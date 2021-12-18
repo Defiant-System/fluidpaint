@@ -1,0 +1,12 @@
+<MenuBar>
+	<Menu name="Fluid Paint">
+		<Menu name="About Fluid Paint" shell="win -a"/>
+		<Menu type="divider"/>
+		<Menu name="Quit Fluid Paint" shell="win -c"/>
+	</Menu>
+	<Menu name="Help">
+		<Menu name="Help" click="open-help"/>
+		<Menu type="divider"/>
+		<Menu name="License"/>
+	</Menu>
+</MenuBar>
