@@ -284,7 +284,7 @@ var Paint = (function () {
 			  this.needsRedraw = true;
 		  }).bind(this));
 
-		this.colorPicker = new ColorPicker(this, "brushColorHSVA", wgl, canvas, shaderSources, COLOR_PICKER_LEFT, 0);
+		this.colorPicker = new ColorPicker(this, "brushColorHSVA", wgl, canvas, COLOR_PICKER_LEFT, 0);
 		//this.brushViewer = new BrushViewer(wgl, this.brushProgram, 0, 800, 200, 300);
 		this.saveButton = document.getElementById("save-button");
 		this.saveButton.addEventListener("click", this.save.bind(this));

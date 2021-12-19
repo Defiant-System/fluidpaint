@@ -10,7 +10,7 @@ var Simulator = (function () {
 		this.frameNumber = frameNumber;
 	}
 
-	function Simulator (wgl, shaderSources, resolutionWidth, resolutionHeight) {
+	function Simulator (wgl, resolutionWidth, resolutionHeight) {
 		this.wgl = wgl;
 
 		wgl.getExtension('OES_texture_float');
