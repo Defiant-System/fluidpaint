@@ -232,8 +232,8 @@ var Paint = (function() {
 		this.brushY = 0;
 		this.brushScale = 30;
 		// this.brushColorHSVA = [Math.random(), 1, 1, 0.8];
-		this.brushColorHSVA = [0, 1, 1, 0.8];
-		this.colorModel = ColorModel.RYB;
+		this.brushColorHSVA = [.75, 1, 1, 0.8];
+		this.colorModel = ColorModel.RGB;
 		this.needsRedraw = true; //whether we need to redraw the painting
 		this.brush = new Brush(wgl, MAX_BRISTLE_COUNT);
 		
@@ -359,11 +359,13 @@ var Paint = (function() {
 		this.newPaintingRectangle = null;
 		this.interactionState = InteractionMode.NONE;
 
-		var update = (function() {
-			this.update();
-			requestAnimationFrame(update);
-		}).bind(this);
-		update();
+		// var update = (function() {
+		// 	this.update();
+		// 	requestAnimationFrame(update);
+		// }).bind(this);
+		// update();
+
+		this.update();
 	}
 
 	Paint.prototype.getPaintingResolutionWidth = function() {
@@ -749,6 +751,8 @@ var Paint = (function() {
 		// this.colorPicker.onMouseMove(position.x, this.canvas.height - position.y);
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
+		
+		this.update();
 	};
 
 

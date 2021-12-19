@@ -1,14 +1,14 @@
 
 var Brush = (function() {
-	var N_PREVIOUS_SPEEDS = 15; //how many previous speeds we store
-	var SPLATS_PER_SEGMENT = 8;
-	var VERTICES_PER_BRISTLE = 10;
-	var BRISTLE_LENGTH = 4.5; //relative to a scale of 1
-	var BRISTLE_JITTER = 0.5;
-	var ITERATIONS = 20;
-	var GRAVITY = 30.0;
-	var BRUSH_DAMPING = 0.75;
-	var STIFFNESS_VARIATION = 0.3;
+	var N_PREVIOUS_SPEEDS = 15, //how many previous speeds we store
+		SPLATS_PER_SEGMENT = 8,
+		VERTICES_PER_BRISTLE = 10,
+		BRISTLE_LENGTH = 4.5, //relative to a scale of 1
+		BRISTLE_JITTER = 0.5,
+		ITERATIONS = 20,
+		GRAVITY = 30.0,
+		BRUSH_DAMPING = 0.75,
+		STIFFNESS_VARIATION = 0.3;
 
 	//the radius of a brush is equal to the scale
 	function Brush (wgl, maxBristleCount) {
