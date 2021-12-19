@@ -1,6 +1,6 @@
 
-var Buttons = (function () {
-	var Buttons = function (element, buttonNames, initialActiveIndex, changeCallback) {
+var Buttons = (function() {
+	var Buttons = function(element, buttonNames, initialActiveIndex, changeCallback) {
 		var elements = [];
 		for (var i = 0; i < buttonNames.length; ++i) {
 			var button = document.createElement('div');
@@ -10,7 +10,7 @@ var Buttons = (function () {
 		}
 
 		var activeElement = elements[initialActiveIndex];
-		var refresh = function () {
+		var refresh = function() {
 			for (var i = 0; i < elements.length; ++i) {
 				if (elements[i] === activeElement) {
 					elements[i].className = 'button-selected';
@@ -21,10 +21,10 @@ var Buttons = (function () {
 		};
 
 		for (var i = 0; i < elements.length; ++i) {
-			(function () { //create closure to store index
+			(function() { //create closure to store index
 				var index = i;
 				var clickedElement = elements[i];
-				var onSelect = function (event) {
+				var onSelect = function(event) {
 					event.preventDefault();
 					if (activeElement !== clickedElement) {
 						activeElement = clickedElement;
@@ -38,7 +38,7 @@ var Buttons = (function () {
 			}());
 		}
 
-		this.setIndex = function (index) {
+		this.setIndex = function(index) {
 			activeElement = elements[index];
 
 			refresh();

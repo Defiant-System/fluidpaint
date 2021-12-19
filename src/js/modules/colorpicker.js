@@ -1,5 +1,5 @@
 
-var ColorPicker = (function () {
+var ColorPicker = (function() {
 	var WIDTH = 300;
 	var HEIGHT = 200;
 
@@ -44,7 +44,7 @@ var ColorPicker = (function () {
 		wgl.bufferData(this.quadVertexBuffer, wgl.ARRAY_BUFFER, new Float32Array([-1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0]), wgl.STATIC_DRAW);
 	}
 
-	ColorPicker.prototype.draw = function (rgbModel) {
+	ColorPicker.prototype.draw = function(rgbModel) {
 		var wgl = this.wgl;
 
 		var hsva = this.painter[this.parameterName];
@@ -71,11 +71,11 @@ var ColorPicker = (function () {
 		wgl.drawArrays(pickerDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 	};
 
-	ColorPicker.prototype.overControl = function (x, y) {
+	ColorPicker.prototype.overControl = function(x, y) {
 		return this.overHue(x, y) || this.overSaturationLightness(x, y) || this.overAlpha(x, y);
 	};
 
-	ColorPicker.prototype.overHue = function (x, y) { //x and y are relative to the canvas
+	ColorPicker.prototype.overHue = function(x, y) { //x and y are relative to the canvas
 		x -= this.left;
 		y -= this.bottom;
 
@@ -87,7 +87,7 @@ var ColorPicker = (function () {
 		return (distance < OUTER_RADIUS && distance > INNER_RADIUS);
 	};
 
-	ColorPicker.prototype.overSaturationLightness = function (x, y) { //x and y are relative to the canvas
+	ColorPicker.prototype.overSaturationLightness = function(x, y) { //x and y are relative to the canvas
 		x -= this.left;
 		y -= this.bottom;
 
@@ -97,14 +97,14 @@ var ColorPicker = (function () {
 		return (Math.abs(xDist) <= SQUARE_WIDTH / 2 && Math.abs(yDist) <= SQUARE_WIDTH / 2);
 	};
 
-	ColorPicker.prototype.overAlpha = function (x, y) { //x and y are relative to the canvas
+	ColorPicker.prototype.overAlpha = function(x, y) { //x and y are relative to the canvas
 		x -= this.left;
 		y -= this.bottom;
 
 		return (x >= ALPHA_SLIDER_X && x <= ALPHA_SLIDER_X + ALPHA_SLIDER_WIDTH && y >= ALPHA_SLIDER_Y && y <= ALPHA_SLIDER_Y + ALPHA_SLIDER_HEIGHT);
 	};
 
-	ColorPicker.prototype.onMouseDown = function (x, y) { //x and y are relative to the canvas
+	ColorPicker.prototype.onMouseDown = function(x, y) { //x and y are relative to the canvas
 		if (this.overHue(x, y)) { 
 			this.huePressed = true;
 		} else if (this.overSaturationLightness(x, y)) {
@@ -116,17 +116,17 @@ var ColorPicker = (function () {
 		this.onMouseMove(x, y);
 	};
 
-	ColorPicker.prototype.isInUse = function () {
+	ColorPicker.prototype.isInUse = function() {
 		return this.huePressed || this.saturationLightnessPressed || this.alphaPressed;
 	};
 
-	ColorPicker.prototype.onMouseUp = function (x, y) {
+	ColorPicker.prototype.onMouseUp = function(x, y) {
 		this.huePressed = false;
 		this.saturationLightnessPressed = false;
 		this.alphaPressed = false;
 	};
 
-	ColorPicker.prototype.onMouseMove = function (mouseX, mouseY) {
+	ColorPicker.prototype.onMouseMove = function(mouseX, mouseY) {
 		//make relative to the picker
 		mouseX -= this.left;
 		mouseY -= this.bottom;

@@ -1,14 +1,14 @@
 
 var Utilities = {
-	swap: function (object, a, b) {
+	swap: function(object, a, b) {
 		var temp = object[a];
 		object[a] = object[b];
 		object[b] = temp;
 	},
-	clamp: function (x, min, max) {
+	clamp: function(x, min, max) {
 		return Math.max(min, Math.min(max, x));
 	},
-	getMousePosition: function (event, element) {
+	getMousePosition: function(event, element) {
 		var boundingRect = element.getBoundingClientRect();
 		return {
 			x: event.clientX - boundingRect.left,

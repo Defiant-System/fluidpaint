@@ -1,5 +1,5 @@
 
-var Slider = (function () {
+var Slider = (function() {
 	var SLIDER_THICKNESS = 2;
 	var LEFT_COLOR = 'white';
 	var RIGHT_COLOR = '#666666';
@@ -37,7 +37,7 @@ var Slider = (function () {
 		div.appendChild(handleDiv);
 
 		var value = initialValue; 
-		var redraw = function () {
+		var redraw = function() {
 			var fraction = (value - minValue) / (maxValue - minValue);
 			sliderLeftDiv.style.width = fraction * length + 'px';
 			sliderRightDiv.style.width = (1.0 - fraction) * length + 'px';
@@ -46,7 +46,7 @@ var Slider = (function () {
 			sliderRightDiv.width = (1.0 - fraction) * length + 'px';
 		};
 
-		var onChange = function (event) {
+		var onChange = function(event) {
 			var mouseX = Utilities.getMousePosition(event, div).x;
 			value = Utilities.clamp((mouseX / length) * (maxValue - minValue) + minValue, minValue, maxValue);
 			changeCallback(value);
@@ -55,42 +55,42 @@ var Slider = (function () {
 
 		var mousePressed = false;
 
-		div.addEventListener('mousedown', function (event) {
+		div.addEventListener('mousedown', function(event) {
 			mousePressed = true;
 			onChange(event);
 		});
 
-		document.addEventListener('mouseup', function (event) {
+		document.addEventListener('mouseup', function(event) {
 			mousePressed = false;
 		});
 
-		document.addEventListener('mousemove', function (event) {
+		document.addEventListener('mousemove', function(event) {
 			if (mousePressed) {
 				onChange(event);
 			}
 		});
 
-		div.addEventListener('touchstart', function (event) {
+		div.addEventListener('touchstart', function(event) {
 			event.preventDefault();
 
 			var firstTouch = event.targetTouches[0];
 			onChange(firstTouch);
 		});
 
-		div.addEventListener('touchmove', function (event) {
+		div.addEventListener('touchmove', function(event) {
 			event.preventDefault();
 
 			var firstTouch = event.targetTouches[0];
 			onChange(firstTouch);
 		});
 
-		this.setValue = function (newValue) {
+		this.setValue = function(newValue) {
 			value = newValue;
 
 			redraw();
 		};
 
-		this.getValue = function () {
+		this.getValue = function() {
 			return value;
 		};
 

@@ -10,7 +10,6 @@ const Shaders = {
 		project: `@import "shaders/project.frag"`,
 		brush: `@import "shaders/brush.frag"`,
 		painting: `@import "shaders/painting.frag"`,
-		picker: `@import "shaders/picker.frag"`,
 		panel: `@import "shaders/panel.frag"`,
 		output: `@import "shaders/output.frag"`,
 		shadow: `@import "shaders/shadow.frag"`,
@@ -23,7 +22,6 @@ const Shaders = {
 	Vertex: {
 		splat: `@import "shaders/splat.vert"`,
 		brush: `@import "shaders/brush.vert"`,
-		picker: `@import "shaders/picker.vert"`,
 		painting: `@import "shaders/painting.vert"`,
 		fullscreen: `@import "shaders/fullscreen.vert"`,
 	}

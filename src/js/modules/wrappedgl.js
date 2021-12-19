@@ -1,5 +1,5 @@
 
-var WrappedGL = (function () {
+var WrappedGL = (function() {
 
 	var CONSTANT_NAMES = [
 		"ACTIVE_ATTRIBUTES",
@@ -305,7 +305,7 @@ var WrappedGL = (function () {
 		"ZERO"
 	];
 
-	WrappedGL.create = function (canvas, options) {
+	WrappedGL.create = function(canvas, options) {
 		var gl = null;
 
 		try {
@@ -332,7 +332,7 @@ var WrappedGL = (function () {
 		/*
 		{
 			defaults: [values],
-			setter: function (called with this set to gl)
+			setter: function(called with this set to gl)
 
 			//undefined flag means not used
 			usedInDraw: whether this state matters for drawing
@@ -346,7 +346,7 @@ var WrappedGL = (function () {
 		this.parameters = {
 			"framebuffer": {
 				defaults: [null],
-				setter: function (framebuffer) {
+				setter: function(framebuffer) {
 					gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
 				},
 				usedInDraw: true,
@@ -355,7 +355,7 @@ var WrappedGL = (function () {
 			},
 			"program": {
 				defaults: [ {program: null} ],
-				setter: function (wrappedProgram) {
+				setter: function(wrappedProgram) {
 					gl.useProgram(wrappedProgram.program);
 				},
 				usedInDraw: true
@@ -368,14 +368,14 @@ var WrappedGL = (function () {
 			},
 			"indexBuffer": {
 				defaults: [null],
-				setter: function (buffer) {
+				setter: function(buffer) {
 					gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
 				},
 				usedInDraw: true
 			},
 			"depthTest": {
 				defaults: [false],
-				setter: function (enabled) {
+				setter: function(enabled) {
 					if (enabled) {
 						gl.enable(gl.DEPTH_TEST);
 					} else {
@@ -391,7 +391,7 @@ var WrappedGL = (function () {
 			},
 			"cullFace": {
 				defaults: [false],
-				setter: function (enabled) {
+				setter: function(enabled) {
 					if (enabled) {
 						gl.enable(gl.CULL_FACE);
 					} else {
@@ -406,7 +406,7 @@ var WrappedGL = (function () {
 			},
 			"blend": {
 				defaults: [false],
-				setter: function (enabled) {
+				setter: function(enabled) {
 					if (enabled) {
 						gl.enable(gl.BLEND);
 					} else {
@@ -427,7 +427,7 @@ var WrappedGL = (function () {
 			},
 			"polygonOffsetFill": {
 				defaults: [false],
-				setter: function (enabled) {
+				setter: function(enabled) {
 					if (enabled) {
 						gl.enable(gl.POLYGON_OFFSET_FILL);
 					} else {
@@ -443,7 +443,7 @@ var WrappedGL = (function () {
 			},
 			"scissorTest": {
 				defaults: [false],
-				setter: function (enabled) {
+				setter: function(enabled) {
 					if (enabled) {
 						gl.enable(gl.SCISSOR_TEST);
 					} else {
@@ -488,10 +488,10 @@ var WrappedGL = (function () {
 			//we need to capture the index in a closure
 			this.parameters["attributeArray" + i.toString()] = {
 				defaults: [null, 0, null, false, 0, 0],
-				setter: (function () {
+				setter: (function() {
 					var index = i;
 
-					return function (buffer, size, type, normalized, stride, offset) {
+					return function(buffer, size, type, normalized, stride, offset) {
 						if (buffer !== null) {
 							gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 							gl.vertexAttribPointer(index, size, type, normalized, stride, offset);
@@ -507,11 +507,11 @@ var WrappedGL = (function () {
 		for (var i = 0; i < maxTextures; ++i) {
 			this.parameters["texture" + i.toString()] = {
 				defaults: [gl.TEXTURE_2D, null],
-				setter: (function () {
+				setter: (function() {
 					//we need to capture the unit in a closure
 					var unit = i;
 
-					return function (target, texture) {
+					return function(target, texture) {
 						gl.activeTexture(gl.TEXTURE0 + unit);
 						gl.bindTexture(target, texture);
 					}
@@ -541,13 +541,13 @@ var WrappedGL = (function () {
 		this.defaultTextureUnit = 0; //the texure unit we use for modifying textures
 	}
 
-	WrappedGL.checkWebGLSupport = function (successCallback, failureCallback) {
-		WrappedGL.checkWebGLSupportWithExtensions([], successCallback, function (hasWebGL, unsupportedExtensions) {
+	WrappedGL.checkWebGLSupport = function(successCallback, failureCallback) {
+		WrappedGL.checkWebGLSupportWithExtensions([], successCallback, function(hasWebGL, unsupportedExtensions) {
 			failureCallback();
 		});
 	}
 
-	WrappedGL.checkWebGLSupportWithExtensions = function (extensions, successCallback, failureCallback) { //successCallback(), failureCallback(hasWebGL, unsupportedExtensions)
+	WrappedGL.checkWebGLSupportWithExtensions = function(extensions, successCallback, failureCallback) { //successCallback(), failureCallback(hasWebGL, unsupportedExtensions)
 		var canvas = document.createElement("canvas");
 		var gl = null;
 		try {
@@ -576,12 +576,12 @@ var WrappedGL = (function () {
 		successCallback();
 	};
 
-	WrappedGL.prototype.getSupportedExtensions = function () {
+	WrappedGL.prototype.getSupportedExtensions = function() {
 		return this.gl.getSupportedExtensions();
 	};
 
 	//returns null if the extension is not supported, otherwise the extension object
-	WrappedGL.prototype.getExtension = function (name) {
+	WrappedGL.prototype.getExtension = function(name) {
 		var gl = this.gl;
 
 		//for certain extensions, we need to expose additional, wrapped rendering compatible, methods directly on WrappedGL and DrawState
@@ -595,10 +595,10 @@ var WrappedGL = (function () {
 				for (var i = 0; i < maxVertexAttributes; ++i) {
 					this.parameters["attributeDivisor" + i.toString()] = {
 						defaults: [0],
-						setter: (function () {
+						setter: (function() {
 							var index = i;
 
-							return function (divisor) {
+							return function(divisor) {
 								instancedExt.vertexAttribDivisorANGLE(index, divisor); 
 							}
 						}()),
@@ -607,7 +607,7 @@ var WrappedGL = (function () {
 				}
 
 				//override vertexAttribPointer
-				DrawState.prototype.vertexAttribPointer = function (buffer, index, size, type, normalized, stride, offset) {
+				DrawState.prototype.vertexAttribPointer = function(buffer, index, size, type, normalized, stride, offset) {
 					this.setParameter("attributeArray" + index.toString(), [buffer, size, type, normalized, stride, offset]);
 
 					if (this.changedParameters.hasOwnProperty("attributeDivisor" + index.toString())) {
@@ -618,18 +618,18 @@ var WrappedGL = (function () {
 					return this;
 				};
 
-				DrawState.prototype.vertexAttribDivisorANGLE = function (index, divisor) {
+				DrawState.prototype.vertexAttribDivisorANGLE = function(index, divisor) {
 					this.setParameter("attributeDivisor" + index.toString(), [divisor]);
 					return this;
 				};
 
-				this.drawArraysInstancedANGLE = function (drawState, mode, first, count, primcount) {
+				this.drawArraysInstancedANGLE = function(drawState, mode, first, count, primcount) {
 					this.resolveDrawState(drawState);
 
 					this.instancedExt.drawArraysInstancedANGLE(mode, first, count, primcount);
 				};
 
-				this.drawElementsInstancedANGLE = function (drawState, mode, count, type, indices, primcount) {
+				this.drawElementsInstancedANGLE = function(drawState, mode, count, type, indices, primcount) {
 					this.resolveDrawState(drawState);
 
 					this.instancedExt.drawElementsInstancedANGLE(mode, count, type, indices, primcount);
@@ -645,11 +645,11 @@ var WrappedGL = (function () {
 		}
 	};
 
-	WrappedGL.prototype.getParameter = function (parameter) {
+	WrappedGL.prototype.getParameter = function(parameter) {
 		return this.gl.getParameter(parameter);
 	};
 
-	WrappedGL.prototype.canRenderToTexture = function (type) {
+	WrappedGL.prototype.canRenderToTexture = function(type) {
 		var gl = this.gl;
 		var framebuffer = this.createFramebuffer(); 
 		var texture = this.buildTexture(gl.RGBA, type, 1, 1, null, gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE, gl.NEAREST, gl.NEAREST);
@@ -663,18 +663,18 @@ var WrappedGL = (function () {
 		return result;
 	};
 
-	WrappedGL.prototype.checkFramebufferStatus = function (framebuffer) {
+	WrappedGL.prototype.checkFramebufferStatus = function(framebuffer) {
 		this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, framebuffer);
 		this.changedParameters["framebuffer"] = framebuffer;
 
 		return this.gl.checkFramebufferStatus(this.gl.FRAMEBUFFER);
 	};
 
-	WrappedGL.prototype.getShaderPrecisionFormat = function (shaderType, precisionType) {
+	WrappedGL.prototype.getShaderPrecisionFormat = function(shaderType, precisionType) {
 		return this.gl.getShaderPrecisionFormat(shaderType, precisionType);
 	};
 
-	WrappedGL.prototype.hasHalfFloatTextureSupport = function () {
+	WrappedGL.prototype.hasHalfFloatTextureSupport = function() {
 		var ext = this.getExtension("OES_texture_half_float");
 		if (ext === null) return false;
 		if (this.getExtension("OES_texture_half_float_linear") === null) return false;
@@ -683,7 +683,7 @@ var WrappedGL = (function () {
 		return true;
 	};
 
-	WrappedGL.prototype.hasFloatTextureSupport = function () {
+	WrappedGL.prototype.hasFloatTextureSupport = function() {
 		if (this.getExtension("OES_texture_float") === null || this.getExtension("OES_texture_float_linear") === null) return false;
 		if (!this.canRenderToTexture(this.FLOAT)) return false;
 
@@ -691,7 +691,7 @@ var WrappedGL = (function () {
 	};
 
 	//flag is one of usedInDraw, usedInClear, usedInRead
-	WrappedGL.prototype.resolveState = function (state, flag) {
+	WrappedGL.prototype.resolveState = function(state, flag) {
 		var gl = this.gl;
 
 		//first let"s revert all states to default that were set but now aren"t set
@@ -720,7 +720,7 @@ var WrappedGL = (function () {
 		}
 	}
 
-	WrappedGL.prototype.resolveDrawState = function (drawState) {
+	WrappedGL.prototype.resolveDrawState = function(drawState) {
 		var gl = this.gl;
 
 		this.resolveState(drawState, "usedInDraw");
@@ -738,77 +738,77 @@ var WrappedGL = (function () {
 
 	};
 
-	WrappedGL.prototype.drawArrays = function (drawState, mode, first, count) {
+	WrappedGL.prototype.drawArrays = function(drawState, mode, first, count) {
 		this.resolveDrawState(drawState);
 		this.gl.drawArrays(mode, first, count);
 	};
 
-	WrappedGL.prototype.drawElements = function (drawState, mode, count, type, offset) {
+	WrappedGL.prototype.drawElements = function(drawState, mode, count, type, offset) {
 		this.resolveDrawState(drawState);
 		this.gl.drawElements(mode, count, type, offset);
 	};
 
-	WrappedGL.prototype.resolveClearState = function (clearState) {
+	WrappedGL.prototype.resolveClearState = function(clearState) {
 		this.resolveState(clearState, "usedInClear");
 	};
 
-	WrappedGL.prototype.clear = function (clearState, bit) {
+	WrappedGL.prototype.clear = function(clearState, bit) {
 		this.resolveClearState(clearState);
 		this.gl.clear(bit);
 	};
 
-	WrappedGL.prototype.resolveReadState = function (readState) {
+	WrappedGL.prototype.resolveReadState = function(readState) {
 		this.resolveState(readState, "usedInRead");
 	};
 
-	WrappedGL.prototype.readPixels = function (readState, x, y, width, height, format, type, pixels) {
+	WrappedGL.prototype.readPixels = function(readState, x, y, width, height, format, type, pixels) {
 		this.resolveReadState(readState);
 		this.gl.readPixels(x, y, width, height, format, type, pixels);
 	};
 
-	WrappedGL.prototype.finish = function () {
+	WrappedGL.prototype.finish = function() {
 		this.gl.finish();
 		return this;
 	};
 
-	WrappedGL.prototype.flush = function () {
+	WrappedGL.prototype.flush = function() {
 		this.gl.flush();
 		return this;
 	};
 
-	WrappedGL.prototype.getError = function () {
+	WrappedGL.prototype.getError = function() {
 		return this.gl.getError();
 	};
 
-	WrappedGL.prototype.createFramebuffer = function () {
+	WrappedGL.prototype.createFramebuffer = function() {
 		return this.gl.createFramebuffer();
 	};
 
-	WrappedGL.prototype.framebufferTexture2D = function (framebuffer, target, attachment, textarget, texture, level) {
+	WrappedGL.prototype.framebufferTexture2D = function(framebuffer, target, attachment, textarget, texture, level) {
 		this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, framebuffer);
 		this.changedParameters["framebuffer"] = framebuffer;
 		this.gl.framebufferTexture2D(target, attachment, textarget, texture, level);
 		return this;
 	};
 
-	WrappedGL.prototype.framebufferRenderbuffer = function (framebuffer, target, attachment, renderbuffertarget, renderbuffer) {
+	WrappedGL.prototype.framebufferRenderbuffer = function(framebuffer, target, attachment, renderbuffertarget, renderbuffer) {
 		this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, framebuffer);
 		this.changedParameters["framebuffer"] = framebuffer;
 
 		this.gl.framebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
 	};
 
-	WrappedGL.prototype.drawBuffers = function (framebuffer, buffers) {
+	WrappedGL.prototype.drawBuffers = function(framebuffer, buffers) {
 		this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, framebuffer);
 		this.changedParameters["framebuffer"] = framebuffer;
 		this.drawExt.drawBuffersWEBGL(buffers);
 	};
 
-	WrappedGL.prototype.createTexture = function () {
+	WrappedGL.prototype.createTexture = function() {
 		return this.gl.createTexture();
 	};
 
-	WrappedGL.prototype.bindTextureForEditing = function (target, texture) {
+	WrappedGL.prototype.bindTextureForEditing = function(target, texture) {
 		this.gl.activeTexture(this.gl.TEXTURE0 + this.defaultTextureUnit);
 		this.gl.bindTexture(target, texture);
 		this.changedParameters["texture" + this.defaultTextureUnit.toString()] = [target, texture];
@@ -817,7 +817,7 @@ var WrappedGL = (function () {
 	//this function is overloaded, it can be either
 	//(target, texture, level, internalformat, width, height, border, format, type, pixels)
 	//(target, texture, level, internalformat, format, type, object)
-	WrappedGL.prototype.texImage2D = function (target, texture) {
+	WrappedGL.prototype.texImage2D = function(target, texture) {
 		var args = Array.prototype.slice.call(arguments, 2);
 		args.unshift(target); //add target to for texImage2D arguments list
 
@@ -830,7 +830,7 @@ var WrappedGL = (function () {
 	//this function is overloaded, it can be either
 	//(target, texture, level, xoffset, yoffset, width, height, format, type, pixels)
 	//(target, texture, level, xoffset, yoffset, format, type, object)
-	WrappedGL.prototype.texSubImage2D = function (target, texture) {
+	WrappedGL.prototype.texSubImage2D = function(target, texture) {
 		var args = Array.prototype.slice.call(arguments, 2);
 		args.unshift(target); //add target to for texImage2D arguments list
 		this.bindTextureForEditing(target, texture);
@@ -856,7 +856,7 @@ var WrappedGL = (function () {
 		return this;
 	};
 
-	WrappedGL.prototype.setTextureFiltering = function (target, texture, wrapS, wrapT, minFilter, magFilter) {
+	WrappedGL.prototype.setTextureFiltering = function(target, texture, wrapS, wrapT, minFilter, magFilter) {
 		var gl = this.gl;
 		this.bindTextureForEditing(target, texture);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrapS);
@@ -866,39 +866,39 @@ var WrappedGL = (function () {
 		return this;
 	};
 
-	WrappedGL.prototype.generateMipmap = function (target, texture) {
+	WrappedGL.prototype.generateMipmap = function(target, texture) {
 		this.bindTextureForEditing(target, texture);
 		this.gl.generateMipmap(target);
 		return this;
 	};
 
-	WrappedGL.prototype.buildTexture = function (format, type, width, height, data, wrapS, wrapT, minFilter, magFilter) {
+	WrappedGL.prototype.buildTexture = function(format, type, width, height, data, wrapS, wrapT, minFilter, magFilter) {
 		var texture = this.createTexture();
 		this.rebuildTexture(texture, format, type, width, height, data, wrapS, wrapT, minFilter, magFilter);
 		return texture;
 	};
 
-	WrappedGL.prototype.rebuildTexture = function (texture, format, type, width, height, data, wrapS, wrapT, minFilter, magFilter) {
+	WrappedGL.prototype.rebuildTexture = function(texture, format, type, width, height, data, wrapS, wrapT, minFilter, magFilter) {
 		this.texImage2D(this.TEXTURE_2D, texture, 0, format, width, height, 0, format, type, data)
 			.setTextureFiltering(this.TEXTURE_2D, texture, wrapS, wrapT, minFilter, magFilter);
 		return this;
 	};
 
-	WrappedGL.prototype.createRenderbuffer = function () {
+	WrappedGL.prototype.createRenderbuffer = function() {
 		return this.gl.createRenderbuffer();
 	};
 
-	WrappedGL.prototype.renderbufferStorage = function (renderbuffer, target, internalformat, width, height) {
+	WrappedGL.prototype.renderbufferStorage = function(renderbuffer, target, internalformat, width, height) {
 		this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, renderbuffer);
 		this.gl.renderbufferStorage(target, internalformat, width, height);
 		return this;
 	};
 
-	WrappedGL.prototype.createBuffer = function () {
+	WrappedGL.prototype.createBuffer = function() {
 		return this.gl.createBuffer();
 	};
 
-	WrappedGL.prototype.bufferData = function (buffer, target, data, usage) {
+	WrappedGL.prototype.bufferData = function(buffer, target, data, usage) {
 		var gl = this.gl;
 
 		if (target === gl.ARRAY_BUFFER) {
@@ -911,13 +911,13 @@ var WrappedGL = (function () {
 		gl.bufferData(target, data, usage);
 	};
 
-	WrappedGL.prototype.buildBuffer = function (target, data, usage) {
+	WrappedGL.prototype.buildBuffer = function(target, data, usage) {
 		var buffer = this.createBuffer();
 		this.bufferData(buffer, target, data, usage);
 		return buffer;
 	};
 
-	WrappedGL.prototype.bufferSubData = function (buffer, target, offset, data) {
+	WrappedGL.prototype.bufferSubData = function(buffer, target, offset, data) {
 		var gl = this.gl;
 
 		if (target === gl.ARRAY_BUFFER) {
@@ -930,23 +930,23 @@ var WrappedGL = (function () {
 		gl.bufferSubData(target, offset, data);
 	};
 
-	WrappedGL.prototype.createProgram = function (vertexShaderSource, fragmentShaderSource, attributeLocations) {
+	WrappedGL.prototype.createProgram = function(vertexShaderSource, fragmentShaderSource, attributeLocations) {
 		return new WrappedProgram(this, vertexShaderSource, fragmentShaderSource, attributeLocations); 
 	};
 
 	//loads text files and calls callback with an object like this:
 	// { filename: "content", otherFilename, "morecontent" }
 	//TODO: error conditions...
-	WrappedGL.loadTextFiles = function (filenames, onLoaded) {
+	WrappedGL.loadTextFiles = function(filenames, onLoaded) {
 		var loadedSoFar = 0;
 		var results = {};
 		for (var i = 0; i < filenames.length; ++i) {
 			var filename = filenames[i];
-			(function () {
+			(function() {
 				var name = filename;
 
 				var request = new XMLHttpRequest();
-				request.onreadystatechange = function () {
+				request.onreadystatechange = function() {
 					if (request.readyState === 4) { //if this reqest is done
 						//add this file to the results object
 						var text = request.responseText;
@@ -969,7 +969,7 @@ var WrappedGL = (function () {
 	//successCallback is called with (program)
 	//vertex shader, fragment shader can either be strings or arrays of strings
 	//in the array case, the file contents will be concatenated
-	WrappedGL.prototype.createProgramFromFiles = function (vertexShaderPath, fragmentShaderPath, attributeLocations, successCallback, failureCallback) {
+	WrappedGL.prototype.createProgramFromFiles = function(vertexShaderPath, fragmentShaderPath, attributeLocations, successCallback, failureCallback) {
 		var that = this;
 
 		var filesToLoad = [];
@@ -985,7 +985,7 @@ var WrappedGL = (function () {
 			filesToLoad.push(fragmentShaderPath);
 		}
 
-		WrappedGL.loadTextFiles(filesToLoad, function (files) {
+		WrappedGL.loadTextFiles(filesToLoad, function(files) {
 			var vertexShaderSources = [];
 			if (Array.isArray(vertexShaderPath)) {
 				for (var i = 0; i < vertexShaderPath.length; ++i) {
@@ -1046,7 +1046,7 @@ var WrappedGL = (function () {
 	}
 
 	//asynchronous
-	WrappedGL.prototype.createProgramsFromFiles = function (programParameters, successCallback, failureCallback) {
+	WrappedGL.prototype.createProgramsFromFiles = function(programParameters, successCallback, failureCallback) {
 		var programCount = keysInObject(programParameters);
 
 		var loadedSoFar = 0;
@@ -1056,10 +1056,10 @@ var WrappedGL = (function () {
 				var parameters = programParameters[programName];
 				
 				var that = this;
-				(function () {
+				(function() {
 					var name = programName;
 
-					that.createProgramFromFiles(parameters.vertexShader, parameters.fragmentShader, parameters.attributeLocations, function (program) {
+					that.createProgramFromFiles(parameters.vertexShader, parameters.fragmentShader, parameters.attributeLocations, function(program) {
 						programs[name] = program;
 
 						loadedSoFar++;
@@ -1073,27 +1073,27 @@ var WrappedGL = (function () {
 		}
 	};
 
-	WrappedGL.prototype.createDrawState = function () {
+	WrappedGL.prototype.createDrawState = function() {
 		return new DrawState(this);
 	};
 
-	WrappedGL.prototype.createClearState = function () {
+	WrappedGL.prototype.createClearState = function() {
 		return new ClearState(this);
 	};
 
-	WrappedGL.prototype.createReadState = function () {
+	WrappedGL.prototype.createReadState = function() {
 		return new ReadState(this);
 	};
 
-	WrappedGL.prototype.deleteBuffer = function (buffer) {
+	WrappedGL.prototype.deleteBuffer = function(buffer) {
 		this.gl.deleteBuffer(buffer);
 	};
 
-	WrappedGL.prototype.deleteFramebuffer = function (buffer) {
+	WrappedGL.prototype.deleteFramebuffer = function(buffer) {
 		this.gl.deleteFramebuffer(buffer);
 	};
 
-	WrappedGL.prototype.deleteTexture = function (texture) {
+	WrappedGL.prototype.deleteTexture = function(texture) {
 		this.gl.deleteTexture(texture);
 	};
 
@@ -1155,7 +1155,7 @@ var WrappedGL = (function () {
 	};
 
 	//TODO: maybe this should be on WrappedGL?
-	WrappedProgram.prototype.getAttribLocation = function (name) {
+	WrappedProgram.prototype.getAttribLocation = function(name) {
 		return this.attributeLocations[name];
 	};
 
@@ -1181,7 +1181,7 @@ var WrappedGL = (function () {
 		return true;
 	};
 
-	State.prototype.setParameter = function (parameterName, values) {
+	State.prototype.setParameter = function(parameterName, values) {
 		if (!arraysEqual(values, this.wgl.parameters[parameterName].defaults)) { //if the state hasn"t been set to the defaults
 			this.changedParameters[parameterName] = values;
 		} else { //if we"re going back to defaults
@@ -1191,7 +1191,7 @@ var WrappedGL = (function () {
 		}
 	};
 
-	State.prototype.clone = function () {
+	State.prototype.clone = function() {
 		var newState = new (this.constructor)(this.wgl);
 
 		for (var parameterName in this.changedParameters) {
@@ -1218,17 +1218,17 @@ var WrappedGL = (function () {
 
 	DrawState.prototype = Object.create(State.prototype);
 	DrawState.prototype.constructor = State;
-	DrawState.prototype.bindFramebuffer = function (framebuffer) {
+	DrawState.prototype.bindFramebuffer = function(framebuffer) {
 		this.setParameter("framebuffer", [framebuffer]);
 		return this;
 	};
 
-	DrawState.prototype.viewport = function (x, y, width, height) {
+	DrawState.prototype.viewport = function(x, y, width, height) {
 		this.setParameter("viewport", [x, y, width, height]);
 		return this;
 	};
 
-	DrawState.prototype.enable = function (cap) {
+	DrawState.prototype.enable = function(cap) {
 		if (cap === this.wgl.DEPTH_TEST) {
 			this.setParameter("depthTest", [true]);
 		} else if (cap === this.wgl.BLEND) {
@@ -1243,7 +1243,7 @@ var WrappedGL = (function () {
 		return this;
 	};
 
-	DrawState.prototype.disable = function (cap) {
+	DrawState.prototype.disable = function(cap) {
 		if (cap === this.wgl.DEPTH_TEST) {
 			this.setParameter("depthTest", [false]);
 		} else if (cap === this.wgl.BLEND) {
@@ -1258,7 +1258,7 @@ var WrappedGL = (function () {
 		return this;
 	};
 
-	DrawState.prototype.vertexAttribPointer = function (buffer, index, size, type, normalized, stride, offset) {
+	DrawState.prototype.vertexAttribPointer = function(buffer, index, size, type, normalized, stride, offset) {
 		this.setParameter("attributeArray" + index.toString(), [buffer, size, type, normalized, stride, offset]);
 
 		if (this.instancedExt && this.changedParameters.hasOwnProperty("attributeDivisor" + index.toString())) {
@@ -1268,148 +1268,148 @@ var WrappedGL = (function () {
 		return this;
 	};
 
-	DrawState.prototype.bindIndexBuffer = function (buffer) {
+	DrawState.prototype.bindIndexBuffer = function(buffer) {
 		this.setParameter("indexBuffer", [buffer]);
 		return this;
 	};
 
-	DrawState.prototype.depthFunc = function (func) {
+	DrawState.prototype.depthFunc = function(func) {
 		this.setParameter("depthFunc", [func]);
 		return this;
 	};
 
-	DrawState.prototype.frontFace = function (mode) {
+	DrawState.prototype.frontFace = function(mode) {
 		this.setParameter("frontFace", [mode]);
 		return this;
 	};
 
-	DrawState.prototype.blendEquation = function (mode) {
+	DrawState.prototype.blendEquation = function(mode) {
 		this.blendEquationSeparate(mode, mode);
 		return this;
 	};
 
-	DrawState.prototype.blendEquationSeparate = function (modeRGB, modeAlpha) {
+	DrawState.prototype.blendEquationSeparate = function(modeRGB, modeAlpha) {
 		this.setParameter("blendEquation", [modeRGB, modeAlpha]);
 		return this;
 	};
 
-	DrawState.prototype.blendFunc = function (sFactor, dFactor) {
+	DrawState.prototype.blendFunc = function(sFactor, dFactor) {
 		this.blendFuncSeparate(sFactor, dFactor, sFactor, dFactor);
 		return this;
 	};
 
-	DrawState.prototype.blendFuncSeparate = function (srcRGB, dstRGB, srcAlpha, dstAlpha) {
+	DrawState.prototype.blendFuncSeparate = function(srcRGB, dstRGB, srcAlpha, dstAlpha) {
 		this.setParameter("blendFunc", [srcRGB, dstRGB, srcAlpha, dstAlpha]);
 		return this;
 	};
 
-	DrawState.prototype.scissor = function (x, y, width, height) {
+	DrawState.prototype.scissor = function(x, y, width, height) {
 		this.setParameter("scissor", [x, y, width, height]);
 		return this;
 	};
 
-	DrawState.prototype.useProgram = function (program) {
+	DrawState.prototype.useProgram = function(program) {
 		this.setParameter("program", [program]);
 		return this;
 	};
 
-	DrawState.prototype.bindTexture = function (unit, target, texture) {
+	DrawState.prototype.bindTexture = function(unit, target, texture) {
 		this.setParameter("texture" + unit.toString(), [target, texture]);
 		return this;
 	};
 
-	DrawState.prototype.colorMask = function (r, g, b, a) {
+	DrawState.prototype.colorMask = function(r, g, b, a) {
 		this.setParameter("colorMask", [r, g, b, a]);
 		return this;
 	};
 
-	DrawState.prototype.depthMask = function (enabled) {
+	DrawState.prototype.depthMask = function(enabled) {
 		this.setParameter("depthMask", [enabled]);
 		return this;
 	};
 
-	DrawState.prototype.polygonOffset = function (factor, units) {
+	DrawState.prototype.polygonOffset = function(factor, units) {
 		this.setParameter("polygonOffset", [factor, units]);
 		return this;
 	};
 
-	DrawState.prototype.uniformTexture = function (uniformName, unit, target, texture) {
+	DrawState.prototype.uniformTexture = function(uniformName, unit, target, texture) {
 		this.uniform1i(uniformName, unit);
 		this.bindTexture(unit, target, texture);
 		return this;
 	};
 
-	DrawState.prototype.uniform1i = function (uniformName, value) {
+	DrawState.prototype.uniform1i = function(uniformName, value) {
 		this.uniforms[uniformName] = {type: "1i", value: [value]};
 		return this;
 	};
 
-	DrawState.prototype.uniform2i = function (uniformName, x, y) {
+	DrawState.prototype.uniform2i = function(uniformName, x, y) {
 		this.uniforms[uniformName] = {type: "2i", value: [x, y]};
 		return this;
 	};
 
-	DrawState.prototype.uniform3i = function (uniformName, x, y, z) {
+	DrawState.prototype.uniform3i = function(uniformName, x, y, z) {
 		this.uniforms[uniformName] = {type: "3i", value: [x, y, z]};
 		return this;
 	};
 
-	DrawState.prototype.uniform4i = function (uniformName, x, y, z ,w) {
+	DrawState.prototype.uniform4i = function(uniformName, x, y, z ,w) {
 		this.uniforms[uniformName] = {type: "4i", value: [x, y, z, w]};
 		return this;
 	};
 
-	DrawState.prototype.uniform1f = function (uniformName, value) {
+	DrawState.prototype.uniform1f = function(uniformName, value) {
 		this.uniforms[uniformName] = {type: "1f", value: value};
 		return this;
 	};
 
-	DrawState.prototype.uniform2f = function (uniformName, x, y) {
+	DrawState.prototype.uniform2f = function(uniformName, x, y) {
 		this.uniforms[uniformName] = {type: "2f", value: [x, y]};
 		return this;
 	};
 
-	DrawState.prototype.uniform3f = function (uniformName, x, y, z) {
+	DrawState.prototype.uniform3f = function(uniformName, x, y, z) {
 		this.uniforms[uniformName] = {type: "3f", value: [x, y, z]};
 		return this;
 	};
 
-	DrawState.prototype.uniform4f = function (uniformName, x, y, z ,w) {
+	DrawState.prototype.uniform4f = function(uniformName, x, y, z ,w) {
 		this.uniforms[uniformName] = {type: "4f", value: [x, y, z, w]};
 		return this;
 	};
 
-	DrawState.prototype.uniform1fv = function (uniformName, value) {
+	DrawState.prototype.uniform1fv = function(uniformName, value) {
 		this.uniforms[uniformName] = {type: "1fv", value: [value]};
 		return this;
 	};
 
-	DrawState.prototype.uniform2fv = function (uniformName, value) {
+	DrawState.prototype.uniform2fv = function(uniformName, value) {
 		this.uniforms[uniformName] = {type: "2fv", value: [value]};
 		return this;
 	};
 
-	DrawState.prototype.uniform3fv = function (uniformName, value) {
+	DrawState.prototype.uniform3fv = function(uniformName, value) {
 		this.uniforms[uniformName] = {type: "3fv", value: [value]};
 		return this;
 	};
 
-	DrawState.prototype.uniform4fv = function (uniformName, value) {
+	DrawState.prototype.uniform4fv = function(uniformName, value) {
 		this.uniforms[uniformName] = {type: "4fv", value: [value]};
 		return this;
 	};
 
-	DrawState.prototype.uniformMatrix2fv = function (uniformName, transpose, matrix) {
+	DrawState.prototype.uniformMatrix2fv = function(uniformName, transpose, matrix) {
 		this.uniforms[uniformName] = {type: "matrix2fv", value: [transpose, matrix]};
 		return this;
 	};
 
-	DrawState.prototype.uniformMatrix3fv = function (uniformName, transpose, matrix) {
+	DrawState.prototype.uniformMatrix3fv = function(uniformName, transpose, matrix) {
 		this.uniforms[uniformName] = {type: "matrix3fv", value: [transpose, matrix]};
 		return this;
 	};
 
-	DrawState.prototype.uniformMatrix4fv = function (uniformName, transpose, matrix) {
+	DrawState.prototype.uniformMatrix4fv = function(uniformName, transpose, matrix) {
 		this.uniforms[uniformName] = {type: "matrix4fv", value: [transpose, matrix]};
 		return this;
 	};
@@ -1420,46 +1420,46 @@ var WrappedGL = (function () {
 
 	ClearState.prototype = Object.create(State.prototype);
 	ClearState.prototype.constructor = ClearState;
-	ClearState.prototype.bindFramebuffer = function (framebuffer) {
+	ClearState.prototype.bindFramebuffer = function(framebuffer) {
 		this.setParameter("framebuffer", [framebuffer]);
 		return this;
 	};
 
-	ClearState.prototype.clearColor = function (r, g, b, a) {
+	ClearState.prototype.clearColor = function(r, g, b, a) {
 		this.setParameter("clearColor", [r, g, b, a]);        
 		return this;
 	};
 
-	ClearState.prototype.clearDepth = function (depth) {
+	ClearState.prototype.clearDepth = function(depth) {
 		this.setParameter("clearDepth", [depth]);
 		return this;
 	}
 
-	ClearState.prototype.colorMask = function (r, g, b, a) {
+	ClearState.prototype.colorMask = function(r, g, b, a) {
 		this.setParameter("colorMask", [r, g, b, a]);
 		return this;
 	};
 
-	ClearState.prototype.depthMask = function (enabled) {
+	ClearState.prototype.depthMask = function(enabled) {
 		this.setParameter("depthMask", [enabled]);
 		return this;
 	};
 
-	ClearState.prototype.enable = function (cap) {
+	ClearState.prototype.enable = function(cap) {
 		if (cap === this.wgl.SCISSOR_TEST) {
 			this.setParameter("scissorTest", [true]);
 		}
 		return this;
 	};
 
-	ClearState.prototype.disable = function (cap) {
+	ClearState.prototype.disable = function(cap) {
 		if (cap === this.wgl.SCISSOR_TEST) {
 			this.setParameter("scissorTest", [false]);
 		}
 		return this;
 	};
 
-	ClearState.prototype.scissor = function (x, y, width, height) {
+	ClearState.prototype.scissor = function(x, y, width, height) {
 		this.setParameter("scissor", [x, y, width, height]);
 		return this;
 	};
@@ -1470,7 +1470,7 @@ var WrappedGL = (function () {
 
 	ReadState.prototype = Object.create(State.prototype);
 	ReadState.prototype.constructor = ReadState;
-	ReadState.prototype.bindFramebuffer = function (framebuffer) {
+	ReadState.prototype.bindFramebuffer = function(framebuffer) {
 		this.setParameter("framebuffer", [framebuffer]);
 		return this;
 	};
