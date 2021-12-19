@@ -23,18 +23,9 @@ var Paint = (function () {
 			RGB: 1
 		},
 		QUALITIES = [
-			{
-				name: "Low",
-				resolutionScale: 1.0
-			},
-			{
-				name: "Medium",
-				resolutionScale: 1.5
-			},
-			{
-				name: "High",
-				resolutionScale: 2.0
-			}
+			{ name: "Low", resolutionScale: 1.0 },
+			{ name: "Medium", resolutionScale: 1.5 },
+			{ name: "High", resolutionScale: 2.0 }
 		],
 		INITIAL_QUALITY = 1,
 		INITIAL_PADDING = 100,
@@ -104,15 +95,11 @@ var Paint = (function () {
 
 		var shader = [
 			"precision highp float;",
-
 			"uniform sampler2D u_input;",
-
 			"uniform vec2 u_step;",
 			"uniform vec2 u_resolution;",
-
 			"void main () {",
 				"vec4 total = vec4(0.0);",
-
 				"vec2 coordinates = gl_FragCoord.xy / u_resolution;",
 				"vec2 delta = u_step / u_resolution;",
 		].join("\n");
@@ -121,7 +108,6 @@ var Paint = (function () {
 
 		for (var i = 0; i < width; ++i) {
 			var offset = i - (width - 1) / 2;
-
 			shader += "total += texture2D(u_input, coordinates + delta * " + offset.toFixed(1) + ") * " + coefficients[i].toFixed(1) + "; \n";
 		}
 
@@ -244,8 +230,9 @@ var Paint = (function () {
 		this.brushInitialized = false; //whether the user has moved their mouse at least once and we thus have a valid brush position
 		this.brushX = 0;
 		this.brushY = 0;
-		this.brushScale = 50;
-		this.brushColorHSVA = [Math.random(), 1, 1, 0.8];
+		this.brushScale = 30;
+		// this.brushColorHSVA = [Math.random(), 1, 1, 0.8];
+		this.brushColorHSVA = [0, 1, 1, 0.8];
 		this.colorModel = ColorModel.RYB;
 		this.needsRedraw = true; //whether we need to redraw the painting
 		this.brush = new Brush(wgl, MAX_BRISTLE_COUNT);
@@ -604,7 +591,7 @@ var Paint = (function () {
 
 		// this.drawShadow(PANEL_SHADOW_ALPHA, new Rectangle(0, panelBottom, PANEL_WIDTH, PANEL_HEIGHT)); //shadow for panel
 		// this.needsRedraw = false;
-		
+
 		// this.colorPicker.draw(this.colorModel === ColorModel.RGB);
 		//this.brushViewer.draw(this.brushX, this.brushY, this.brush);
 	};
