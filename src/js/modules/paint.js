@@ -249,81 +249,80 @@ var Paint = (function () {
 		this.colorModel = ColorModel.RYB;
 		this.needsRedraw = true; //whether we need to redraw the painting
 		this.brush = new Brush(wgl, MAX_BRISTLE_COUNT);
-
-		this.fluiditySlider = new Slider(document.getElementById("fluidity-slider"), this.simulator.fluidity, 0.6, 0.9, (function (fluidity) {
-		  this.simulator.fluidity = fluidity;
-		}).bind(this));
-
-		this.bristleCountSlider = new Slider(document.getElementById("bristles-slider"), 1, 0, 1, (function (t) {
-			var BRISTLE_SLIDER_POWER = 2.0;
-			t = Math.pow(t, BRISTLE_SLIDER_POWER);
-			var bristleCount = Math.floor(MIN_BRISTLE_COUNT + t * (MAX_BRISTLE_COUNT - MIN_BRISTLE_COUNT));
-			this.brush.setBristleCount(bristleCount);
-		}).bind(this));
-
-		this.brushSizeSlider = new Slider(document.getElementById("size-slider"), this.brushScale, MIN_BRUSH_SCALE, MAX_BRUSH_SCALE, (function(size) {
-			this.brushScale = size;
-		}).bind(this));
 		
-		this.qualityButtons = new Buttons(document.getElementById("qualities"),
-			QUALITIES.map(function (q) { return q.name })
-		, INITIAL_QUALITY, (function (index) {
-			this.saveSnapshot();
-			this.resolutionScale = QUALITIES[index].resolutionScale;
-			this.simulator.changeResolution(this.getPaintingResolutionWidth(), this.getPaintingResolutionHeight());
-			this.needsRedraw = true;
-		}).bind(this)); 
+		// this.fluiditySlider = new Slider(document.getElementById("fluidity-slider"), this.simulator.fluidity, 0.6, 0.9, (function (fluidity) {
+		//   this.simulator.fluidity = fluidity;
+		// }).bind(this));
 
-		this.modelButtons = new Buttons(document.getElementById("models"),
-		  ["Natural", "Digital"], 0, (function (index) {
-			  if (index === 0) {
-				  this.colorModel = ColorModel.RYB;
-			  } else if (index === 1) {
-				  this.colorModel = ColorModel.RGB;
-			  }
-			  this.needsRedraw = true;
-		  }).bind(this));
+		// this.bristleCountSlider = new Slider(document.getElementById("bristles-slider"), 1, 0, 1, (function (t) {
+		// 	var BRISTLE_SLIDER_POWER = 2.0;
+		// 	t = Math.pow(t, BRISTLE_SLIDER_POWER);
+		// 	var bristleCount = Math.floor(MIN_BRISTLE_COUNT + t * (MAX_BRISTLE_COUNT - MIN_BRISTLE_COUNT));
+		// 	this.brush.setBristleCount(bristleCount);
+		// }).bind(this));
 
-		this.colorPicker = new ColorPicker(this, "brushColorHSVA", wgl, canvas, COLOR_PICKER_LEFT, 0);
-		//this.brushViewer = new BrushViewer(wgl, this.brushProgram, 0, 800, 200, 300);
-		this.saveButton = document.getElementById("save-button");
-		this.saveButton.addEventListener("click", this.save.bind(this));
-		this.saveButton.addEventListener("touchstart", (function (event) {
-			event.preventDefault();
-			this.save();
-		}).bind(this));
+		// this.brushSizeSlider = new Slider(document.getElementById("size-slider"), this.brushScale, MIN_BRUSH_SCALE, MAX_BRUSH_SCALE, (function(size) {
+		// 	this.brushScale = size;
+		// }).bind(this));
+		
+		// this.qualityButtons = new Buttons(document.getElementById("qualities"),
+		// 	QUALITIES.map(function (q) { return q.name })
+		// , INITIAL_QUALITY, (function (index) {
+		// 	this.saveSnapshot();
+		// 	this.resolutionScale = QUALITIES[index].resolutionScale;
+		// 	this.simulator.changeResolution(this.getPaintingResolutionWidth(), this.getPaintingResolutionHeight());
+		// 	this.needsRedraw = true;
+		// }).bind(this)); 
 
-		this.clearButton = document.getElementById("clear-button");  
-		this.clearButton.addEventListener("click", this.clear.bind(this));
-		this.clearButton.addEventListener("touchstart", (function (event) {
-			event.preventDefault();
+		// this.modelButtons = new Buttons(document.getElementById("models"),
+		//   ["Natural", "Digital"], 0, (function (index) {
+		// 	  if (index === 0) {
+		// 		  this.colorModel = ColorModel.RYB;
+		// 	  } else if (index === 1) {
+		// 		  this.colorModel = ColorModel.RGB;
+		// 	  }
+		// 	  this.needsRedraw = true;
+		//   }).bind(this));
 
-			this.clear();
-		}).bind(this));
+		// this.colorPicker = new ColorPicker(this, "brushColorHSVA", wgl, canvas, COLOR_PICKER_LEFT, 0);
+		
+		// this.saveButton = document.getElementById("save-button");
+		// this.saveButton.addEventListener("click", this.save.bind(this));
+		// this.saveButton.addEventListener("touchstart", (function (event) {
+		// 	event.preventDefault();
+		// 	this.save();
+		// }).bind(this));
 
-		this.undoButton = document.getElementById("undo-button");
-		this.undoButton.addEventListener("click", this.undo.bind(this));
-		this.undoButton.addEventListener("touchstart", (function (event) {
-			event.preventDefault();
-			this.undo();
-		}).bind(this));
+		// this.clearButton = document.getElementById("clear-button");  
+		// this.clearButton.addEventListener("click", this.clear.bind(this));
+		// this.clearButton.addEventListener("touchstart", (function (event) {
+		// 	event.preventDefault();
 
-		this.redoButton = document.getElementById("redo-button");
-		this.redoButton.addEventListener("click", this.redo.bind(this));
-		this.redoButton.addEventListener("touchstart", (function (event) {
-			event.preventDefault();
-			this.redo();
-		}).bind(this));
+		// 	this.clear();
+		// }).bind(this));
 
-		this.refreshDoButtons();
+		// this.undoButton = document.getElementById("undo-button");
+		// this.undoButton.addEventListener("click", this.undo.bind(this));
+		// this.undoButton.addEventListener("touchstart", (function (event) {
+		// 	event.preventDefault();
+		// 	this.undo();
+		// }).bind(this));
+
+		// this.redoButton = document.getElementById("redo-button");
+		// this.redoButton.addEventListener("click", this.redo.bind(this));
+		// this.redoButton.addEventListener("touchstart", (function (event) {
+		// 	event.preventDefault();
+		// 	this.redo();
+		// }).bind(this));
+
+		// this.refreshDoButtons();
 		this.mainProjectionMatrix = makeOrthographicMatrix(new Float32Array(16), 0.0, this.canvas.width, 0, this.canvas.height, -5000.0, 5000.0);
 		this.onResize = function () {
 			this.canvas.width = window.innerWidth;
 			this.canvas.height = window.innerHeight;
 			this.paintingRectangle.left = Utilities.clamp(this.paintingRectangle.left, -this.paintingRectangle.width, this.canvas.width);
 			this.paintingRectangle.bottom = Utilities.clamp(this.paintingRectangle.bottom, -this.paintingRectangle.height, this.canvas.height);
-			this.colorPicker.bottom = this.canvas.height - COLOR_PICKER_TOP;
-			//this.brushViewer.bottom = this.canvas.height - 800;
+			// this.colorPicker.bottom = this.canvas.height - COLOR_PICKER_TOP;
 			this.mainProjectionMatrix = makeOrthographicMatrix(new Float32Array(16), 0.0, this.canvas.width, 0, this.canvas.height, -5000.0, 5000.0);
 			this.canvasTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, this.canvas.width, this.canvas.height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
 			this.tempCanvasTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, this.canvas.width, this.canvas.height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
@@ -332,7 +331,7 @@ var Paint = (function () {
 		};
 		this.onResize();
 
-		window.addEventListener("resize", this.onResize.bind(this));
+		// window.addEventListener("resize", this.onResize.bind(this));
 		
 		this.mouseX = 0;
 		this.mouseY = 0;
@@ -342,7 +341,7 @@ var Paint = (function () {
 		canvas.addEventListener("mousedown", this.onMouseDown.bind(this));
 		document.addEventListener("mouseup", this.onMouseUp.bind(this));
 		canvas.addEventListener("mouseover", this.onMouseOver.bind(this));
-		document.addEventListener("wheel", this.onWheel.bind(this));
+		// document.addEventListener("wheel", this.onWheel.bind(this));
 
 		document.addEventListener("keydown", (function (event) {
 			if (event.keyCode === 32) { //space
@@ -517,7 +516,7 @@ var Paint = (function () {
 		this.drawShadow(PAINTING_SHADOW_ALPHA, clippedPaintingRectangle); //draw painting shadow
 
 		//draw brush to screen
-		if (this.interactionState === InteractionMode.PAINTING || !this.colorPicker.isInUse() && this.interactionState === InteractionMode.NONE && this.desiredInteractionMode(this.mouseX, this.mouseY) === InteractionMode.PAINTING) { //we draw the brush if we"re painting or you would start painting on click
+		// if (this.interactionState === InteractionMode.PAINTING || !this.colorPicker.isInUse() && this.interactionState === InteractionMode.NONE && this.desiredInteractionMode(this.mouseX, this.mouseY) === InteractionMode.PAINTING) { //we draw the brush if we"re painting or you would start painting on click
 			var brushDrawState = wgl.createDrawState()
 				.bindFramebuffer(null)
 				.viewport(0, 0, this.canvas.width, this.canvas.height)
@@ -532,17 +531,12 @@ var Paint = (function () {
 				.uniformTexture("u_positionsTexture", 0, wgl.TEXTURE_2D, this.brush.positionsTexture);
 
 			wgl.drawElements(brushDrawState, wgl.LINES, this.brush.indexCount * this.brush.bristleCount / this.brush.maxBristleCount, wgl.UNSIGNED_SHORT, 0);
-		}
+		// }
 
 
 		//work out what cursor we want
 		var desiredCursor = "";
-
-		if (this.colorPicker.isInUse()) {
-			desiredCursor = "pointer";
-		} else if (this.colorPicker.overControl(this.mouseX, this.mouseY)) {
-			desiredCursor = "pointer";
-		} else if (this.interactionState === InteractionMode.NONE) { //if there is no current interaction, we display a cursor based on what interaction would occur on click
+		if (this.interactionState === InteractionMode.NONE) { //if there is no current interaction, we display a cursor based on what interaction would occur on click
 			var desiredMode = this.desiredInteractionMode(this.mouseX, this.mouseY);
 
 			if (desiredMode === InteractionMode.PAINTING) {
@@ -568,6 +562,7 @@ var Paint = (function () {
 			this.canvas.style.cursor = desiredCursor;
 		}
 
+		/*
 		var panelBottom = this.canvas.height - PANEL_HEIGHT;
 		if (this.needsRedraw) {
 			//blur the canvas for the panel
@@ -605,10 +600,12 @@ var Paint = (function () {
 			.vertexAttribPointer(this.quadVertexBuffer, 0, 2, wgl.FLOAT, wgl.FALSE, 0, 0);
 
 		wgl.drawArrays(panelDrawState, wgl.TRIANGLE_STRIP, 0, 4);
+		*/
 
-		this.drawShadow(PANEL_SHADOW_ALPHA, new Rectangle(0, panelBottom, PANEL_WIDTH, PANEL_HEIGHT)); //shadow for panel
-		this.needsRedraw = false;
-		this.colorPicker.draw(this.colorModel === ColorModel.RGB);
+		// this.drawShadow(PANEL_SHADOW_ALPHA, new Rectangle(0, panelBottom, PANEL_WIDTH, PANEL_HEIGHT)); //shadow for panel
+		// this.needsRedraw = false;
+		
+		// this.colorPicker.draw(this.colorModel === ColorModel.RGB);
 		//this.brushViewer.draw(this.brushX, this.brushY, this.brush);
 	};
 
@@ -700,17 +697,17 @@ var Paint = (function () {
 	};
 
 	Paint.prototype.refreshDoButtons = function () {
-		if (this.canUndo()) {
-			this.undoButton.className = "button do-button-active";
-		} else {
-			this.undoButton.className = "button do-button-inactive";
-		}
+		// if (this.canUndo()) {
+		// 	this.undoButton.className = "button do-button-active";
+		// } else {
+		// 	this.undoButton.className = "button do-button-inactive";
+		// }
 
-		if (this.canRedo()) {
-			this.redoButton.className = "button do-button-active";
-		} else {
-			this.redoButton.className = "button do-button-inactive";
-		}
+		// if (this.canRedo()) {
+		// 	this.redoButton.className = "button do-button-active";
+		// } else {
+		// 	this.redoButton.className = "button do-button-inactive";
+		// }
 	};
 
 	Paint.prototype.save = function () {
@@ -813,7 +810,7 @@ var Paint = (function () {
 			this.needsRedraw = true;
 		}
 
-		this.colorPicker.onMouseMove(position.x, this.canvas.height - position.y);
+		// this.colorPicker.onMouseMove(position.x, this.canvas.height - position.y);
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
 	};
@@ -880,9 +877,9 @@ var Paint = (function () {
 		this.mouseY = mouseY;
 		this.brushX = mouseX;
 		this.brushY = mouseY;
-		this.colorPicker.onMouseDown(mouseX, mouseY);
+		// this.colorPicker.onMouseDown(mouseX, mouseY);
 
-		if (!this.colorPicker.isInUse()) {
+		// if (!this.colorPicker.isInUse()) {
 			var mode = this.desiredInteractionMode(mouseX, mouseY);
 			if (mode === InteractionMode.PANNING) {
 				this.interactionState = InteractionMode.PANNING;
@@ -895,14 +892,14 @@ var Paint = (function () {
 				this.interactionState = InteractionMode.PAINTING;
 				this.saveSnapshot();
 			}
-		}
+		// }
 	};
 
 	Paint.prototype.onMouseUp = function (event) {
 		if (event.preventDefault) event.preventDefault();
 
 		var position = Utilities.getMousePosition(event, this.canvas);
-		this.colorPicker.onMouseUp(position.x, this.canvas.height - position.y);
+		// this.colorPicker.onMouseUp(position.x, this.canvas.height - position.y);
 
 		if (this.interactionState === InteractionMode.RESIZING) { //if we"re stopping the resize
 			//resize simulator

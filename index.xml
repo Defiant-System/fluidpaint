@@ -4,8 +4,8 @@
 		<meta name="title" value="Fluid Paint" version="1.0"/>
 		<meta name="author" value="David Li" namespace="ant" ported="Hakan Bilgin"/>
 		<meta name="license" value="AGPL-3.0"/>
-		<meta name="width" value="900"/>
-		<meta name="height" value="540"/>
+		<meta name="width" value="1050"/>
+		<meta name="height" value="720"/>
 		<meta name="top" value="150"/>
 		<meta name="left" value="150"/>
 		<meta name="minimize"/>

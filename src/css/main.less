@@ -1,4 +1,14 @@
 
+/* latin */
+@font-face {
+	font-family: "Open Sans";
+	font-style: normal;
+	// font-weight: 700;
+	font-display: swap;
+	src: url(~/fonts/open-sans.woff2) format("woff2");
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 content {
 	position: absolute;
 	top: 0;
@@ -6,20 +16,21 @@ content {
 	right: 0;
 	bottom: 0;
 	user-select: none;
+	font-family: "Open Sans", sans-serif;
 
 	canvas {
 		position: absolute;
-	    top: 0;
-	    left: 0;
-	    z-index: 2;
-	    // cursor: crosshair;
-	    border-radius: 0 0 5px 5px;
+			top: 0;
+			left: 0;
+			z-index: 2;
+			// cursor: crosshair;
+			border-radius: 0 0 5px 5px;
 	}
 
 
 
 	#ui {
-		background: rgba(0,0,0,.25);
+		// background: rgba(0,0,0,.25);
 		pointer-events: none;
 		position: absolute;
 		top: 0;
