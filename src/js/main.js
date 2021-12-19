@@ -33,14 +33,11 @@ const Shaders = {
 @import "modules/rectangle.js"
 @import "modules/brush.js"
 @import "modules/simulator.js"
-@import "modules/colorpicker.js"
-@import "modules/slider.js"
-@import "modules/buttons.js"
 @import "modules/paint.js"
 
 let canvas = document.createElement('canvas'),
-	painter,
-	wgl;
+	wgl = WrappedGL.create(canvas),
+	painter = new Paint(canvas, wgl);
 
 const fluidpaint = {
 	init() {
@@ -49,9 +46,6 @@ const fluidpaint = {
 		this.cvs = this.content.append(canvas);
 
 		this.dispatch({ type: "window.resize" });
-
-		wgl = WrappedGL.create(canvas);
-		painter = new Paint(canvas, wgl);
 	},
 	dispatch(event) {
 		let Self = fluidpaint,

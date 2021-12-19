@@ -28,7 +28,9 @@ var Paint = (function() {
 			{ name: "High", resolutionScale: 2.0 }
 		],
 		INITIAL_QUALITY = 1,
-		INITIAL_PADDING = 100,
+		// INITIAL_PADDING = 100,
+		INITIAL_WIDTH = 600,
+		INITIAL_HEIGHT = 400,
 		MIN_PAINTING_WIDTH = 300,
 		MAX_PAINTING_WIDTH = 4096, //this is further constrained by the maximum texture size
 		//brush parameters
@@ -36,7 +38,7 @@ var Paint = (function() {
 		MIN_BRISTLE_COUNT = 10,
 		MIN_BRUSH_SCALE = 5,
 		MAX_BRUSH_SCALE = 75,
-		BRUSH_HEIGHT = 1.0, //how high the brush is over the canvas - this is scaled with the brushScale
+		BRUSH_HEIGHT = 2.0, //how high the brush is over the canvas - this is scaled with the brushScale
 		Z_THRESHOLD = 0.13333, //this is scaled with the brushScale
 		//splatting parameters
 		SPLAT_VELOCITY_SCALE = 0.14,
@@ -119,7 +121,6 @@ var Paint = (function() {
 
 	function hsvToRyb(h, s, v) {
 		h = h % 1;
-
 		var c = v * s,
 			hDash = h * 6,
 			x = c * (1 - Math.abs(hDash % 2 - 1)),
@@ -128,11 +129,9 @@ var Paint = (function() {
 			g = [x, c, c, x, 0, 0][mod],
 			b = [0, 0, x, c, c, x][mod],
 			m = v - c;
-
 		r += m;
 		g += m;
 		b += m;
-
 		return [r, g, b];
 	}
 
@@ -185,7 +184,7 @@ var Paint = (function() {
 		wgl.getExtension("OES_texture_float");
 		wgl.getExtension("OES_texture_float_linear");
 		var maxTextureSize = wgl.getParameter(wgl.MAX_TEXTURE_SIZE);
-		
+
 		this.maxPaintingWidth = Math.min(MAX_PAINTING_WIDTH, maxTextureSize / QUALITIES[QUALITIES.length - 1].resolutionScale);
 		this.framebuffer = wgl.createFramebuffer();
 		this.paintingProgram = wgl.createProgram(Shaders.Vertex.painting, Shaders.Fragment.painting);
@@ -208,10 +207,11 @@ var Paint = (function() {
 
 		//position of painting on screen, and its dimensions
 		//units are pixels
-		this.paintingRectangle = new Rectangle(
-			INITIAL_PADDING, INITIAL_PADDING,
-			Utilities.clamp(canvas.width - INITIAL_PADDING * 2, MIN_PAINTING_WIDTH, this.maxPaintingWidth),
-			Utilities.clamp(canvas.height - INITIAL_PADDING * 2, MIN_PAINTING_WIDTH, this.maxPaintingWidth));
+		let width = Utilities.clamp(INITIAL_WIDTH, MIN_PAINTING_WIDTH, this.maxPaintingWidth),
+			height = Utilities.clamp(INITIAL_HEIGHT, MIN_PAINTING_WIDTH, this.maxPaintingWidth),
+			left = Math.round((canvas.width - width) / 2),
+			bottom = Math.round((canvas.height - height) / 2);
+		this.paintingRectangle = new Rectangle(left, bottom, width, height);
 
 		//simulation resolution = painting resolution * resolution scale
 		this.resolutionScale = QUALITIES[INITIAL_QUALITY].resolutionScale;
@@ -455,15 +455,12 @@ var Paint = (function() {
 		if (this.needsRedraw) {
 			//draw painting into texture
 			wgl.framebufferTexture2D(this.framebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, this.canvasTexture, 0);
-			var clearState = wgl.createClearState()
-				.bindFramebuffer(this.framebuffer);
-				// .clearColor(BACKGROUND_GRAY, BACKGROUND_GRAY, BACKGROUND_GRAY, 1.0);
+			var clearState = wgl.createClearState().bindFramebuffer(this.framebuffer);
 
 			wgl.clear(clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
 
 
 			var paintingProgram;
-
 			if (this.colorModel === ColorModel.RYB) {
 				paintingProgram = this.interactionState === InteractionMode.RESIZING ? this.resizingPaintingProgram : this.paintingProgram;
 			} else if (this.colorModel === ColorModel.RGB) {

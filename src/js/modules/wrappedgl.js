@@ -320,7 +320,7 @@ var WrappedGL = (function() {
 		return new WrappedGL(gl);
 	}
 
-	function WrappedGL (gl) {
+	function WrappedGL(gl) {
 		this.gl = gl;
 		for (var i = 0; i < CONSTANT_NAMES.length; i += 1) {
 			this[CONSTANT_NAMES[i]] = gl[CONSTANT_NAMES[i]];
@@ -1035,7 +1035,7 @@ var WrappedGL = (function() {
 		secondProgram: secondProgramObject
 	*/
 
-	function keysInObject (object) {
+	function keysInObject(object) {
 		var count = 0;
 		for (var key in object) {
 			if (object.hasOwnProperty(key)) {
@@ -1097,7 +1097,7 @@ var WrappedGL = (function() {
 		this.gl.deleteTexture(texture);
 	};
 
-	function buildShader (gl, type, source) {
+	function buildShader(gl, type, source) {
 		var shader = gl.createShader(type);
 		gl.shaderSource(shader, source);
 		gl.compileShader(shader);
@@ -1111,7 +1111,7 @@ var WrappedGL = (function() {
 
 	//we don"t have to specify any or all attribute location bindings
 	//any unspecified bindings will be assigned automatically and can be queried with program.getAttribLocation(attributeName)
-	function WrappedProgram (wgl, vertexShaderSource, fragmentShaderSource, requestedAttributeLocations) {
+	function WrappedProgram(wgl, vertexShaderSource, fragmentShaderSource, requestedAttributeLocations) {
 		this.uniformLocations = {};
 		this.uniforms = {}; //TODO: if we want to cache uniform values in the future
 
@@ -1159,7 +1159,7 @@ var WrappedGL = (function() {
 		return this.attributeLocations[name];
 	};
 
-	function State (wgl) {
+	function State(wgl) {
 		this.wgl = wgl;
 
 		//all states that have been changed from defaults
@@ -1174,7 +1174,7 @@ var WrappedGL = (function() {
 	};
 
 	//assumes a and b are equal length
-	function arraysEqual (a, b) {
+	function arraysEqual(a, b) {
 		for (var i = 0; i < a.length; ++i) {
 			if (a[i] !== b[i]) return false;
 		}
@@ -1209,7 +1209,7 @@ var WrappedGL = (function() {
 	}
 
 	//inherits from State
-	function DrawState (wgl) {
+	function DrawState(wgl) {
 		State.call(this, wgl);
 
 		//we always set uniforms
@@ -1414,7 +1414,7 @@ var WrappedGL = (function() {
 		return this;
 	};
 
-	function ClearState (wgl) {
+	function ClearState(wgl) {
 		State.call(this, wgl);
 	};
 
@@ -1464,7 +1464,7 @@ var WrappedGL = (function() {
 		return this;
 	};
 
-	function ReadState (wgl) {
+	function ReadState(wgl) {
 		State.call(this, wgl);
 	}
 

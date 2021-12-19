@@ -13,8 +13,10 @@
 		<meta name="resize"/>
 		<meta name="script" value="src/js/main.js"/>
 		<meta name="style" value="src/css/main.less"/>
+		<meta name="icons" value="src/svg/icons.svg"/>
 		<meta name="content" value="src/partials/content.htm"/>
 
+		@import "src/partials/toolbar.xml"
 		@import "src/partials/menubar.xml"
 	</Head>
 </Application>
