@@ -1,4 +1,10 @@
 
+const QUALITIES = [
+	{ name: "Low", resolutionScale: 1.0 },
+	{ name: "Medium", resolutionScale: 1.5 },
+	{ name: "High", resolutionScale: 2.0 }
+];
+
 var Paint = (function() {
 
 	var InteractionMode = {
@@ -22,11 +28,6 @@ var Paint = (function() {
 			RYB: 0,
 			RGB: 1
 		},
-		QUALITIES = [
-			{ name: "Low", resolutionScale: 1.0 },
-			{ name: "Medium", resolutionScale: 1.5 },
-			{ name: "High", resolutionScale: 2.0 }
-		],
 		INITIAL_QUALITY = 1,
 		// INITIAL_PADDING = 100,
 		INITIAL_WIDTH = 600,
@@ -261,46 +262,6 @@ var Paint = (function() {
 		// 	this.needsRedraw = true;
 		// }).bind(this)); 
 
-		// this.modelButtons = new Buttons(document.getElementById("models"),
-		//   ["Natural", "Digital"], 0, (function(index) {
-		// 	  if (index === 0) {
-		// 		  this.colorModel = ColorModel.RYB;
-		// 	  } else if (index === 1) {
-		// 		  this.colorModel = ColorModel.RGB;
-		// 	  }
-		// 	  this.needsRedraw = true;
-		//   }).bind(this));
-
-		// this.colorPicker = new ColorPicker(this, "brushColorHSVA", wgl, canvas, COLOR_PICKER_LEFT, 0);
-		
-		// this.saveButton = document.getElementById("save-button");
-		// this.saveButton.addEventListener("click", this.save.bind(this));
-		// this.saveButton.addEventListener("touchstart", (function(event) {
-		// 	event.preventDefault();
-		// 	this.save();
-		// }).bind(this));
-
-		// this.clearButton = document.getElementById("clear-button");  
-		// this.clearButton.addEventListener("click", this.clear.bind(this));
-		// this.clearButton.addEventListener("touchstart", (function(event) {
-		// 	event.preventDefault();
-
-		// 	this.clear();
-		// }).bind(this));
-
-		// this.undoButton = document.getElementById("undo-button");
-		// this.undoButton.addEventListener("click", this.undo.bind(this));
-		// this.undoButton.addEventListener("touchstart", (function(event) {
-		// 	event.preventDefault();
-		// 	this.undo();
-		// }).bind(this));
-
-		// this.redoButton = document.getElementById("redo-button");
-		// this.redoButton.addEventListener("click", this.redo.bind(this));
-		// this.redoButton.addEventListener("touchstart", (function(event) {
-		// 	event.preventDefault();
-		// 	this.redo();
-		// }).bind(this));
 
 		// this.refreshDoButtons();
 		this.mainProjectionMatrix = makeOrthographicMatrix(new Float32Array(16), 0.0, this.canvas.width, 0, this.canvas.height, -5000.0, 5000.0);
@@ -324,9 +285,11 @@ var Paint = (function() {
 		this.mouseY = 0;
 		this.spaceDown = false;
 
+		/*
 		canvas.addEventListener("mousemove", this.onMouseMove.bind(this));
 		canvas.addEventListener("mousedown", this.onMouseDown.bind(this));
 		document.addEventListener("mouseup", this.onMouseUp.bind(this));
+		*/
 		// canvas.addEventListener("mouseover", this.onMouseOver.bind(this));
 		// document.addEventListener("wheel", this.onWheel.bind(this));
 
@@ -358,6 +321,8 @@ var Paint = (function() {
 		//when we finish resizing, we then resize the simulator to match
 		this.newPaintingRectangle = null;
 		this.interactionState = InteractionMode.NONE;
+
+		this._clearState = wgl.createClearState().bindFramebuffer(this.framebuffer);
 
 		// var update = (function() {
 		// 	this.update();
@@ -457,9 +422,7 @@ var Paint = (function() {
 		if (this.needsRedraw) {
 			//draw painting into texture
 			wgl.framebufferTexture2D(this.framebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, this.canvasTexture, 0);
-			var clearState = wgl.createClearState().bindFramebuffer(this.framebuffer);
-
-			wgl.clear(clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
+			wgl.clear(this._clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
 
 
 			var paintingProgram;
@@ -501,7 +464,7 @@ var Paint = (function() {
 		this.drawShadow(PAINTING_SHADOW_ALPHA, clippedPaintingRectangle); //draw painting shadow
 
 		//draw brush to screen
-		if (this.interactionState === InteractionMode.PAINTING || this.interactionState === InteractionMode.NONE && this.desiredInteractionMode(this.mouseX, this.mouseY) === InteractionMode.PAINTING) { //we draw the brush if we"re painting or you would start painting on click
+		if (this.interactionState !== InteractionMode.PAINTING || this.interactionState === InteractionMode.NONE && this.desiredInteractionMode(this.mouseX, this.mouseY) === InteractionMode.PAINTING) { //we draw the brush if we"re painting or you would start painting on click
 			var brushDrawState = wgl.createDrawState()
 				.bindFramebuffer(null)
 				.viewport(0, 0, canvas.width, canvas.height)
@@ -550,7 +513,8 @@ var Paint = (function() {
 
 	Paint.prototype.clear = function() {
 		this.simulator.clear();
-		this.needsRedraw = true;
+		// this.needsRedraw = true;
+		this.update();
 	};
 
 
@@ -621,7 +585,8 @@ var Paint = (function() {
 		}
 
 		this.refreshDoButtons();
-		this.needsRedraw = true;
+		// this.needsRedraw = true;
+		this.update();
 	};
 
 	Paint.prototype.redo = function() {
@@ -631,7 +596,8 @@ var Paint = (function() {
 		}
 
 		this.refreshDoButtons();
-		this.needsRedraw = true;
+		// this.needsRedraw = true;
+		this.update();
 	};
 
 	Paint.prototype.refreshDoButtons = function() {
@@ -697,6 +663,51 @@ var Paint = (function() {
 		window.open(saveCanvas.toDataURL());
 	};
 
+	Paint.prototype.getResizingSide = function(mouseX, mouseY) {
+		//the side we"d be resizing with the current mouse position
+		//we can resize if our perpendicular distance to an edge is less than RESIZING_RADIUS
+		if (Math.abs(mouseX - this.paintingRectangle.left) <= RESIZING_RADIUS && Math.abs(mouseY - this.paintingRectangle.getTop()) <= RESIZING_RADIUS) { //top left
+			return ResizingSide.TOP_LEFT;
+		}
+		if (Math.abs(mouseX - this.paintingRectangle.getRight()) <= RESIZING_RADIUS && Math.abs(mouseY - this.paintingRectangle.getTop()) <= RESIZING_RADIUS) { //top right
+			return ResizingSide.TOP_RIGHT;
+		}
+		if (Math.abs(mouseX - this.paintingRectangle.left) <= RESIZING_RADIUS && Math.abs(mouseY - this.paintingRectangle.bottom) <= RESIZING_RADIUS) { //bottom left
+			return ResizingSide.BOTTOM_LEFT;
+		}
+		if (Math.abs(mouseX - this.paintingRectangle.getRight()) <= RESIZING_RADIUS && Math.abs(mouseY - this.paintingRectangle.bottom) <= RESIZING_RADIUS) { //bottom right
+			return ResizingSide.BOTTOM_RIGHT;
+		}
+		if (mouseY > this.paintingRectangle.bottom && mouseY <= this.paintingRectangle.getTop()) { //left or right
+			if (Math.abs(mouseX - this.paintingRectangle.left) <= RESIZING_RADIUS) { //left
+				return ResizingSide.LEFT;
+			} else if (Math.abs(mouseX - this.paintingRectangle.getRight()) <= RESIZING_RADIUS) { //right
+				return ResizingSide.RIGHT;
+			}
+		}
+		
+		if (mouseX > this.paintingRectangle.left && mouseX <= this.paintingRectangle.getRight()) { //bottom or top
+			if (Math.abs(mouseY - this.paintingRectangle.bottom) <= RESIZING_RADIUS) { //bottom
+				return ResizingSide.BOTTOM;
+			} else if (Math.abs(mouseY - this.paintingRectangle.getTop()) <= RESIZING_RADIUS) { //top
+				return ResizingSide.TOP;
+			}
+		}
+
+		return ResizingSide.NONE;
+	};
+
+	//what interaction mode would be triggered if we clicked with given mouse position
+	Paint.prototype.desiredInteractionMode = function(mouseX, mouseY) { 
+		if (this.spaceDown || this.mouseX < this.paintingRectangle.left - RESIZING_RADIUS || this.mouseX > this.paintingRectangle.left + this.paintingRectangle.width + RESIZING_RADIUS || this.mouseY < this.paintingRectangle.bottom - RESIZING_RADIUS || this.mouseY > this.paintingRectangle.bottom + this.paintingRectangle.height + RESIZING_RADIUS) {
+			return InteractionMode.PANNING;
+		} else if (this.getResizingSide(mouseX, mouseY) !== ResizingSide.NONE) {
+			return InteractionMode.RESIZING;
+		} else {
+			return InteractionMode.PAINTING;
+		}
+	};
+
 	Paint.prototype.onMouseMove = function(event) {
 		if (event.preventDefault) event.preventDefault();
 
@@ -753,52 +764,6 @@ var Paint = (function() {
 		this.mouseY = mouseY;
 		
 		this.update();
-	};
-
-
-	Paint.prototype.getResizingSide = function(mouseX, mouseY) {
-		//the side we"d be resizing with the current mouse position
-		//we can resize if our perpendicular distance to an edge is less than RESIZING_RADIUS
-		if (Math.abs(mouseX - this.paintingRectangle.left) <= RESIZING_RADIUS && Math.abs(mouseY - this.paintingRectangle.getTop()) <= RESIZING_RADIUS) { //top left
-			return ResizingSide.TOP_LEFT;
-		}
-		if (Math.abs(mouseX - this.paintingRectangle.getRight()) <= RESIZING_RADIUS && Math.abs(mouseY - this.paintingRectangle.getTop()) <= RESIZING_RADIUS) { //top right
-			return ResizingSide.TOP_RIGHT;
-		}
-		if (Math.abs(mouseX - this.paintingRectangle.left) <= RESIZING_RADIUS && Math.abs(mouseY - this.paintingRectangle.bottom) <= RESIZING_RADIUS) { //bottom left
-			return ResizingSide.BOTTOM_LEFT;
-		}
-		if (Math.abs(mouseX - this.paintingRectangle.getRight()) <= RESIZING_RADIUS && Math.abs(mouseY - this.paintingRectangle.bottom) <= RESIZING_RADIUS) { //bottom right
-			return ResizingSide.BOTTOM_RIGHT;
-		}
-		if (mouseY > this.paintingRectangle.bottom && mouseY <= this.paintingRectangle.getTop()) { //left or right
-			if (Math.abs(mouseX - this.paintingRectangle.left) <= RESIZING_RADIUS) { //left
-				return ResizingSide.LEFT;
-			} else if (Math.abs(mouseX - this.paintingRectangle.getRight()) <= RESIZING_RADIUS) { //right
-				return ResizingSide.RIGHT;
-			}
-		}
-		
-		if (mouseX > this.paintingRectangle.left && mouseX <= this.paintingRectangle.getRight()) { //bottom or top
-			if (Math.abs(mouseY - this.paintingRectangle.bottom) <= RESIZING_RADIUS) { //bottom
-				return ResizingSide.BOTTOM;
-			} else if (Math.abs(mouseY - this.paintingRectangle.getTop()) <= RESIZING_RADIUS) { //top
-				return ResizingSide.TOP;
-			}
-		}
-
-		return ResizingSide.NONE;
-	};
-
-	//what interaction mode would be triggered if we clicked with given mouse position
-	Paint.prototype.desiredInteractionMode = function(mouseX, mouseY) { 
-		if (this.spaceDown || this.mouseX < this.paintingRectangle.left - RESIZING_RADIUS || this.mouseX > this.paintingRectangle.left + this.paintingRectangle.width + RESIZING_RADIUS || this.mouseY < this.paintingRectangle.bottom - RESIZING_RADIUS || this.mouseY > this.paintingRectangle.bottom + this.paintingRectangle.height + RESIZING_RADIUS) {
-			return InteractionMode.PANNING;
-		} else if (this.getResizingSide(mouseX, mouseY) !== ResizingSide.NONE) {
-			return InteractionMode.RESIZING;
-		} else {
-			return InteractionMode.PAINTING;
-		}
 	};
 
 	Paint.prototype.onMouseDown = function(event) {

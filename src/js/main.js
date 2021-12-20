@@ -51,14 +51,45 @@ const fluidpaint = {
 		let Self = fluidpaint,
 			el;
 		switch (event.type) {
+			// system events
 			case "window.open":
 				break;
 			case "window.resize":
 				// canvas
 				Self.cvs.prop({ width: window.innerWidth, height: window.innerHeight });
 				break;
+			// custom events
 			case "open-help":
 				defiant.shell("fs -u '~/help/index.md'");
+				break;
+			case "clear":
+				painter.clear();
+				break;
+			case "history-undo":
+				painter.undo();
+				break;
+			case "history-redo":
+				painter.redo();
+				break;
+			case "set-color":
+				painter.brushColorHSVA = [.5, 1, 1, 0.8];
+				break;
+			case "color-mode":
+				painter.colorModel = +event.arg;
+				painter.update();
+				break;
+			case "quality":
+				let index = +event.arg;
+				painter.saveSnapshot();
+				painter.resolutionScale = QUALITIES[index].resolutionScale;
+				painter.simulator.changeResolution(painter.getPaintingResolutionWidth(), painter.getPaintingResolutionHeight());
+				painter.update();
+
+				console.log( painter.getPaintingResolutionWidth() );
+				break;
+			case "save":
+			case "toggle-sidebar":
+				console.log(event);
 				break;
 		}
 	}

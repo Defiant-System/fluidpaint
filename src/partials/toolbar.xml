@@ -1,14 +1,27 @@
 <ToolBar>
 	<Group width="30%">
 		<Options>
-			<Tool symbol="icon-undo" click="history-undo" state="disabled"/>
-			<Tool symbol="icon-redo" click="history-redo" state="disabled"/>
+			<Tool symbol="icon-undo" click="history-undo" state="1disabled"/>
+			<Tool symbol="icon-redo" click="history-redo" state="1disabled"/>
 		</Options>
-		<!-- <Tool symbol="icon-sidebar"/> -->
-		<Select name="100%" width="35" menu="view-zoom"></Select>
+		<Tool name="Clear" click="clear"/>
+		<Tool name="Save" click="save"/>
+		<!-- <Select name="100%" width="35" menu="view-zoom"/> -->
 	</Group>
 	<Group width="40%" align="center">
-		<!-- <Tool symbol="icon-chart" click="popup-view-options" arg="chart"/> -->
+		<Options>
+			<Tool name="Low" click="quality" arg="0"/>
+			<Tool name="Medium" click="quality" arg="1"/>
+			<Tool name="High" click="quality" arg="2"/>
+		</Options>
+		<Options>
+			<Tool name="Natural" click="color-mode" arg="1"/>
+			<Tool name="Digital" click="color-mode" arg="0"/>
+		</Options>
+		<Options>
+			<Tool name="Red" click="set-color" arg="#ff0000"/>
+			<Tool name="Blue" click="set-color" arg="#0000ff"/>
+		</Options>
 	</Group>
 	<Group width="30%">
 		<Tool symbol="icon-format" click="toggle-sidebar"/>
