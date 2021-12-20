@@ -35,17 +35,61 @@ const Shaders = {
 @import "modules/simulator.js"
 @import "modules/paint.js"
 
+
 let canvas = document.createElement('canvas'),
 	wgl = WrappedGL.create(canvas),
 	painter = new Paint(canvas, wgl);
+
 
 const fluidpaint = {
 	init() {
 		// fast references
 		this.content = window.find("content");
+		this.doc = $(document);
 		this.cvs = this.content.append(canvas);
 
 		this.dispatch({ type: "window.resize" });
+
+		// bind event handlers
+		this.cvs.on("mousedown", this.cvsDnD);
+	},
+	cvsDnD(event) {
+		let Self = fluidpaint,
+			Drag = Self.drag;
+		switch (event.type) {
+			case "mousedown":
+				// create drag object
+				Self.drag = {
+					offset: {
+						x: event.clientX - event.offsetX,
+						y: event.clientY - event.offsetY,
+					}
+				};
+				painter.interactionState === InteractionMode.PAINTING;
+				painter.saveSnapshot();
+				// bind event
+				Self.doc.on("mousemove mouseup", Self.cvsDnD);
+				break;
+			case "mousemove":
+				let mouseX = event.clientX - Drag.offset.x,
+					mouseY = window.innerHeight - (event.clientY - Drag.offset.y);
+				
+				painter.mouseX =
+				painter.brushX = mouseX;
+				painter.mouseY =
+				painter.brushY = mouseY;
+
+				if (!painter.brushInitialized) {
+					painter.brush.initialize(painter.brushX, painter.brushY, BRUSH_HEIGHT * painter.brushScale, painter.brushScale);
+				}
+				painter.update();
+				break;
+			case "mouseup":
+				painter.interactionState === InteractionMode.NONE;
+				// bind event
+				Self.doc.off("mousemove mouseup", Self.cvsDnD);
+				break;
+		}
 	},
 	dispatch(event) {
 		let Self = fluidpaint,
