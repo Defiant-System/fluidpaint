@@ -199,7 +199,7 @@ var Paint = (function() {
 		var wgl = this.wgl;
 		var shadowDrawState = wgl.createDrawState()
 		  .uniform2f("u_bottomLeft", rectangle.left, rectangle.bottom)
-		  .uniform2f("u_topRight", rectangle.getRight(), rectangle.getTop())
+		  .uniform2f("u_topRight", rectangle.right, rectangle.top)
 		  .uniform1f("u_sigma", BOX_SHADOW_SIGMA) 
 		  .uniform1f("u_alpha", alpha) 
 		  .enable(wgl.BLEND)
@@ -209,9 +209,9 @@ var Paint = (function() {
 
 		var rectangles = [
 			new Rectangle(rectangle.left - BOX_SHADOW_WIDTH, rectangle.bottom - BOX_SHADOW_WIDTH, rectangle.width + 2 * BOX_SHADOW_WIDTH, BOX_SHADOW_WIDTH), //bottom
-			new Rectangle(rectangle.left - BOX_SHADOW_WIDTH, rectangle.getTop(), rectangle.width + 2 * BOX_SHADOW_WIDTH, BOX_SHADOW_WIDTH), //top
+			new Rectangle(rectangle.left - BOX_SHADOW_WIDTH, rectangle.top, rectangle.width + 2 * BOX_SHADOW_WIDTH, BOX_SHADOW_WIDTH), //top
 			new Rectangle(rectangle.left - BOX_SHADOW_WIDTH, rectangle.bottom, BOX_SHADOW_WIDTH, rectangle.height), //left
-			new Rectangle(rectangle.getRight(), rectangle.bottom, BOX_SHADOW_WIDTH, rectangle.height) // right
+			new Rectangle(rectangle.right, rectangle.bottom, BOX_SHADOW_WIDTH, rectangle.height) // right
 		];
 
 		var screenRectangle = new Rectangle(0, 0, this.canvas.width, this.canvas.height);

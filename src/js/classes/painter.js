@@ -25,6 +25,7 @@ class Painter {
 		wgl.bufferData(this.quadVertexBuffer, wgl.ARRAY_BUFFER, new Float32Array([-1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0]), wgl.STATIC_DRAW);
 
 		this.paintingRectangle = new Rectangle(0, 0, canvas.width, canvas.height);
+
 		//simulation resolution = painting resolution * resolution scale
 		this.resolutionScale = QUALITIES[INITIAL_QUALITY].resolutionScale;
 		this.simulator = new Simulator(wgl, this.paintingResolutionWidth, this.paintingResolutionHeight);
@@ -66,11 +67,10 @@ class Painter {
 		this._clearState = wgl.createClearState().bindFramebuffer(this.framebuffer);
 		this._update = true;
 
-		var Self = this,
-			update = (function() {
-				Self.update();
+		var update = () => {
+				this.update();
 				requestAnimationFrame(update);
-			});
+			};
 
 		update();
 	}

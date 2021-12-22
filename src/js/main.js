@@ -32,12 +32,12 @@ const Shaders = {
 @import "classes/snapshot.js"
 @import "classes/painter.js"
 @import "classes/brush.js"
+@import "classes/rectangle.js"
 
 
 @import "modules/color.js"
 @import "modules/wrappedgl.js"
 @import "modules/utilities.js"
-@import "modules/rectangle.js"
 @import "modules/simulator.js"
 
 

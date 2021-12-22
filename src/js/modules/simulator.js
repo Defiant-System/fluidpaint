@@ -165,6 +165,7 @@ var Simulator = (function() {
 		for (var i = 1; i < this.splatAreas.length; ++i) { // and add the others
 			var splatArea = this.splatAreas[i];
 			var area = splatArea.rectangle.clone();
+
 			simulationArea.includeRectangle(area);
 		}
 
@@ -192,18 +193,6 @@ var Simulator = (function() {
 
 		var simulationArea = this.getSimulationArea();
 		var wgl = this.wgl;
-
-		/*
-		var clearState = wgl.createClearState()
-			.bindFramebuffer(this.simulationFramebuffer)
-			.clearColor(Math.sin(this.frameNumber * 0.1) * 0.5 + 0.5, 1, 1, 1)
-			
-			// restrict splatting to area that"ll be simulated
-			.enable(wgl.SCISSOR_TEST)
-			.scissor(Math.floor(simulationArea.left), Math.floor(simulationArea.bottom), Math.floor(simulationArea.width), Math.floor(simulationArea.height))
-		wgl.framebufferTexture2D(this.simulationFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, this.paintTexture, 0);
-		wgl.clear(clearState, wgl.COLOR_BUFFER_BIT);
-		*/
 
 		var splatPaintDrawState = wgl.createDrawState()
 			.bindFramebuffer(this.simulationFramebuffer)
@@ -274,7 +263,7 @@ var Simulator = (function() {
 				.uniformTexture("u_velocityTexture", 0, wgl.TEXTURE_2D, velocityTexture)
 				.uniformTexture("u_inputTexture", 1, wgl.TEXTURE_2D, dataTexture)
 				.uniform2f("u_min", simulationArea.left, simulationArea.bottom)
-				.uniform2f("u_max", simulationArea.getRight(), simulationArea.getTop())
+				.uniform2f("u_max", simulationArea.right, simulationArea.top)
 				.vertexAttribPointer(this.quadVertexBuffer, this.advectProgram.getAttribLocation("a_position"), 2, wgl.FLOAT, false, 0, 0);
 			
 			wgl.framebufferTexture2D(this.simulationFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, targetTexture, 0);
