@@ -208,35 +208,85 @@ class Painter {
 			this.snapshots.push(front);
 			this.snapshotIndex -= 1;
 		}
-
 		this.undoing = false;
 		var snapshot = this.snapshots[this.snapshotIndex]; //the snapshot to save into
 		// if we need to resize the snapshot"s texture
 		if (snapshot.textureWidth !== this.simulator.resolutionWidth || snapshot.textureHeight !== this.simulator.resolutionHeight) {
 			wgl.rebuildTexture(snapshot.texture, wgl.RGBA, wgl.FLOAT, this.simulator.resolutionWidth, this.simulator.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
 		}
-
 		this.simulator.copyPaintTexture(snapshot.texture);
-
 		snapshot.paintingWidth = this.paintingRectangle.width;
 		snapshot.paintingHeight = this.paintingRectangle.height;
 		snapshot.resolutionScale = this.resolutionScale;
-
+		
 		this.snapshotIndex += 1;
+		this.refreshDoButtons();
 	}
 
-	applySnapshot() {}
+	applySnapshot(snapshot) {
+		this.paintingRectangle.width = snapshot.paintingWidth;
+		this.paintingRectangle.height = snapshot.paintingHeight;
+		if (this.resolutionScale !== snapshot.resolutionScale) {
+			for (var i = 0; i < QUALITIES.length; ++i) {
+				if (QUALITIES[i].resolutionScale === snapshot.resolutionScale) {
+					this.qualityButtons.setIndex(i);
+				}
+			}
+			this.resolutionScale = snapshot.resolutionScale;
+		}
+		if (this.simulator.width !== this.paintingResolutionWidth || this.simulator.height !== this.paintingResolutionHeight) {
+			this.simulator.changeResolution(this.paintingResolutionWidth, this.paintingResolutionHeight);
+		}
+		this.simulator.applyPaintTexture(snapshot.texture);
+	}
 
-	canUndo() {}
+	canUndo() {
+		return this.snapshotIndex >= 1;
+	}
 
-	canRedo() {}
+	canRedo() {
+		return this.undoing && this.snapshotIndex <= this.maxRedoIndex - 1;
+	}
 
-	undo() {}
+	undo() {
+		if (!this.undoing) {
+			this.saveSnapshot();
+			this.undoing = true;
+			this.snapshotIndex -= 1;
+			this.maxRedoIndex = this.snapshotIndex;
+		}
 
-	redo() {}
+		if (this.canUndo()) {
+			this.applySnapshot(this.snapshots[this.snapshotIndex - 1]);
+			this.snapshotIndex -= 1;
+		}
 
-	refreshDoButtons() {}
+		this.refreshDoButtons();
+		this.needsRedraw = true;
+		this.update();
+	}
 
-	save() {}
+	redo() {
+		if (this.canRedo()) {
+			this.applySnapshot(this.snapshots[this.snapshotIndex + 1]);
+			this.snapshotIndex += 1;
+		}
+
+		this.refreshDoButtons();
+		this.needsRedraw = true;
+		this.update();
+	}
+
+	refreshDoButtons() {
+		window.find(`.toolbar-tool_[data-click="history-undo"]`)
+			.toggleClass("tool-disabled_", this.canUndo());
+		console.log( this.canUndo() );
+		window.find(`.toolbar-tool_[data-click="history-redo"]`)
+			.toggleClass("tool-disabled_", this.canRedo());
+	}
+
+	save() {
+
+	}
 
 }

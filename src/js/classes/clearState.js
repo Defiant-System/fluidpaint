@@ -10,7 +10,8 @@ class ClearState extends State {
 	}
 
 	clearColor(r, g, b, a) {
-		this.setParameter("clearColor", [r, g, b, a]);        
+		console.log( [r, g, b, a] );
+		this.setParameter("clearColor", [r, g, b, a]);
 		return this;
 	}
 

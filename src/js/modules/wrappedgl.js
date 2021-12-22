@@ -1,6 +1,310 @@
 
 var WrappedGL = (function() {
 
+	var CONSTANT_NAMES = [
+		"ACTIVE_ATTRIBUTES",
+		"ACTIVE_ATTRIBUTE_MAX_LENGTH",
+		"ACTIVE_TEXTURE",
+		"ACTIVE_UNIFORMS",
+		"ACTIVE_UNIFORM_MAX_LENGTH",
+		"ALIASED_LINE_WIDTH_RANGE",
+		"ALIASED_POINT_SIZE_RANGE",
+		"ALPHA",
+		"ALPHA_BITS",
+		"ALWAYS",
+		"ARRAY_BUFFER",
+		"ARRAY_BUFFER_BINDING",
+		"ATTACHED_SHADERS",
+		"BACK",
+		"BLEND",
+		"BLEND_COLOR",
+		"BLEND_DST_ALPHA",
+		"BLEND_DST_RGB",
+		"BLEND_EQUATION",
+		"BLEND_EQUATION_ALPHA",
+		"BLEND_EQUATION_RGB",
+		"BLEND_SRC_ALPHA",
+		"BLEND_SRC_RGB",
+		"BLUE_BITS",
+		"BOOL",
+		"BOOL_VEC2",
+		"BOOL_VEC3",
+		"BOOL_VEC4",
+		"BROWSER_DEFAULT_WEBGL",
+		"BUFFER_SIZE",
+		"BUFFER_USAGE",
+		"BYTE",
+		"CCW",
+		"CLAMP_TO_EDGE",
+		"COLOR_ATTACHMENT0",
+		"COLOR_BUFFER_BIT",
+		"COLOR_CLEAR_VALUE",
+		"COLOR_WRITEMASK",
+		"COMPILE_STATUS",
+		"COMPRESSED_TEXTURE_FORMATS",
+		"CONSTANT_ALPHA",
+		"CONSTANT_COLOR",
+		"CONTEXT_LOST_WEBGL",
+		"CULL_FACE",
+		"CULL_FACE_MODE",
+		"CURRENT_PROGRAM",
+		"CURRENT_VERTEX_ATTRIB",
+		"CW",
+		"DECR",
+		"DECR_WRAP",
+		"DELETE_STATUS",
+		"DEPTH_ATTACHMENT",
+		"DEPTH_BITS",
+		"DEPTH_BUFFER_BIT",
+		"DEPTH_CLEAR_VALUE",
+		"DEPTH_COMPONENT",
+		"DEPTH_COMPONENT16",
+		"DEPTH_FUNC",
+		"DEPTH_RANGE",
+		"DEPTH_STENCIL",
+		"DEPTH_STENCIL_ATTACHMENT",
+		"DEPTH_TEST",
+		"DEPTH_WRITEMASK",
+		"DITHER",
+		"DONT_CARE",
+		"DST_ALPHA",
+		"DST_COLOR",
+		"DYNAMIC_DRAW",
+		"ELEMENT_ARRAY_BUFFER",
+		"ELEMENT_ARRAY_BUFFER_BINDING",
+		"EQUAL",
+		"FASTEST",
+		"FLOAT",
+		"FLOAT_MAT2",
+		"FLOAT_MAT3",
+		"FLOAT_MAT4",
+		"FLOAT_VEC2",
+		"FLOAT_VEC3",
+		"FLOAT_VEC4",
+		"FRAGMENT_SHADER",
+		"FRAMEBUFFER",
+		"FRAMEBUFFER_ATTACHMENT_OBJECT_NAME",
+		"FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE",
+		"FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE",
+		"FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL",
+		"FRAMEBUFFER_BINDING",
+		"FRAMEBUFFER_COMPLETE",
+		"FRAMEBUFFER_INCOMPLETE_ATTACHMENT",
+		"FRAMEBUFFER_INCOMPLETE_DIMENSIONS",
+		"FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT",
+		"FRAMEBUFFER_UNSUPPORTED",
+		"FRONT",
+		"FRONT_AND_BACK",
+		"FRONT_FACE",
+		"FUNC_ADD",
+		"FUNC_REVERSE_SUBTRACT",
+		"FUNC_SUBTRACT",
+		"GENERATE_MIPMAP_HINT",
+		"GEQUAL",
+		"GREATER",
+		"GREEN_BITS",
+		"HIGH_FLOAT",
+		"HIGH_INT",
+		"INCR",
+		"INCR_WRAP",
+		"INFO_LOG_LENGTH",
+		"INT",
+		"INT_VEC2",
+		"INT_VEC3",
+		"INT_VEC4",
+		"INVALID_ENUM",
+		"INVALID_FRAMEBUFFER_OPERATION",
+		"INVALID_OPERATION",
+		"INVALID_VALUE",
+		"INVERT",
+		"KEEP",
+		"LEQUAL",
+		"LESS",
+		"LINEAR",
+		"LINEAR_MIPMAP_LINEAR",
+		"LINEAR_MIPMAP_NEAREST",
+		"LINES",
+		"LINE_LOOP",
+		"LINE_STRIP",
+		"LINE_WIDTH",
+		"LINK_STATUS",
+		"LOW_FLOAT",
+		"LOW_INT",
+		"LUMINANCE",
+		"LUMINANCE_ALPHA",
+		"MAX_COMBINED_TEXTURE_IMAGE_UNITS",
+		"MAX_CUBE_MAP_TEXTURE_SIZE",
+		"MAX_FRAGMENT_UNIFORM_VECTORS",
+		"MAX_RENDERBUFFER_SIZE",
+		"MAX_TEXTURE_IMAGE_UNITS",
+		"MAX_TEXTURE_SIZE",
+		"MAX_VARYING_VECTORS",
+		"MAX_VERTEX_ATTRIBS",
+		"MAX_VERTEX_TEXTURE_IMAGE_UNITS",
+		"MAX_VERTEX_UNIFORM_VECTORS",
+		"MAX_VIEWPORT_DIMS",
+		"MEDIUM_FLOAT",
+		"MEDIUM_INT",
+		"MIRRORED_REPEAT",
+		"NEAREST",
+		"NEAREST_MIPMAP_LINEAR",
+		"NEAREST_MIPMAP_NEAREST",
+		"NEVER",
+		"NICEST",
+		"NONE",
+		"NOTEQUAL",
+		"NO_ERROR",
+		"NUM_COMPRESSED_TEXTURE_FORMATS",
+		"ONE",
+		"ONE_MINUS_CONSTANT_ALPHA",
+		"ONE_MINUS_CONSTANT_COLOR",
+		"ONE_MINUS_DST_ALPHA",
+		"ONE_MINUS_DST_COLOR",
+		"ONE_MINUS_SRC_ALPHA",
+		"ONE_MINUS_SRC_COLOR",
+		"OUT_OF_MEMORY",
+		"PACK_ALIGNMENT",
+		"POINTS",
+		"POLYGON_OFFSET_FACTOR",
+		"POLYGON_OFFSET_FILL",
+		"POLYGON_OFFSET_UNITS",
+		"RED_BITS",
+		"RENDERBUFFER",
+		"RENDERBUFFER_ALPHA_SIZE",
+		"RENDERBUFFER_BINDING",
+		"RENDERBUFFER_BLUE_SIZE",
+		"RENDERBUFFER_DEPTH_SIZE",
+		"RENDERBUFFER_GREEN_SIZE",
+		"RENDERBUFFER_HEIGHT",
+		"RENDERBUFFER_INTERNAL_FORMAT",
+		"RENDERBUFFER_RED_SIZE",
+		"RENDERBUFFER_STENCIL_SIZE",
+		"RENDERBUFFER_WIDTH",
+		"RENDERER",
+		"REPEAT",
+		"REPLACE",
+		"RGB",
+		"RGB5_A1",
+		"RGB565",
+		"RGBA",
+		"RGBA4",
+		"SAMPLER_2D",
+		"SAMPLER_CUBE",
+		"SAMPLES",
+		"SAMPLE_ALPHA_TO_COVERAGE",
+		"SAMPLE_BUFFERS",
+		"SAMPLE_COVERAGE",
+		"SAMPLE_COVERAGE_INVERT",
+		"SAMPLE_COVERAGE_VALUE",
+		"SCISSOR_BOX",
+		"SCISSOR_TEST",
+		"SHADER_COMPILER",
+		"SHADER_SOURCE_LENGTH",
+		"SHADER_TYPE",
+		"SHADING_LANGUAGE_VERSION",
+		"SHORT",
+		"SRC_ALPHA",
+		"SRC_ALPHA_SATURATE",
+		"SRC_COLOR",
+		"STATIC_DRAW",
+		"STENCIL_ATTACHMENT",
+		"STENCIL_BACK_FAIL",
+		"STENCIL_BACK_FUNC",
+		"STENCIL_BACK_PASS_DEPTH_FAIL",
+		"STENCIL_BACK_PASS_DEPTH_PASS",
+		"STENCIL_BACK_REF",
+		"STENCIL_BACK_VALUE_MASK",
+		"STENCIL_BACK_WRITEMASK",
+		"STENCIL_BITS",
+		"STENCIL_BUFFER_BIT",
+		"STENCIL_CLEAR_VALUE",
+		"STENCIL_FAIL",
+		"STENCIL_FUNC",
+		"STENCIL_INDEX",
+		"STENCIL_INDEX8",
+		"STENCIL_PASS_DEPTH_FAIL",
+		"STENCIL_PASS_DEPTH_PASS",
+		"STENCIL_REF",
+		"STENCIL_TEST",
+		"STENCIL_VALUE_MASK",
+		"STENCIL_WRITEMASK",
+		"STREAM_DRAW",
+		"SUBPIXEL_BITS",
+		"TEXTURE",
+		"TEXTURE0",
+		"TEXTURE1",
+		"TEXTURE2",
+		"TEXTURE3",
+		"TEXTURE4",
+		"TEXTURE5",
+		"TEXTURE6",
+		"TEXTURE7",
+		"TEXTURE8",
+		"TEXTURE9",
+		"TEXTURE10",
+		"TEXTURE11",
+		"TEXTURE12",
+		"TEXTURE13",
+		"TEXTURE14",
+		"TEXTURE15",
+		"TEXTURE16",
+		"TEXTURE17",
+		"TEXTURE18",
+		"TEXTURE19",
+		"TEXTURE20",
+		"TEXTURE21",
+		"TEXTURE22",
+		"TEXTURE23",
+		"TEXTURE24",
+		"TEXTURE25",
+		"TEXTURE26",
+		"TEXTURE27",
+		"TEXTURE28",
+		"TEXTURE29",
+		"TEXTURE30",
+		"TEXTURE31",
+		"TEXTURE_2D",
+		"TEXTURE_BINDING_2D",
+		"TEXTURE_BINDING_CUBE_MAP",
+		"TEXTURE_CUBE_MAP",
+		"TEXTURE_CUBE_MAP_NEGATIVE_X",
+		"TEXTURE_CUBE_MAP_NEGATIVE_Y",
+		"TEXTURE_CUBE_MAP_NEGATIVE_Z",
+		"TEXTURE_CUBE_MAP_POSITIVE_X",
+		"TEXTURE_CUBE_MAP_POSITIVE_Y",
+		"TEXTURE_CUBE_MAP_POSITIVE_Z",
+		"TEXTURE_MAG_FILTER",
+		"TEXTURE_MIN_FILTER",
+		"TEXTURE_WRAP_S",
+		"TEXTURE_WRAP_T",
+		"TRIANGLES",
+		"TRIANGLE_FAN",
+		"TRIANGLE_STRIP",
+		"UNPACK_ALIGNMENT",
+		"UNPACK_COLORSPACE_CONVERSION_WEBGL",
+		"UNPACK_FLIP_Y_WEBGL",
+		"UNPACK_PREMULTIPLY_ALPHA_WEBGL",
+		"UNSIGNED_BYTE",
+		"UNSIGNED_INT",
+		"UNSIGNED_SHORT",
+		"UNSIGNED_SHORT_4_4_4_4",
+		"UNSIGNED_SHORT_5_5_5_1",
+		"UNSIGNED_SHORT_5_6_5",
+		"VALIDATE_STATUS",
+		"VENDOR",
+		"VERSION",
+		"VERTEX_ATTRIB_ARRAY_BUFFER_BINDING",
+		"VERTEX_ATTRIB_ARRAY_ENABLED",
+		"VERTEX_ATTRIB_ARRAY_NORMALIZED",
+		"VERTEX_ATTRIB_ARRAY_POINTER",
+		"VERTEX_ATTRIB_ARRAY_SIZE",
+		"VERTEX_ATTRIB_ARRAY_STRIDE",
+		"VERTEX_ATTRIB_ARRAY_TYPE",
+		"VERTEX_SHADER",
+		"VIEWPORT",
+		"ZERO"
+	];
+
 	WrappedGL.create = function(canvas, options) {
 		var gl = null;
 
@@ -187,7 +491,7 @@ var WrappedGL = (function() {
 				setter: (function() {
 					var index = i;
 
-					return (buffer, size, type, normalized, stride, offset) => {
+					return function(buffer, size, type, normalized, stride, offset) {
 						if (buffer !== null) {
 							gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 							gl.vertexAttribPointer(index, size, type, normalized, stride, offset);
@@ -207,7 +511,7 @@ var WrappedGL = (function() {
 					//we need to capture the unit in a closure
 					var unit = i;
 
-					return (target, texture) => {
+					return function(target, texture) {
 						gl.activeTexture(gl.TEXTURE0 + unit);
 						gl.bindTexture(target, texture);
 					}
@@ -293,7 +597,10 @@ var WrappedGL = (function() {
 						defaults: [0],
 						setter: (function() {
 							var index = i;
-							return divisor => instancedExt.vertexAttribDivisorANGLE(index, divisor);
+
+							return function(divisor) {
+								instancedExt.vertexAttribDivisorANGLE(index, divisor); 
+							}
 						}()),
 						usedInDraw: true
 					};
@@ -631,6 +938,31 @@ var WrappedGL = (function() {
 	// { filename: "content", otherFilename, "morecontent" }
 	//TODO: error conditions...
 	WrappedGL.loadTextFiles = function(filenames, onLoaded) {
+		var loadedSoFar = 0;
+		var results = {};
+		for (var i = 0; i < filenames.length; ++i) {
+			var filename = filenames[i];
+			(function() {
+				var name = filename;
+
+				var request = new XMLHttpRequest();
+				request.onreadystatechange = function() {
+					if (request.readyState === 4) { //if this reqest is done
+						//add this file to the results object
+						var text = request.responseText;
+						results[name] = text;
+
+						loadedSoFar += 1;
+						if (loadedSoFar === filenames.length) { //if we"ve loaded all of the files
+							onLoaded(results);    
+						}
+					}
+				}
+				request.open("GET", name, true);
+				request.send();
+
+			}());
+		}
 	};
 
 	//asynchronous
@@ -638,7 +970,43 @@ var WrappedGL = (function() {
 	//vertex shader, fragment shader can either be strings or arrays of strings
 	//in the array case, the file contents will be concatenated
 	WrappedGL.prototype.createProgramFromFiles = function(vertexShaderPath, fragmentShaderPath, attributeLocations, successCallback, failureCallback) {
-		
+		var that = this;
+
+		var filesToLoad = [];
+		if (Array.isArray(vertexShaderPath)) {
+			filesToLoad = filesToLoad.concat(vertexShaderPath);
+		} else {
+			filesToLoad.push(vertexShaderPath);
+		}
+
+		if (Array.isArray(fragmentShaderPath)) {
+			filesToLoad = filesToLoad.concat(fragmentShaderPath);
+		} else {
+			filesToLoad.push(fragmentShaderPath);
+		}
+
+		WrappedGL.loadTextFiles(filesToLoad, function(files) {
+			var vertexShaderSources = [];
+			if (Array.isArray(vertexShaderPath)) {
+				for (var i = 0; i < vertexShaderPath.length; ++i) {
+					vertexShaderSources.push(files[vertexShaderPath[i]]);
+				}
+			} else {
+				vertexShaderSources.push(files[vertexShaderPath]);
+			}
+
+			var fragmentShaderSources = [];
+			if (Array.isArray(fragmentShaderPath)) {
+				for (var i = 0; i < fragmentShaderPath.length; ++i) {
+					fragmentShaderSources.push(files[fragmentShaderPath[i]]);
+				}
+			} else {
+				fragmentShaderSources.push(files[fragmentShaderPath]);
+			}
+
+			var program =  that.createProgram(vertexShaderSources.join("\n"), fragmentShaderSources.join("\n"), attributeLocations);
+			successCallback(program);
+		});
 	};
 
 	/*
@@ -667,9 +1035,42 @@ var WrappedGL = (function() {
 		secondProgram: secondProgramObject
 	*/
 
+	function keysInObject(object) {
+		var count = 0;
+		for (var key in object) {
+			if (object.hasOwnProperty(key)) {
+				count += 1;
+			}
+		}
+		return count;
+	}
+
 	//asynchronous
 	WrappedGL.prototype.createProgramsFromFiles = function(programParameters, successCallback, failureCallback) {
-		
+		var programCount = keysInObject(programParameters);
+
+		var loadedSoFar = 0;
+		var programs = {};
+		for (var programName in programParameters) {
+			if (programParameters.hasOwnProperty(programName)) {
+				var parameters = programParameters[programName];
+				
+				var that = this;
+				(function() {
+					var name = programName;
+
+					that.createProgramFromFiles(parameters.vertexShader, parameters.fragmentShader, parameters.attributeLocations, function(program) {
+						programs[name] = program;
+
+						loadedSoFar++;
+						if (loadedSoFar === programCount) { //if we"ve loaded all the programs
+							successCallback(programs);
+						}
+					
+					});
+				}());
+			}
+		}
 	};
 
 	WrappedGL.prototype.createDrawState = function() {
@@ -696,363 +1097,383 @@ var WrappedGL = (function() {
 		this.gl.deleteTexture(texture);
 	};
 
+	function buildShader(gl, type, source) {
+		var shader = gl.createShader(type);
+		gl.shaderSource(shader, source);
+		gl.compileShader(shader);
+
+		//log any errors
+		if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+			console.log(gl.getShaderInfoLog(shader));
+		}
+		return shader;
+	};
+
 	//we don"t have to specify any or all attribute location bindings
 	//any unspecified bindings will be assigned automatically and can be queried with program.getAttribLocation(attributeName)
-	// function WrappedProgram(wgl, vertexShaderSource, fragmentShaderSource, requestedAttributeLocations) {
-	// 	this.uniformLocations = {};
-	// 	this.uniforms = {}; //TODO: if we want to cache uniform values in the future
+	function WrappedProgram(wgl, vertexShaderSource, fragmentShaderSource, requestedAttributeLocations) {
+		this.uniformLocations = {};
+		this.uniforms = {}; //TODO: if we want to cache uniform values in the future
 
-	// 	var gl = wgl.gl;
+		var gl = wgl.gl;
 
-	// 	//build shaders from source
-	// 	var vertexShader = buildShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-	// 	var fragmentShader = buildShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+		//build shaders from source
+		var vertexShader = buildShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+		var fragmentShader = buildShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
 
-	// 	//create program and attach shaders
-	// 	var program = this.program = gl.createProgram();
-	// 	gl.attachShader(program, vertexShader);
-	// 	gl.attachShader(program, fragmentShader);
+		//create program and attach shaders
+		var program = this.program = gl.createProgram();
+		gl.attachShader(program, vertexShader);
+		gl.attachShader(program, fragmentShader);
 		
-	// 	//bind the attribute locations that have been specified in attributeLocations
-	// 	if (requestedAttributeLocations !== undefined) {
-	// 		for (var attributeName in requestedAttributeLocations) {
-	// 			gl.bindAttribLocation(program, requestedAttributeLocations[attributeName], attributeName);
-	// 		}
-	// 	}
-	// 	gl.linkProgram(program);
+		//bind the attribute locations that have been specified in attributeLocations
+		if (requestedAttributeLocations !== undefined) {
+			for (var attributeName in requestedAttributeLocations) {
+				gl.bindAttribLocation(program, requestedAttributeLocations[attributeName], attributeName);
+			}
+		}
+		gl.linkProgram(program);
 
 
-	// 	//construct this.attributeLocations (maps attribute names to locations)
-	// 	this.attributeLocations = {};
-	// 	var numberOfAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
-	// 	for (var i = 0; i < numberOfAttributes; ++i) {
-	// 		var activeAttrib = gl.getActiveAttrib(program, i);
-	// 		var attributeName = activeAttrib.name;
-	// 		this.attributeLocations[attributeName] = gl.getAttribLocation(program, attributeName);
-	// 	}
+		//construct this.attributeLocations (maps attribute names to locations)
+		this.attributeLocations = {};
+		var numberOfAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
+		for (var i = 0; i < numberOfAttributes; ++i) {
+			var activeAttrib = gl.getActiveAttrib(program, i);
+			var attributeName = activeAttrib.name;
+			this.attributeLocations[attributeName] = gl.getAttribLocation(program, attributeName);
+		}
 
-	// 	//cache uniform locations
-	// 	var uniformLocations = this.uniformLocations = {};
-	// 	var numberOfUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
-	// 	for (var i = 0; i < numberOfUniforms; i += 1) {
-	// 		var activeUniform = gl.getActiveUniform(program, i),
-	// 			uniformLocation = gl.getUniformLocation(program, activeUniform.name);
-	// 		uniformLocations[activeUniform.name] = uniformLocation;
-	// 	}
-	// };
+		//cache uniform locations
+		var uniformLocations = this.uniformLocations = {};
+		var numberOfUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+		for (var i = 0; i < numberOfUniforms; i += 1) {
+			var activeUniform = gl.getActiveUniform(program, i),
+				uniformLocation = gl.getUniformLocation(program, activeUniform.name);
+			uniformLocations[activeUniform.name] = uniformLocation;
+		}
+	};
 
-	// //TODO: maybe this should be on WrappedGL?
-	// WrappedProgram.prototype.getAttribLocation = function(name) {
-	// 	return this.attributeLocations[name];
-	// };
+	//TODO: maybe this should be on WrappedGL?
+	WrappedProgram.prototype.getAttribLocation = function(name) {
+		return this.attributeLocations[name];
+	};
 
-	// function State(wgl) {
-	// 	this.wgl = wgl;
+	function State(wgl) {
+		this.wgl = wgl;
 
-	// 	//all states that have been changed from defaults
-	// 	this.changedParameters = {};
-	// 	//map of state string to array of values
-	// 	//eg
-	// 	/*
-	// 		"framebuffer: [framebuffer],
-	// 		"viewport": [x, y, width, height],
-	// 		"blendMode": [rgb, alpha]
-	// 	*/
-	// };
+		//all states that have been changed from defaults
+		this.changedParameters = {};
+		//map of state string to array of values
+		//eg
+		/*
+			"framebuffer: [framebuffer],
+			"viewport": [x, y, width, height],
+			"blendMode": [rgb, alpha]
+		*/
+	};
 
-	// State.prototype.setParameter = function(parameterName, values) {
-	// 	if (!arraysEqual(values, this.wgl.parameters[parameterName].defaults)) { //if the state hasn"t been set to the defaults
-	// 		this.changedParameters[parameterName] = values;
-	// 	} else { //if we"re going back to defaults
-	// 		if (this.changedParameters.hasOwnProperty(parameterName)) {
-	// 			delete this.changedParameters[parameterName];
-	// 		}
-	// 	}
-	// };
+	//assumes a and b are equal length
+	function arraysEqual(a, b) {
+		for (var i = 0; i < a.length; ++i) {
+			if (a[i] !== b[i]) return false;
+		}
+		return true;
+	};
 
-	// State.prototype.clone = function() {
-	// 	var newState = new (this.constructor)(this.wgl);
+	State.prototype.setParameter = function(parameterName, values) {
+		if (!arraysEqual(values, this.wgl.parameters[parameterName].defaults)) { //if the state hasn"t been set to the defaults
+			this.changedParameters[parameterName] = values;
+		} else { //if we"re going back to defaults
+			if (this.changedParameters.hasOwnProperty(parameterName)) {
+				delete this.changedParameters[parameterName];
+			}
+		}
+	};
 
-	// 	for (var parameterName in this.changedParameters) {
-	// 		if (this.changedParameters.hasOwnProperty(parameterName)) {
-	// 			var parameterValues = this.changedParameters[parameterName];
-	// 			var clonedValues = [];
-	// 			for (var i = 0; i < parameterValues.length; ++i) {
-	// 				clonedValues.push(parameterValues[i]);
-	// 			}
-	// 			newState.changedParameters[parameterName] = clonedValues;
-	// 		}
-	// 	}
+	State.prototype.clone = function() {
+		var newState = new (this.constructor)(this.wgl);
 
-	// 	return newState;
-	// }
+		for (var parameterName in this.changedParameters) {
+			if (this.changedParameters.hasOwnProperty(parameterName)) {
+				var parameterValues = this.changedParameters[parameterName];
+				var clonedValues = [];
+				for (var i = 0; i < parameterValues.length; ++i) {
+					clonedValues.push(parameterValues[i]);
+				}
+				newState.changedParameters[parameterName] = clonedValues;
+			}
+		}
 
-	// //inherits from State
-	// function DrawState(wgl) {
-	// 	State.call(this, wgl);
+		return newState;
+	}
 
-	// 	//we always set uniforms
-	// 	this.uniforms = {}; //eg: {type: "3f", value: [x, y, z]}
-	// }
+	//inherits from State
+	function DrawState(wgl) {
+		State.call(this, wgl);
 
-	// DrawState.prototype = Object.create(State.prototype);
-	// DrawState.prototype.constructor = State;
-	// DrawState.prototype.bindFramebuffer = function(framebuffer) {
-	// 	this.setParameter("framebuffer", [framebuffer]);
-	// 	return this;
-	// };
+		//we always set uniforms
+		this.uniforms = {}; //eg: {type: "3f", value: [x, y, z]}
+	}
 
-	// DrawState.prototype.viewport = function(x, y, width, height) {
-	// 	this.setParameter("viewport", [x, y, width, height]);
-	// 	return this;
-	// };
+	DrawState.prototype = Object.create(State.prototype);
+	DrawState.prototype.constructor = State;
+	DrawState.prototype.bindFramebuffer = function(framebuffer) {
+		this.setParameter("framebuffer", [framebuffer]);
+		return this;
+	};
 
-	// DrawState.prototype.enable = function(cap) {
-	// 	if (cap === this.wgl.DEPTH_TEST) {
-	// 		this.setParameter("depthTest", [true]);
-	// 	} else if (cap === this.wgl.BLEND) {
-	// 		this.setParameter("blend", [true]);
-	// 	} else if (cap === this.wgl.CULL_FACE) {
-	// 		this.setParameter("cullFace", [true]);
-	// 	} else if (cap === this.wgl.POLYGON_OFFSET_FILL) {
-	// 		this.setParameter("polygonOffsetFill", [true]);   
-	// 	} else if (cap === this.wgl.SCISSOR_TEST) {
-	// 		this.setParameter("scissorTest", [true]);
-	// 	}
-	// 	return this;
-	// };
+	DrawState.prototype.viewport = function(x, y, width, height) {
+		this.setParameter("viewport", [x, y, width, height]);
+		return this;
+	};
 
-	// DrawState.prototype.disable = function(cap) {
-	// 	if (cap === this.wgl.DEPTH_TEST) {
-	// 		this.setParameter("depthTest", [false]);
-	// 	} else if (cap === this.wgl.BLEND) {
-	// 		this.setParameter("blend", [false]);
-	// 	} else if (cap === this.wgl.CULL_FACE) {
-	// 		this.setParameter("cullFace", [false]);
-	// 	} else if (cap === this.wgl.POLYGON_OFFSET_FILL) {
-	// 		this.setParameter("polygonOffsetFill", [false]);   
-	// 	} else if (cap === this.wgl.SCISSOR_TEST) {
-	// 		this.setParameter("scissorTest", [false]);
-	// 	}
-	// 	return this;
-	// };
+	DrawState.prototype.enable = function(cap) {
+		if (cap === this.wgl.DEPTH_TEST) {
+			this.setParameter("depthTest", [true]);
+		} else if (cap === this.wgl.BLEND) {
+			this.setParameter("blend", [true]);
+		} else if (cap === this.wgl.CULL_FACE) {
+			this.setParameter("cullFace", [true]);
+		} else if (cap === this.wgl.POLYGON_OFFSET_FILL) {
+			this.setParameter("polygonOffsetFill", [true]);   
+		} else if (cap === this.wgl.SCISSOR_TEST) {
+			this.setParameter("scissorTest", [true]);
+		}
+		return this;
+	};
 
-	// DrawState.prototype.vertexAttribPointer = function(buffer, index, size, type, normalized, stride, offset) {
-	// 	this.setParameter("attributeArray" + index.toString(), [buffer, size, type, normalized, stride, offset]);
+	DrawState.prototype.disable = function(cap) {
+		if (cap === this.wgl.DEPTH_TEST) {
+			this.setParameter("depthTest", [false]);
+		} else if (cap === this.wgl.BLEND) {
+			this.setParameter("blend", [false]);
+		} else if (cap === this.wgl.CULL_FACE) {
+			this.setParameter("cullFace", [false]);
+		} else if (cap === this.wgl.POLYGON_OFFSET_FILL) {
+			this.setParameter("polygonOffsetFill", [false]);   
+		} else if (cap === this.wgl.SCISSOR_TEST) {
+			this.setParameter("scissorTest", [false]);
+		}
+		return this;
+	};
 
-	// 	if (this.instancedExt && this.changedParameters.hasOwnProperty("attributeDivisor" + index.toString())) {
-	// 		//we need to have divisor information for any attribute location that has a bound buffer
-	// 		this.setParameter("attributeDivisor" + index.toString(), [0]);
-	// 	}
-	// 	return this;
-	// };
+	DrawState.prototype.vertexAttribPointer = function(buffer, index, size, type, normalized, stride, offset) {
+		this.setParameter("attributeArray" + index.toString(), [buffer, size, type, normalized, stride, offset]);
 
-	// DrawState.prototype.bindIndexBuffer = function(buffer) {
-	// 	this.setParameter("indexBuffer", [buffer]);
-	// 	return this;
-	// };
+		if (this.instancedExt && this.changedParameters.hasOwnProperty("attributeDivisor" + index.toString())) {
+			//we need to have divisor information for any attribute location that has a bound buffer
+			this.setParameter("attributeDivisor" + index.toString(), [0]);
+		}
+		return this;
+	};
 
-	// DrawState.prototype.depthFunc = function(func) {
-	// 	this.setParameter("depthFunc", [func]);
-	// 	return this;
-	// };
+	DrawState.prototype.bindIndexBuffer = function(buffer) {
+		this.setParameter("indexBuffer", [buffer]);
+		return this;
+	};
 
-	// DrawState.prototype.frontFace = function(mode) {
-	// 	this.setParameter("frontFace", [mode]);
-	// 	return this;
-	// };
+	DrawState.prototype.depthFunc = function(func) {
+		this.setParameter("depthFunc", [func]);
+		return this;
+	};
 
-	// DrawState.prototype.blendEquation = function(mode) {
-	// 	this.blendEquationSeparate(mode, mode);
-	// 	return this;
-	// };
+	DrawState.prototype.frontFace = function(mode) {
+		this.setParameter("frontFace", [mode]);
+		return this;
+	};
 
-	// DrawState.prototype.blendEquationSeparate = function(modeRGB, modeAlpha) {
-	// 	this.setParameter("blendEquation", [modeRGB, modeAlpha]);
-	// 	return this;
-	// };
+	DrawState.prototype.blendEquation = function(mode) {
+		this.blendEquationSeparate(mode, mode);
+		return this;
+	};
 
-	// DrawState.prototype.blendFunc = function(sFactor, dFactor) {
-	// 	this.blendFuncSeparate(sFactor, dFactor, sFactor, dFactor);
-	// 	return this;
-	// };
+	DrawState.prototype.blendEquationSeparate = function(modeRGB, modeAlpha) {
+		this.setParameter("blendEquation", [modeRGB, modeAlpha]);
+		return this;
+	};
 
-	// DrawState.prototype.blendFuncSeparate = function(srcRGB, dstRGB, srcAlpha, dstAlpha) {
-	// 	this.setParameter("blendFunc", [srcRGB, dstRGB, srcAlpha, dstAlpha]);
-	// 	return this;
-	// };
+	DrawState.prototype.blendFunc = function(sFactor, dFactor) {
+		this.blendFuncSeparate(sFactor, dFactor, sFactor, dFactor);
+		return this;
+	};
 
-	// DrawState.prototype.scissor = function(x, y, width, height) {
-	// 	this.setParameter("scissor", [x, y, width, height]);
-	// 	return this;
-	// };
+	DrawState.prototype.blendFuncSeparate = function(srcRGB, dstRGB, srcAlpha, dstAlpha) {
+		this.setParameter("blendFunc", [srcRGB, dstRGB, srcAlpha, dstAlpha]);
+		return this;
+	};
 
-	// DrawState.prototype.useProgram = function(program) {
-	// 	this.setParameter("program", [program]);
-	// 	return this;
-	// };
+	DrawState.prototype.scissor = function(x, y, width, height) {
+		this.setParameter("scissor", [x, y, width, height]);
+		return this;
+	};
 
-	// DrawState.prototype.bindTexture = function(unit, target, texture) {
-	// 	this.setParameter("texture" + unit.toString(), [target, texture]);
-	// 	return this;
-	// };
+	DrawState.prototype.useProgram = function(program) {
+		this.setParameter("program", [program]);
+		return this;
+	};
 
-	// DrawState.prototype.colorMask = function(r, g, b, a) {
-	// 	this.setParameter("colorMask", [r, g, b, a]);
-	// 	return this;
-	// };
+	DrawState.prototype.bindTexture = function(unit, target, texture) {
+		this.setParameter("texture" + unit.toString(), [target, texture]);
+		return this;
+	};
 
-	// DrawState.prototype.depthMask = function(enabled) {
-	// 	this.setParameter("depthMask", [enabled]);
-	// 	return this;
-	// };
+	DrawState.prototype.colorMask = function(r, g, b, a) {
+		this.setParameter("colorMask", [r, g, b, a]);
+		return this;
+	};
 
-	// DrawState.prototype.polygonOffset = function(factor, units) {
-	// 	this.setParameter("polygonOffset", [factor, units]);
-	// 	return this;
-	// };
+	DrawState.prototype.depthMask = function(enabled) {
+		this.setParameter("depthMask", [enabled]);
+		return this;
+	};
 
-	// DrawState.prototype.uniformTexture = function(uniformName, unit, target, texture) {
-	// 	this.uniform1i(uniformName, unit);
-	// 	this.bindTexture(unit, target, texture);
-	// 	return this;
-	// };
+	DrawState.prototype.polygonOffset = function(factor, units) {
+		this.setParameter("polygonOffset", [factor, units]);
+		return this;
+	};
 
-	// DrawState.prototype.uniform1i = function(uniformName, value) {
-	// 	this.uniforms[uniformName] = {type: "1i", value: [value]};
-	// 	return this;
-	// };
+	DrawState.prototype.uniformTexture = function(uniformName, unit, target, texture) {
+		this.uniform1i(uniformName, unit);
+		this.bindTexture(unit, target, texture);
+		return this;
+	};
 
-	// DrawState.prototype.uniform2i = function(uniformName, x, y) {
-	// 	this.uniforms[uniformName] = {type: "2i", value: [x, y]};
-	// 	return this;
-	// };
+	DrawState.prototype.uniform1i = function(uniformName, value) {
+		this.uniforms[uniformName] = {type: "1i", value: [value]};
+		return this;
+	};
 
-	// DrawState.prototype.uniform3i = function(uniformName, x, y, z) {
-	// 	this.uniforms[uniformName] = {type: "3i", value: [x, y, z]};
-	// 	return this;
-	// };
+	DrawState.prototype.uniform2i = function(uniformName, x, y) {
+		this.uniforms[uniformName] = {type: "2i", value: [x, y]};
+		return this;
+	};
 
-	// DrawState.prototype.uniform4i = function(uniformName, x, y, z ,w) {
-	// 	this.uniforms[uniformName] = {type: "4i", value: [x, y, z, w]};
-	// 	return this;
-	// };
+	DrawState.prototype.uniform3i = function(uniformName, x, y, z) {
+		this.uniforms[uniformName] = {type: "3i", value: [x, y, z]};
+		return this;
+	};
 
-	// DrawState.prototype.uniform1f = function(uniformName, value) {
-	// 	this.uniforms[uniformName] = {type: "1f", value: value};
-	// 	return this;
-	// };
+	DrawState.prototype.uniform4i = function(uniformName, x, y, z ,w) {
+		this.uniforms[uniformName] = {type: "4i", value: [x, y, z, w]};
+		return this;
+	};
 
-	// DrawState.prototype.uniform2f = function(uniformName, x, y) {
-	// 	this.uniforms[uniformName] = {type: "2f", value: [x, y]};
-	// 	return this;
-	// };
+	DrawState.prototype.uniform1f = function(uniformName, value) {
+		this.uniforms[uniformName] = {type: "1f", value: value};
+		return this;
+	};
 
-	// DrawState.prototype.uniform3f = function(uniformName, x, y, z) {
-	// 	this.uniforms[uniformName] = {type: "3f", value: [x, y, z]};
-	// 	return this;
-	// };
+	DrawState.prototype.uniform2f = function(uniformName, x, y) {
+		this.uniforms[uniformName] = {type: "2f", value: [x, y]};
+		return this;
+	};
 
-	// DrawState.prototype.uniform4f = function(uniformName, x, y, z ,w) {
-	// 	this.uniforms[uniformName] = {type: "4f", value: [x, y, z, w]};
-	// 	return this;
-	// };
+	DrawState.prototype.uniform3f = function(uniformName, x, y, z) {
+		this.uniforms[uniformName] = {type: "3f", value: [x, y, z]};
+		return this;
+	};
 
-	// DrawState.prototype.uniform1fv = function(uniformName, value) {
-	// 	this.uniforms[uniformName] = {type: "1fv", value: [value]};
-	// 	return this;
-	// };
+	DrawState.prototype.uniform4f = function(uniformName, x, y, z ,w) {
+		this.uniforms[uniformName] = {type: "4f", value: [x, y, z, w]};
+		return this;
+	};
 
-	// DrawState.prototype.uniform2fv = function(uniformName, value) {
-	// 	this.uniforms[uniformName] = {type: "2fv", value: [value]};
-	// 	return this;
-	// };
+	DrawState.prototype.uniform1fv = function(uniformName, value) {
+		this.uniforms[uniformName] = {type: "1fv", value: [value]};
+		return this;
+	};
 
-	// DrawState.prototype.uniform3fv = function(uniformName, value) {
-	// 	this.uniforms[uniformName] = {type: "3fv", value: [value]};
-	// 	return this;
-	// };
+	DrawState.prototype.uniform2fv = function(uniformName, value) {
+		this.uniforms[uniformName] = {type: "2fv", value: [value]};
+		return this;
+	};
 
-	// DrawState.prototype.uniform4fv = function(uniformName, value) {
-	// 	this.uniforms[uniformName] = {type: "4fv", value: [value]};
-	// 	return this;
-	// };
+	DrawState.prototype.uniform3fv = function(uniformName, value) {
+		this.uniforms[uniformName] = {type: "3fv", value: [value]};
+		return this;
+	};
 
-	// DrawState.prototype.uniformMatrix2fv = function(uniformName, transpose, matrix) {
-	// 	this.uniforms[uniformName] = {type: "matrix2fv", value: [transpose, matrix]};
-	// 	return this;
-	// };
+	DrawState.prototype.uniform4fv = function(uniformName, value) {
+		this.uniforms[uniformName] = {type: "4fv", value: [value]};
+		return this;
+	};
 
-	// DrawState.prototype.uniformMatrix3fv = function(uniformName, transpose, matrix) {
-	// 	this.uniforms[uniformName] = {type: "matrix3fv", value: [transpose, matrix]};
-	// 	return this;
-	// };
+	DrawState.prototype.uniformMatrix2fv = function(uniformName, transpose, matrix) {
+		this.uniforms[uniformName] = {type: "matrix2fv", value: [transpose, matrix]};
+		return this;
+	};
 
-	// DrawState.prototype.uniformMatrix4fv = function(uniformName, transpose, matrix) {
-	// 	this.uniforms[uniformName] = {type: "matrix4fv", value: [transpose, matrix]};
-	// 	return this;
-	// };
+	DrawState.prototype.uniformMatrix3fv = function(uniformName, transpose, matrix) {
+		this.uniforms[uniformName] = {type: "matrix3fv", value: [transpose, matrix]};
+		return this;
+	};
 
-	// function ClearState(wgl) {
-	// 	State.call(this, wgl);
-	// };
+	DrawState.prototype.uniformMatrix4fv = function(uniformName, transpose, matrix) {
+		this.uniforms[uniformName] = {type: "matrix4fv", value: [transpose, matrix]};
+		return this;
+	};
 
-	// ClearState.prototype = Object.create(State.prototype);
-	// ClearState.prototype.constructor = ClearState;
-	// ClearState.prototype.bindFramebuffer = function(framebuffer) {
-	// 	this.setParameter("framebuffer", [framebuffer]);
-	// 	return this;
-	// };
+	function ClearState(wgl) {
+		State.call(this, wgl);
+	};
 
-	// ClearState.prototype.clearColor = function(r, g, b, a) {
-	// 	this.setParameter("clearColor", [r, g, b, a]);        
-	// 	return this;
-	// };
+	ClearState.prototype = Object.create(State.prototype);
+	ClearState.prototype.constructor = ClearState;
+	ClearState.prototype.bindFramebuffer = function(framebuffer) {
+		this.setParameter("framebuffer", [framebuffer]);
+		return this;
+	};
 
-	// ClearState.prototype.clearDepth = function(depth) {
-	// 	this.setParameter("clearDepth", [depth]);
-	// 	return this;
-	// }
+	ClearState.prototype.clearColor = function(r, g, b, a) {
+		this.setParameter("clearColor", [r, g, b, a]);        
+		return this;
+	};
 
-	// ClearState.prototype.colorMask = function(r, g, b, a) {
-	// 	this.setParameter("colorMask", [r, g, b, a]);
-	// 	return this;
-	// };
+	ClearState.prototype.clearDepth = function(depth) {
+		this.setParameter("clearDepth", [depth]);
+		return this;
+	}
 
-	// ClearState.prototype.depthMask = function(enabled) {
-	// 	this.setParameter("depthMask", [enabled]);
-	// 	return this;
-	// };
+	ClearState.prototype.colorMask = function(r, g, b, a) {
+		this.setParameter("colorMask", [r, g, b, a]);
+		return this;
+	};
 
-	// ClearState.prototype.enable = function(cap) {
-	// 	if (cap === this.wgl.SCISSOR_TEST) {
-	// 		this.setParameter("scissorTest", [true]);
-	// 	}
-	// 	return this;
-	// };
+	ClearState.prototype.depthMask = function(enabled) {
+		this.setParameter("depthMask", [enabled]);
+		return this;
+	};
 
-	// ClearState.prototype.disable = function(cap) {
-	// 	if (cap === this.wgl.SCISSOR_TEST) {
-	// 		this.setParameter("scissorTest", [false]);
-	// 	}
-	// 	return this;
-	// };
+	ClearState.prototype.enable = function(cap) {
+		if (cap === this.wgl.SCISSOR_TEST) {
+			this.setParameter("scissorTest", [true]);
+		}
+		return this;
+	};
 
-	// ClearState.prototype.scissor = function(x, y, width, height) {
-	// 	this.setParameter("scissor", [x, y, width, height]);
-	// 	return this;
-	// };
+	ClearState.prototype.disable = function(cap) {
+		if (cap === this.wgl.SCISSOR_TEST) {
+			this.setParameter("scissorTest", [false]);
+		}
+		return this;
+	};
 
-	// function ReadState(wgl) {
-	// 	State.call(this, wgl);
-	// }
+	ClearState.prototype.scissor = function(x, y, width, height) {
+		this.setParameter("scissor", [x, y, width, height]);
+		return this;
+	};
 
-	// ReadState.prototype = Object.create(State.prototype);
-	// ReadState.prototype.constructor = ReadState;
-	// ReadState.prototype.bindFramebuffer = function(framebuffer) {
-	// 	this.setParameter("framebuffer", [framebuffer]);
-	// 	return this;
-	// };
+	function ReadState(wgl) {
+		State.call(this, wgl);
+	}
+
+	ReadState.prototype = Object.create(State.prototype);
+	ReadState.prototype.constructor = ReadState;
+	ReadState.prototype.bindFramebuffer = function(framebuffer) {
+		this.setParameter("framebuffer", [framebuffer]);
+		return this;
+	};
 
 	return WrappedGL;
 

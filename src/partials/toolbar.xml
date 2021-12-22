@@ -1,8 +1,8 @@
 <ToolBar>
 	<Group width="20%">
 		<Options>
-			<Tool symbol="icon-undo" click="history-undo" state="1disabled"/>
-			<Tool symbol="icon-redo" click="history-redo" state="1disabled"/>
+			<Tool symbol="icon-undo" click="history-undo" state="disabled"/>
+			<Tool symbol="icon-redo" click="history-redo" state="disabled"/>
 		</Options>
 		<Tool name="Clear" click="clear"/>
 		<Tool name="Save" click="save"/>

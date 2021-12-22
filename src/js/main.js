@@ -80,6 +80,18 @@ const fluidpaint = {
 			case "open-help":
 				defiant.shell("fs -u '~/help/index.md'");
 				break;
+			case "history-undo":
+				painter.undo();
+				break;
+			case "history-redo":
+				painter.redo();
+				break;
+			case "clear":
+				painter.clear();
+				break;
+			case "save":
+				painter.save();
+				break;
 		}
 	}
 };
