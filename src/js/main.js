@@ -39,7 +39,6 @@ const Shaders = {
 @import "modules/utilities.js"
 @import "modules/rectangle.js"
 @import "modules/simulator.js"
-@import "modules/paint.js"
 
 
 let canvas = document.createElement('canvas');
@@ -60,9 +59,6 @@ const fluidpaint = {
 		};
 		// append canvas to workarea
 		this.els.cvs = this.els.wrapper.append(canvas);
-
-		// bind event handlers
-		this.els.content.on("mousedown mousemove", this.cvsDnD);
 	},
 	dispatch(event) {
 		let Self = fluidpaint,
@@ -76,36 +72,6 @@ const fluidpaint = {
 			// custom events
 			case "open-help":
 				defiant.shell("fs -u '~/help/index.md'");
-				break;
-		}
-	},
-	cvsDnD(event) {
-		let Self = fluidpaint,
-			Drag = Self.drag;
-		switch (event.type) {
-			case "mousedown":
-				painter.interactionState = InteractionMode.PAINTING;
-				painter.saveSnapshot();
-				// bind event
-				Self.els.doc.on("mouseup", Self.cvsDnD);
-				break;
-			case "mousemove":
-				let pos = Utilities.getMousePosition(event, Self.els.cvs[0]),
-					mX = pos.x,
-					mY = Self.els.cvs[0].height - pos.y;
-				
-				painter.brushX = mX;
-				painter.brushY = mY;
-
-				if (!painter.brushInitialized) {
-					painter.brush.initialize(mX, mY, BRUSH_HEIGHT * painter.brushScale, painter.brushScale);
-					painter.brushInitialized = true;
-				}
-				break;
-			case "mouseup":
-				painter.interactionState = InteractionMode.NONE;
-				// unbind event
-				Self.els.doc.off("mouseup", Self.cvsDnD);
 				break;
 		}
 	}

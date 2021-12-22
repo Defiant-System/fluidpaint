@@ -4,11 +4,17 @@ class Painter {
 		this.canvas = canvas;
 		this.wgl = wgl;
 
+		// references to elements
+		this._doc = $(document);
+		this._body = window.find("content");
+		// bind event handlers
+		this._body.on("mousedown mousemove", this.move.bind(this));
+		this._doc.on("mouseup", this.move.bind(this));
+
 		wgl.getExtension("OES_texture_float");
 		wgl.getExtension("OES_texture_float_linear");
 		let maxTextureSize = wgl.getParameter(wgl.MAX_TEXTURE_SIZE);
 
-		this.maxPaintingWidth = Math.min(MAX_PAINTING_WIDTH, maxTextureSize / QUALITIES[QUALITIES.length - 1].resolutionScale);
 		this.framebuffer = wgl.createFramebuffer();
 		this.paintingProgram = wgl.createProgram(Shaders.Vertex.painting, Shaders.Fragment.painting);
 		this.paintingProgramRGB = wgl.createProgram(Shaders.Vertex.painting, "#define RGB \n "+ Shaders.Fragment.painting);
@@ -17,7 +23,6 @@ class Painter {
 
 		this.quadVertexBuffer = wgl.createBuffer();
 		wgl.bufferData(this.quadVertexBuffer, wgl.ARRAY_BUFFER, new Float32Array([-1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0]), wgl.STATIC_DRAW);
-
 
 		this.paintingRectangle = new Rectangle(0, 0, canvas.width, canvas.height);
 		//simulation resolution = painting resolution * resolution scale
@@ -52,8 +57,6 @@ class Painter {
 		this.mainProjectionMatrix = makeOrthographicMatrix(new Float32Array(16), 0.0, canvas.width, 0, canvas.height, -5000.0, 5000.0);
 		this.canvasTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, canvas.width, canvas.height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
 		this.needsRedraw = true;
-		
-		this.spaceDown = false;
 
 		//this is updated during resizing according to the new mouse position
 		//when we finish resizing, we then resize the simulator to match
@@ -70,6 +73,28 @@ class Painter {
 			});
 
 		update();
+	}
+
+	move(event) {
+		switch (event.type) {
+			case "mousedown":
+				this.interactionState = InteractionMode.PAINTING;
+				this.saveSnapshot();
+				break;
+			case "mousemove":
+				let pos = Utilities.getMousePosition(event, this.canvas);
+				this.brushX = pos.x;
+				this.brushY = this.canvas.height - pos.y;
+
+				if (!this.brushInitialized) {
+					this.brush.initialize(this.brushX, this.brushY, BRUSH_HEIGHT * this.brushScale, this.brushScale);
+					this.brushInitialized = true;
+				}
+				break;
+			case "mouseup":
+				this.interactionState = InteractionMode.NONE;
+				break;
+		}
 	}
 
 	get paintingResolutionWidth() {

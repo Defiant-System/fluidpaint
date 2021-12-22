@@ -1,8 +1,8 @@
 
 var Simulator = (function() {
 	var PRESSURE_JACOBI_ITERATIONS = 2;
-	var FRAMES_TO_SIMULATE = 60; //how many frames to simulate the area induced by each splat for
-	var SPLAT_PADDING = 4.5; //approximately sqrt(BRISTLE_LENGTH * BRISTLE_LENGTH - BRUSH_HEIGHT * BRUSH_HEIGHT)
+	var FRAMES_TO_SIMULATE = 60; // how many frames to simulate the area induced by each splat for
+	var SPLAT_PADDING = 4.5; // approximately sqrt(BRISTLE_LENGTH * BRISTLE_LENGTH - BRUSH_HEIGHT * BRUSH_HEIGHT)
 	var SPEED_PADDING = 1.1;
 
 	function SplatArea (rectangle, frameNumber) {
@@ -19,13 +19,13 @@ var Simulator = (function() {
 		var halfFloatExt = wgl.getExtension("OES_texture_half_float");
 		var halfFloatLinearExt = wgl.getExtension("OES_texture_half_float_linear");
 
-		this.simulationTextureType = wgl.hasHalfFloatTextureSupport() ? halfFloatExt.HALF_FLOAT_OES : wgl.FLOAT; //use float if half float not available
+		this.simulationTextureType = wgl.hasHalfFloatTextureSupport() ? halfFloatExt.HALF_FLOAT_OES : wgl.FLOAT; // use float if half float not available
 		this.resolutionWidth = resolutionWidth;
 		this.resolutionHeight = resolutionHeight;
 		this.fluidity = 0.8;
 		this.frameNumber = 0;
-		this.splatAreas = []; //the splat areas that we"re currently still simulating
-		//more recent are at the front of the array
+		this.splatAreas = []; // the splat areas that we"re currently still simulating
+		// more recent are at the front of the array
 
 		//////////////////////////////////////////////////
 		// create shader programs
@@ -47,7 +47,7 @@ var Simulator = (function() {
 		this.splatVelocitiesBuffer = wgl.createBuffer();
 		this.simulationFramebuffer = wgl.createFramebuffer();
 
-		//create textures
+		// create textures
 		this.paintTexture = wgl.buildTexture(wgl.RGBA, wgl.FLOAT, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
 		this.paintTextureTemp = wgl.buildTexture(wgl.RGBA, wgl.FLOAT, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
 		this.velocityTexture = wgl.buildTexture(wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
@@ -84,7 +84,7 @@ var Simulator = (function() {
 		wgl.drawArrays(copyDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 	};
 
-	//resizes the canvas with direct texel correspondence, offsetting the previous painting
+	// resizes the canvas with direct texel correspondence, offsetting the previous painting
 	Simulator.prototype.resize = function(newWidth, newHeight, offsetX, offsetY, featherSize) {
 		var wgl = this.wgl;
 
@@ -119,7 +119,7 @@ var Simulator = (function() {
 		this.clearTextures([this.velocityTexture, this.velocityTextureTemp, this.divergenceTexture, this.pressureTexture, this.pressureTextureTemp]);
 	};
 
-	//resamples the whole painting
+	// resamples the whole painting
 	Simulator.prototype.changeResolution = function(newWidth, newHeight) {
 		var wgl = this.wgl;
 
@@ -143,7 +143,7 @@ var Simulator = (function() {
 	};
 
 
-	//assumes destination texture has dimensions resolutionWidth x resolutionHeight
+	// assumes destination texture has dimensions resolutionWidth x resolutionHeight
 	Simulator.prototype.copyPaintTexture = function(destinationTexture) {
 		this.copyTexture(this.resolutionWidth, this.resolutionHeight, this.paintTexture, destinationTexture);
 	};
@@ -155,14 +155,14 @@ var Simulator = (function() {
 		this.clearTextures([this.velocityTexture, this.velocityTextureTemp]);
 	};
 
-	//returns the area we"re currently simulating
+	// returns the area we"re currently simulating
 	Simulator.prototype.getSimulationArea = function() {
 		var simulationBorder = 0;
 
-		//now let"s work out the total simulation area we need to simulate
-		var simulationArea = this.splatAreas[0].rectangle.clone(); //start with the first rectangle
+		// now let"s work out the total simulation area we need to simulate
+		var simulationArea = this.splatAreas[0].rectangle.clone(); // start with the first rectangle
 
-		for (var i = 1; i < this.splatAreas.length; ++i) { //and add the others
+		for (var i = 1; i < this.splatAreas.length; ++i) { // and add the others
 			var splatArea = this.splatAreas[i];
 			var area = splatArea.rectangle.clone();
 			simulationArea.includeRectangle(area);
@@ -175,14 +175,14 @@ var Simulator = (function() {
 	};
 
 	Simulator.prototype.splat = function(brush, zThreshold, paintingRectangle, splatColor, splatRadius, velocityScale) {
-		//the area we need to simulate for this set of splats
+		// the area we need to simulate for this set of splats
 		var brushPadding = Math.ceil(brush.scale * SPLAT_PADDING);
 		brushPadding += Math.ceil(brush.filteredSpeed * SPEED_PADDING);
 
-		//we start in canvas space
+		// we start in canvas space
 		var area = new Rectangle(brush.positionX - brushPadding, brush.positionY - brushPadding, brushPadding * 2, brushPadding * 2);
 		
-		//transform into simulation space
+		// transform into simulation space
 		area.translate(-paintingRectangle.left, -paintingRectangle.bottom);
 		area.scale(this.resolutionWidth / paintingRectangle.width, this.resolutionHeight / paintingRectangle.height);
 		area.round();
@@ -198,7 +198,7 @@ var Simulator = (function() {
 			.bindFramebuffer(this.simulationFramebuffer)
 			.clearColor(Math.sin(this.frameNumber * 0.1) * 0.5 + 0.5, 1, 1, 1)
 			
-			//restrict splatting to area that"ll be simulated
+			// restrict splatting to area that"ll be simulated
 			.enable(wgl.SCISSOR_TEST)
 			.scissor(Math.floor(simulationArea.left), Math.floor(simulationArea.bottom), Math.floor(simulationArea.width), Math.floor(simulationArea.height))
 		wgl.framebufferTexture2D(this.simulationFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, this.paintTexture, 0);
@@ -208,7 +208,7 @@ var Simulator = (function() {
 		var splatPaintDrawState = wgl.createDrawState()
 			.bindFramebuffer(this.simulationFramebuffer)
 			.viewport(0, 0, this.resolutionWidth, this.resolutionHeight)
-			//restrict splatting to area that"ll be simulated
+			// restrict splatting to area that"ll be simulated
 			.enable(wgl.SCISSOR_TEST)
 			.scissor(simulationArea.left, simulationArea.bottom, simulationArea.width, simulationArea.height)
 			.enable(wgl.BLEND)
@@ -232,7 +232,7 @@ var Simulator = (function() {
 		var splatVelocityDrawState = wgl.createDrawState()
 			.bindFramebuffer(this.simulationFramebuffer)
 			.viewport(0, 0, this.resolutionWidth, this.resolutionHeight)
-			//restrict splatting to area that"ll be simulated
+			// restrict splatting to area that"ll be simulated
 			.enable(wgl.SCISSOR_TEST)
 			.scissor(simulationArea.left, simulationArea.bottom, simulationArea.width, simulationArea.height)
 			.enable(wgl.BLEND)
@@ -255,7 +255,7 @@ var Simulator = (function() {
 
 	};
 
-	//returns whether any simulating actually took place
+	// returns whether any simulating actually took place
 	Simulator.prototype.simulate = function() {
 		var wgl = this.wgl;
 
@@ -284,9 +284,9 @@ var Simulator = (function() {
 
 		////////////////////////////////////////
 		// advect velocity and paint
-		var DELTA_TIME = 1.0 / 60.0; //we use a constant timestep for simulation consistency
+		var DELTA_TIME = 1.0 / 60.0; // we use a constant timestep for simulation consistency
 
-		//compute divergence for pressure projection
+		// compute divergence for pressure projection
 		var divergenceDrawState = wgl.createDrawState()
 			.bindFramebuffer(this.simulationFramebuffer)
 			.viewport(simulationArea.left, simulationArea.bottom, simulationArea.width, simulationArea.height)
@@ -300,7 +300,7 @@ var Simulator = (function() {
 		wgl.framebufferTexture2D(this.simulationFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, this.divergenceTexture, 0);
 		wgl.drawArrays(divergenceDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 		
-		//compute pressure via jacobi iteration
+		// compute pressure via jacobi iteration
 		var jacobiDrawState = wgl.createDrawState()
 			.bindFramebuffer(this.simulationFramebuffer)
 			.viewport(simulationArea.left, simulationArea.bottom, simulationArea.width, simulationArea.height)
@@ -323,7 +323,7 @@ var Simulator = (function() {
 			Utilities.swap(this, "pressureTexture", "pressureTextureTemp");
 		}
 		
-		//subtract pressure gradient from velocity
+		// subtract pressure gradient from velocity
 		var subtractDrawState = wgl.createDrawState()
 			.bindFramebuffer(this.simulationFramebuffer)
 			.viewport(simulationArea.left, simulationArea.bottom, simulationArea.width, simulationArea.height)
@@ -340,17 +340,17 @@ var Simulator = (function() {
 		
 		Utilities.swap(this, "velocityTexture", "velocityTextureTemp");
 
-		//advect paint
+		// advect paint
 		advect(this.velocityTexture, this.paintTexture, this.paintTextureTemp, DELTA_TIME, 1.0);
 		Utilities.swap(this, "paintTexture", "paintTextureTemp");
 
-		//advect velocity
+		// advect velocity
 		advect(this.velocityTexture, this.velocityTexture, this.velocityTextureTemp, DELTA_TIME, this.fluidity);
 		Utilities.swap(this, "velocityTexture", "velocityTextureTemp");
 
 		this.frameNumber += 1;
 
-		//remove all of the splat areas we no longer need to simulate
+		// remove all of the splat areas we no longer need to simulate
 		var i = this.splatAreas.length;
 		while (i--) {
 			if (this.frameNumber - this.splatAreas[i].frameNumber > FRAMES_TO_SIMULATE) {
@@ -358,8 +358,8 @@ var Simulator = (function() {
 			}
 		}
 
-		if (this.splatAreas.length === 0) { //if we finished simulating on this step
-			this.clearTextures(this.velocityTexture, this.velocityTextureTemp); //clear all velocity textures
+		if (this.splatAreas.length === 0) { // if we finished simulating on this step
+			this.clearTextures(this.velocityTexture, this.velocityTextureTemp); // clear all velocity textures
 		}
 
 		return true;

@@ -177,7 +177,7 @@ class Brush {
 
 	// max of last N_PREVIOUS_SPEEDS speeds
 	get filteredSpeed() {
-		return this.speeds.reduce(function(a, b) { return Math.max(a, b) });
+		return this.speeds.reduce((a, b) => Math.max(a, b));
 	}
 
 	update(x, y, z, scale) {
