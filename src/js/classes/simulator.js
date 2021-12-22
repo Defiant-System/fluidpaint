@@ -1,22 +1,23 @@
 
-var Simulator = (function() {
-
-	function Simulator (wgl, resolutionWidth, resolutionHeight) {
+class Simulator {
+	constructor(wgl, resolutionWidth, resolutionHeight) {
 		this.wgl = wgl;
+		this.resolutionWidth = resolutionWidth;
+		this.resolutionHeight = resolutionHeight;
 
 		wgl.getExtension("OES_texture_float");
 		wgl.getExtension("OES_texture_float_linear");
 
-		var halfFloatExt = wgl.getExtension("OES_texture_half_float");
-		var halfFloatLinearExt = wgl.getExtension("OES_texture_half_float_linear");
+		let halfFloatExt = wgl.getExtension("OES_texture_half_float");
+		let halfFloatLinearExt = wgl.getExtension("OES_texture_half_float_linear");
 
-		this.simulationTextureType = wgl.hasHalfFloatTextureSupport() ? halfFloatExt.HALF_FLOAT_OES : wgl.FLOAT; // use float if half float not available
-		this.resolutionWidth = resolutionWidth;
-		this.resolutionHeight = resolutionHeight;
+		// use float if half float not available
+		this.simulationTextureType = wgl.hasHalfFloatTextureSupport() ? halfFloatExt.HALF_FLOAT_OES : wgl.FLOAT;
 		this.fluidity = 0.8;
 		this.frameNumber = 0;
-		this.splatAreas = []; // the splat areas that we"re currently still simulating
+		// the splat areas that we"re currently still simulating
 		// more recent are at the front of the array
+		this.splatAreas = [];
 
 		//////////////////////////////////////////////////
 		// create shader programs
@@ -50,7 +51,7 @@ var Simulator = (function() {
 		this.clearTextures([this.paintTexture, this.paintTextureTemp, this.velocityTexture, this.velocityTextureTemp, this.divergenceTexture, this.pressureTexture, this.pressureTextureTemp]);
 	}
 
-	Simulator.prototype.clearTextures = function(textures) {
+	clearTextures(textures) {
 		var wgl = this.wgl;
 		for (var i = 0; i < textures.length; ++i) {
 			wgl.framebufferTexture2D(this.simulationFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, textures[i], 0);
@@ -58,13 +59,13 @@ var Simulator = (function() {
 				wgl.createClearState().bindFramebuffer(this.simulationFramebuffer),
 				wgl.COLOR_BUFFER_BIT);
 		}
-	};
+	}
 
-	Simulator.prototype.clear = function() {
+	clear() {
 		this.clearTextures([this.paintTexture, this.paintTextureTemp]);
-	};
+	}
 
-	Simulator.prototype.copyTexture = function(destinationWidth, destinationHeight, sourceTexture, destinationTexture) {
+	copyTexture(destinationWidth, destinationHeight, sourceTexture, destinationTexture) {
 		var copyDrawState = wgl.createDrawState()
 			.bindFramebuffer(this.simulationFramebuffer)
 			.viewport(0, 0, destinationWidth, destinationHeight)
@@ -73,10 +74,10 @@ var Simulator = (function() {
 			.vertexAttribPointer(this.quadVertexBuffer, this.copyProgram.getAttribLocation("a_position"), 2, wgl.FLOAT, false, 0, 0);
 		wgl.framebufferTexture2D(this.simulationFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, destinationTexture, 0);
 		wgl.drawArrays(copyDrawState, wgl.TRIANGLE_STRIP, 0, 4);
-	};
+	}
 
 	// resizes the canvas with direct texel correspondence, offsetting the previous painting
-	Simulator.prototype.resize = function(newWidth, newHeight, offsetX, offsetY, featherSize) {
+	resize(newWidth, newHeight, offsetX, offsetY, featherSize) {
 		var wgl = this.wgl;
 
 		var resizeDrawState = wgl.createDrawState()
@@ -108,10 +109,10 @@ var Simulator = (function() {
 		wgl.rebuildTexture(this.pressureTextureTemp, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
 		
 		this.clearTextures([this.velocityTexture, this.velocityTextureTemp, this.divergenceTexture, this.pressureTexture, this.pressureTextureTemp]);
-	};
+	}
 
 	// resamples the whole painting
-	Simulator.prototype.changeResolution = function(newWidth, newHeight) {
+	changeResolution(newWidth, newHeight) {
 		var wgl = this.wgl;
 
 		wgl.rebuildTexture(this.paintTextureTemp, wgl.RGBA, wgl.FLOAT, newWidth, newHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
@@ -131,23 +132,22 @@ var Simulator = (function() {
 		wgl.rebuildTexture(this.pressureTextureTemp, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
 
 		this.clearTextures([this.velocityTexture, this.velocityTextureTemp, this.divergenceTexture, this.pressureTexture, this.pressureTextureTemp]);
-	};
-
+	}
 
 	// assumes destination texture has dimensions resolutionWidth x resolutionHeight
-	Simulator.prototype.copyPaintTexture = function(destinationTexture) {
+	copyPaintTexture(destinationTexture) {
 		this.copyTexture(this.resolutionWidth, this.resolutionHeight, this.paintTexture, destinationTexture);
-	};
+	}
 
-	Simulator.prototype.applyPaintTexture = function(texture) {
+	applyPaintTexture(texture) {
 		this.copyTexture(this.resolutionWidth, this.resolutionHeight, texture, this.paintTexture);
 		this.copyTexture(this.resolutionWidth, this.resolutionHeight, texture, this.paintTextureTemp);
 
 		this.clearTextures([this.velocityTexture, this.velocityTextureTemp]);
-	};
+	}
 
 	// returns the area we"re currently simulating
-	Simulator.prototype.getSimulationArea = function() {
+	get simulationArea() {
 		var simulationBorder = 0;
 
 		// now let"s work out the total simulation area we need to simulate
@@ -164,9 +164,9 @@ var Simulator = (function() {
 		simulationArea.intersectRectangle(new Rectangle(0, 0, this.resolutionWidth, this.resolutionHeight));
 
 		return simulationArea;
-	};
+	}
 
-	Simulator.prototype.splat = function(brush, zThreshold, paintingRectangle, splatColor, splatRadius, velocityScale) {
+	splat(brush, zThreshold, paintingRectangle, splatColor, splatRadius, velocityScale) {
 		// the area we need to simulate for this set of splats
 		var brushPadding = Math.ceil(brush.scale * SPLAT_PADDING);
 		brushPadding += Math.ceil(brush.filteredSpeed * SPEED_PADDING);
@@ -182,7 +182,7 @@ var Simulator = (function() {
 
 		this.splatAreas.splice(0, 0, new SplatArea(area, this.frameNumber));
 
-		var simulationArea = this.getSimulationArea();
+		var simulationArea = this.simulationArea;
 		var wgl = this.wgl;
 
 		var splatPaintDrawState = wgl.createDrawState()
@@ -232,16 +232,15 @@ var Simulator = (function() {
 			.uniform1f("u_velocityScale", velocityScale);
 
 		wgl.drawElements(splatVelocityDrawState, wgl.TRIANGLES, brush.splatIndexCount * brush.bristleCount / brush.maxBristleCount, wgl.UNSIGNED_SHORT, 0);
-
-	};
+	}
 
 	// returns whether any simulating actually took place
-	Simulator.prototype.simulate = function() {
+	simulate() {
 		var wgl = this.wgl;
 
 		if (this.splatAreas.length === 0) return false;
 
-		var simulationArea = this.getSimulationArea();
+		var simulationArea = this.simulationArea;
 		var advect = (function(velocityTexture, dataTexture, targetTexture, deltaTime, dissipation) {
 			var advectDrawState = wgl.createDrawState()
 				.bindFramebuffer(this.simulationFramebuffer)
@@ -343,8 +342,6 @@ var Simulator = (function() {
 		}
 
 		return true;
-	};
+	}
 
-	return Simulator;
-
-}());
+}

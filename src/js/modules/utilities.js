@@ -15,7 +15,27 @@ var Utilities = {
 			y: event.clientY - boundingRect.top
 		};
 	}
-};
+}
+
+function buildShader(gl, type, source) {
+	var shader = gl.createShader(type);
+	gl.shaderSource(shader, source);
+	gl.compileShader(shader);
+
+	//log any errors
+	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+		console.log(gl.getShaderInfoLog(shader));
+	}
+	return shader;
+}
+
+//assumes a and b are equal length
+function arraysEqual(a, b) {
+	for (var i = 0; i < a.length; ++i) {
+		if (a[i] !== b[i]) return false;
+	}
+	return true;
+}
 
 function pascalRow(n) {
 	var line = [1];

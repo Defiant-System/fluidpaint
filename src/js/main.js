@@ -29,16 +29,23 @@ const Shaders = {
 
 
 @import "modules/variables.js"
+@import "classes/splatArea.js"
 @import "classes/snapshot.js"
 @import "classes/painter.js"
 @import "classes/brush.js"
 @import "classes/rectangle.js"
+@import "classes/simulator.js"
+
+@import "classes/state.js"
+@import "classes/drawState.js"
+@import "classes/clearState.js"
+@import "classes/readState.js"
+@import "classes/wrappedProgram.js"
 
 
 @import "modules/color.js"
 @import "modules/wrappedgl.js"
 @import "modules/utilities.js"
-@import "modules/simulator.js"
 
 
 let canvas = document.createElement('canvas');

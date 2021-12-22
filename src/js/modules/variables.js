@@ -80,3 +80,9 @@ let N_PREVIOUS_SPEEDS = 15, // how many previous speeds we store
 	GRAVITY = 30.0,
 	BRUSH_DAMPING = 0.75,
 	STIFFNESS_VARIATION = 0.3;
+
+// Simulator variables
+let PRESSURE_JACOBI_ITERATIONS = 2,
+	FRAMES_TO_SIMULATE = 60, // how many frames to simulate the area induced by each splat for
+	SPLAT_PADDING = 4.5, // approximately sqrt(BRISTLE_LENGTH * BRISTLE_LENGTH - BRUSH_HEIGHT * BRUSH_HEIGHT)
+	SPEED_PADDING = 1.1;
