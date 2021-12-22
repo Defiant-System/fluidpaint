@@ -4,7 +4,6 @@ var ColorPicker = (function() {
 	var HEIGHT = 200;
 
 	//coordinates are all relative to [left, bottom]
-
 	var ALPHA_SLIDER_X = 220;
 	var ALPHA_SLIDER_Y = 10;
 	var ALPHA_SLIDER_WIDTH = 20;

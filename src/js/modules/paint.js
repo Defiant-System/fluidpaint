@@ -366,8 +366,8 @@ var Paint = (function() {
 		wgl.deleteTexture(saveTexture);
 		wgl.deleteFramebuffer(saveFramebuffer);
 
-		//then we draw the pixels to a 2D canvas and then save from the canvas
-		//is there a better way?
+		// then we draw the pixels to a 2D canvas and then save from the canvas
+		// is there a better way?
 		var saveCanvas = document.createElement("canvas");
 		saveCanvas.width = saveWidth;
 		saveCanvas.height = saveHeight;

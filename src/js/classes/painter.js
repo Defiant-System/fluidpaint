@@ -20,6 +20,7 @@ class Painter {
 		this.paintingProgramRGB = wgl.createProgram(Shaders.Vertex.painting, "#define RGB \n "+ Shaders.Fragment.painting);
 		this.brushProgram = wgl.createProgram(Shaders.Vertex.brush, Shaders.Fragment.brush, { "a_position": 0 });
 		this.outputProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.output, { "a_position": 0 });
+		this.savePaintingProgram = wgl.createProgram(Shaders.Vertex.painting, "#define SAVE \n "+ Shaders.Fragment.painting);
 
 		this.quadVertexBuffer = wgl.createBuffer();
 		wgl.bufferData(this.quadVertexBuffer, wgl.ARRAY_BUFFER, new Float32Array([-1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0]), wgl.STATIC_DRAW);
@@ -255,12 +256,10 @@ class Painter {
 			this.snapshotIndex -= 1;
 			this.maxRedoIndex = this.snapshotIndex;
 		}
-
 		if (this.canUndo()) {
 			this.applySnapshot(this.snapshots[this.snapshotIndex - 1]);
 			this.snapshotIndex -= 1;
 		}
-
 		this.refreshDoButtons();
 		this.needsRedraw = true;
 		this.update();
@@ -271,7 +270,6 @@ class Painter {
 			this.applySnapshot(this.snapshots[this.snapshotIndex + 1]);
 			this.snapshotIndex += 1;
 		}
-
 		this.refreshDoButtons();
 		this.needsRedraw = true;
 		this.update();
@@ -280,13 +278,59 @@ class Painter {
 	refreshDoButtons() {
 		window.find(`.toolbar-tool_[data-click="history-undo"]`)
 			.toggleClass("tool-disabled_", this.canUndo());
-		console.log( this.canUndo() );
 		window.find(`.toolbar-tool_[data-click="history-redo"]`)
 			.toggleClass("tool-disabled_", this.canRedo());
 	}
 
 	save() {
+		//we first render the painting to a WebGL texture
+		var wgl = this.wgl;
+		var saveWidth = this.paintingRectangle.width;
+		var saveHeight = this.paintingRectangle.height;
+		var saveTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, saveWidth, saveHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
+		var saveFramebuffer = wgl.createFramebuffer();
+		wgl.framebufferTexture2D(saveFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, saveTexture, 0);
+		// var paintingProgram = this.colorModel === ColorModel.RYB ? this.savePaintingProgram : this.savePaintingProgramRGB;
+		var paintingProgram = this.savePaintingProgram;
+		
+		var saveDrawState = wgl.createDrawState()
+			.bindFramebuffer(saveFramebuffer)
+			.viewport(0, 0, saveWidth, saveHeight)
+			.vertexAttribPointer(this.quadVertexBuffer, paintingProgram.getAttribLocation("a_position"), 2, wgl.FLOAT, false, 0, 0)
+			.useProgram(paintingProgram)
+			.uniform2f("u_paintingSize", this.paintingRectangle.width, this.paintingRectangle.height)
+			.uniform2f("u_paintingResolution", this.simulator.resolutionWidth, this.simulator.resolutionHeight)
+			.uniform2f("u_screenResolution", this.paintingRectangle.width, this.paintingRectangle.height)
+			.uniform2f("u_paintingPosition", 0, 0)
+			.uniformTexture("u_paintTexture", 0, wgl.TEXTURE_2D, this.simulator.paintTexture)
+			.uniform1f("u_normalScale", NORMAL_SCALE / this.resolutionScale)
+			.uniform1f("u_roughness", ROUGHNESS)
+			.uniform1f("u_diffuseScale", DIFFUSE_SCALE)
+			.uniform1f("u_specularScale", SPECULAR_SCALE)
+			.uniform1f("u_F0", F0)
+			.uniform3f("u_lightDirection", LIGHT_DIRECTION[0], LIGHT_DIRECTION[1], LIGHT_DIRECTION[2]);
 
+		wgl.drawArrays(saveDrawState, wgl.TRIANGLE_STRIP, 0, 4);
+
+		//then we read back this texture
+		var savePixels = new Uint8Array(saveWidth * saveHeight * 4);
+		wgl.readPixels(wgl.createReadState().bindFramebuffer(saveFramebuffer),
+						0, 0, saveWidth, saveHeight, wgl.RGBA, wgl.UNSIGNED_BYTE, savePixels);
+
+		wgl.deleteTexture(saveTexture);
+		wgl.deleteFramebuffer(saveFramebuffer);
+
+		// then we draw the pixels to a 2D canvas and then save from the canvas
+		// is there a better way?
+		var saveCanvas = document.createElement("canvas");
+		saveCanvas.width = saveWidth;
+		saveCanvas.height = saveHeight;
+		var saveContext = saveCanvas.getContext("2d");
+		var imageData = saveContext.createImageData(saveWidth, saveHeight);
+		imageData.data.set(savePixels);
+		saveContext.putImageData(imageData, 0, 0);
+
+		// fluidpaint.els.content.append(saveCanvas);
 	}
 
 }

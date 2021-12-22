@@ -47,5 +47,4 @@ class ClearState extends State {
 		this.setParameter("scissor", [x, y, width, height]);
 		return this;
 	}
-
 }
