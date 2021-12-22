@@ -29,7 +29,6 @@ const Shaders = {
 
 
 @import "modules/variables.js"
-
 @import "classes/snapshot.js"
 @import "classes/painter.js"
 
@@ -43,10 +42,12 @@ const Shaders = {
 @import "modules/paint.js"
 
 
-let canvas = document.createElement('canvas'),
-	wgl = WrappedGL.create(canvas),
+let canvas = document.createElement('canvas');
+canvas.width = 640;
+canvas.height = 480;
+
+let wgl = WrappedGL.create(canvas),
 	painter = new Painter(canvas, wgl);
-	// painter = new Paint(canvas, wgl);
 
 
 const fluidpaint = {
@@ -54,9 +55,11 @@ const fluidpaint = {
 		// fast references
 		this.wrapper = window.find(".wrapper");
 		this.doc = $(document);
-
 		this.cvs = this.wrapper.append(canvas);
-		this.cvs.prop({ width: 700, height: 480 });
+
+		// bind event handlers
+		this.cvs.on("mousedown", this.cvsDnD);
+		this.doc.on("mousemove mouseup", this.cvsDnD);
 	},
 	dispatch(event) {
 		let Self = fluidpaint,
@@ -67,9 +70,64 @@ const fluidpaint = {
 			// system events
 			case "window.open":
 				break;
+			case "window.focus":
+				painter._update = true;
+				break;
+			case "window.blur":
+				painter._update = false;
+				break;
 			// custom events
 			case "open-help":
 				defiant.shell("fs -u '~/help/index.md'");
+				break;
+		}
+	},
+	cvsDnD(event) {
+		let Self = fluidpaint,
+			Drag = Self.drag,
+			position,
+			mouseX,
+			mouseY;
+		switch (event.type) {
+			case "mousedown":
+				// create drag object
+				Self.drag = {
+					offset: {
+						x: event.clientX - event.offsetX,
+						y: event.clientY - event.offsetY,
+					}
+				};
+				painter.interactionState = InteractionMode.PAINTING;
+				painter.saveSnapshot();
+
+				painter.brushX =
+				painter.mouseX = event.offsetX;
+				painter.brushY =
+				painter.mouseY = event.offsetY;
+
+				// bind event
+				// Self.doc.on("mousemove mouseup", Self.cvsDnD);
+				break;
+			case "mousemove":
+				position = Utilities.getMousePosition(event, Self.cvs[0]);
+				mouseX = position.x;
+				mouseY = Self.cvs[0].height - position.y;
+				
+				painter.brushX =
+				painter.mouseX = mouseX;
+				painter.brushY =
+				painter.mouseY = mouseY;
+
+				if (!painter.brushInitialized) {
+					painter.brush.initialize(painter.brushX, painter.brushY, BRUSH_HEIGHT * painter.brushScale, painter.brushScale);
+					painter.brushInitialized = true;
+				}
+				break;
+			case "mouseup":
+				painter.interactionState = InteractionMode.NONE;
+				
+				// bind event
+				// Self.doc.off("mousemove mouseup", Self.cvsDnD);
 				break;
 		}
 	}
