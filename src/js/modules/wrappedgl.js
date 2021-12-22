@@ -293,10 +293,7 @@ var WrappedGL = (function() {
 						defaults: [0],
 						setter: (function() {
 							var index = i;
-
-							return function(divisor) {
-								instancedExt.vertexAttribDivisorANGLE(index, divisor); 
-							}
+							return divisor => instancedExt.vertexAttribDivisorANGLE(index, divisor);
 						}()),
 						usedInDraw: true
 					};
@@ -634,31 +631,6 @@ var WrappedGL = (function() {
 	// { filename: "content", otherFilename, "morecontent" }
 	//TODO: error conditions...
 	WrappedGL.loadTextFiles = function(filenames, onLoaded) {
-		var loadedSoFar = 0;
-		var results = {};
-		for (var i = 0; i < filenames.length; ++i) {
-			var filename = filenames[i];
-			(function() {
-				var name = filename;
-
-				var request = new XMLHttpRequest();
-				request.onreadystatechange = function() {
-					if (request.readyState === 4) { //if this reqest is done
-						//add this file to the results object
-						var text = request.responseText;
-						results[name] = text;
-
-						loadedSoFar += 1;
-						if (loadedSoFar === filenames.length) { //if we"ve loaded all of the files
-							onLoaded(results);    
-						}
-					}
-				}
-				request.open("GET", name, true);
-				request.send();
-
-			}());
-		}
 	};
 
 	//asynchronous
@@ -666,43 +638,7 @@ var WrappedGL = (function() {
 	//vertex shader, fragment shader can either be strings or arrays of strings
 	//in the array case, the file contents will be concatenated
 	WrappedGL.prototype.createProgramFromFiles = function(vertexShaderPath, fragmentShaderPath, attributeLocations, successCallback, failureCallback) {
-		var that = this;
-
-		var filesToLoad = [];
-		if (Array.isArray(vertexShaderPath)) {
-			filesToLoad = filesToLoad.concat(vertexShaderPath);
-		} else {
-			filesToLoad.push(vertexShaderPath);
-		}
-
-		if (Array.isArray(fragmentShaderPath)) {
-			filesToLoad = filesToLoad.concat(fragmentShaderPath);
-		} else {
-			filesToLoad.push(fragmentShaderPath);
-		}
-
-		WrappedGL.loadTextFiles(filesToLoad, function(files) {
-			var vertexShaderSources = [];
-			if (Array.isArray(vertexShaderPath)) {
-				for (var i = 0; i < vertexShaderPath.length; ++i) {
-					vertexShaderSources.push(files[vertexShaderPath[i]]);
-				}
-			} else {
-				vertexShaderSources.push(files[vertexShaderPath]);
-			}
-
-			var fragmentShaderSources = [];
-			if (Array.isArray(fragmentShaderPath)) {
-				for (var i = 0; i < fragmentShaderPath.length; ++i) {
-					fragmentShaderSources.push(files[fragmentShaderPath[i]]);
-				}
-			} else {
-				fragmentShaderSources.push(files[fragmentShaderPath]);
-			}
-
-			var program =  that.createProgram(vertexShaderSources.join("\n"), fragmentShaderSources.join("\n"), attributeLocations);
-			successCallback(program);
-		});
+		
 	};
 
 	/*
@@ -733,30 +669,7 @@ var WrappedGL = (function() {
 
 	//asynchronous
 	WrappedGL.prototype.createProgramsFromFiles = function(programParameters, successCallback, failureCallback) {
-		var programCount = keysInObject(programParameters);
-
-		var loadedSoFar = 0;
-		var programs = {};
-		for (var programName in programParameters) {
-			if (programParameters.hasOwnProperty(programName)) {
-				var parameters = programParameters[programName];
-				
-				var that = this;
-				(function() {
-					var name = programName;
-
-					that.createProgramFromFiles(parameters.vertexShader, parameters.fragmentShader, parameters.attributeLocations, function(program) {
-						programs[name] = program;
-
-						loadedSoFar++;
-						if (loadedSoFar === programCount) { //if we"ve loaded all the programs
-							successCallback(programs);
-						}
-					
-					});
-				}());
-			}
-		}
+		
 	};
 
 	WrappedGL.prototype.createDrawState = function() {

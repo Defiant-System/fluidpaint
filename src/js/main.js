@@ -41,10 +41,10 @@ const Shaders = {
 @import "classes/clearState.js"
 @import "classes/readState.js"
 @import "classes/wrappedProgram.js"
+@import "classes/wrappedgl.js"
 
 
 @import "modules/color.js"
-@import "modules/wrappedgl.js"
 @import "modules/utilities.js"
 
 
