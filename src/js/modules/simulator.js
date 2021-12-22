@@ -177,7 +177,7 @@ var Simulator = (function() {
 	Simulator.prototype.splat = function(brush, zThreshold, paintingRectangle, splatColor, splatRadius, velocityScale) {
 		//the area we need to simulate for this set of splats
 		var brushPadding = Math.ceil(brush.scale * SPLAT_PADDING);
-		brushPadding += Math.ceil(brush.getFilteredSpeed() * SPEED_PADDING);
+		brushPadding += Math.ceil(brush.filteredSpeed * SPEED_PADDING);
 
 		//we start in canvas space
 		var area = new Rectangle(brush.positionX - brushPadding, brush.positionY - brushPadding, brushPadding * 2, brushPadding * 2);

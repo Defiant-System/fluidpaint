@@ -69,3 +69,14 @@ let QUALITIES = [
 	DIFFUSE_SCALE = 0.15,
 	LIGHT_DIRECTION = [0, 1, 1],
 	HISTORY_SIZE = 4; //number of snapshots we store - this should be number of reversible actions + 1
+
+// Brush variables
+let N_PREVIOUS_SPEEDS = 15, // how many previous speeds we store
+	SPLATS_PER_SEGMENT = 8,
+	VERTICES_PER_BRISTLE = 10,
+	BRISTLE_LENGTH = 4.5, // relative to a scale of 1
+	BRISTLE_JITTER = 0.5,
+	ITERATIONS = 20,
+	GRAVITY = 30.0,
+	BRUSH_DAMPING = 0.75,
+	STIFFNESS_VARIATION = 0.3;

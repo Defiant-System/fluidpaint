@@ -31,13 +31,13 @@ const Shaders = {
 @import "modules/variables.js"
 @import "classes/snapshot.js"
 @import "classes/painter.js"
+@import "classes/brush.js"
 
 
 @import "modules/color.js"
 @import "modules/wrappedgl.js"
 @import "modules/utilities.js"
 @import "modules/rectangle.js"
-@import "modules/brush.js"
 @import "modules/simulator.js"
 @import "modules/paint.js"
 
@@ -53,13 +53,16 @@ let wgl = WrappedGL.create(canvas),
 const fluidpaint = {
 	init() {
 		// fast references
-		this.wrapper = window.find(".wrapper");
-		this.doc = $(document);
-		this.cvs = this.wrapper.append(canvas);
+		this.els = {
+			doc: $(document),
+			content: window.find("content"),
+			wrapper: window.find(".wrapper"),
+		};
+		// append canvas to workarea
+		this.els.cvs = this.els.wrapper.append(canvas);
 
 		// bind event handlers
-		this.cvs.on("mousedown", this.cvsDnD);
-		this.doc.on("mousemove mouseup", this.cvsDnD);
+		this.els.content.on("mousedown mousemove", this.cvsDnD);
 	},
 	dispatch(event) {
 		let Self = fluidpaint,
@@ -70,12 +73,6 @@ const fluidpaint = {
 			// system events
 			case "window.open":
 				break;
-			case "window.focus":
-				painter._update = true;
-				break;
-			case "window.blur":
-				painter._update = false;
-				break;
 			// custom events
 			case "open-help":
 				defiant.shell("fs -u '~/help/index.md'");
@@ -84,50 +81,31 @@ const fluidpaint = {
 	},
 	cvsDnD(event) {
 		let Self = fluidpaint,
-			Drag = Self.drag,
-			position,
-			mouseX,
-			mouseY;
+			Drag = Self.drag;
 		switch (event.type) {
 			case "mousedown":
-				// create drag object
-				Self.drag = {
-					offset: {
-						x: event.clientX - event.offsetX,
-						y: event.clientY - event.offsetY,
-					}
-				};
 				painter.interactionState = InteractionMode.PAINTING;
 				painter.saveSnapshot();
-
-				painter.brushX =
-				painter.mouseX = event.offsetX;
-				painter.brushY =
-				painter.mouseY = event.offsetY;
-
 				// bind event
-				// Self.doc.on("mousemove mouseup", Self.cvsDnD);
+				Self.els.doc.on("mouseup", Self.cvsDnD);
 				break;
 			case "mousemove":
-				position = Utilities.getMousePosition(event, Self.cvs[0]);
-				mouseX = position.x;
-				mouseY = Self.cvs[0].height - position.y;
+				let pos = Utilities.getMousePosition(event, Self.els.cvs[0]),
+					mX = pos.x,
+					mY = Self.els.cvs[0].height - pos.y;
 				
-				painter.brushX =
-				painter.mouseX = mouseX;
-				painter.brushY =
-				painter.mouseY = mouseY;
+				painter.brushX = mX;
+				painter.brushY = mY;
 
 				if (!painter.brushInitialized) {
-					painter.brush.initialize(painter.brushX, painter.brushY, BRUSH_HEIGHT * painter.brushScale, painter.brushScale);
+					painter.brush.initialize(mX, mY, BRUSH_HEIGHT * painter.brushScale, painter.brushScale);
 					painter.brushInitialized = true;
 				}
 				break;
 			case "mouseup":
 				painter.interactionState = InteractionMode.NONE;
-				
-				// bind event
-				// Self.doc.off("mousemove mouseup", Self.cvsDnD);
+				// unbind event
+				Self.els.doc.off("mouseup", Self.cvsDnD);
 				break;
 		}
 	}

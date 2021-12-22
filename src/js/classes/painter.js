@@ -53,8 +53,6 @@ class Painter {
 		this.canvasTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, canvas.width, canvas.height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
 		this.needsRedraw = true;
 		
-		this.mouseX = 0;
-		this.mouseY = 0;
 		this.spaceDown = false;
 
 		//this is updated during resizing according to the new mouse position
@@ -63,11 +61,14 @@ class Painter {
 		this.interactionState = InteractionMode.NONE;
 
 		this._clearState = wgl.createClearState().bindFramebuffer(this.framebuffer);
+		this._update = true;
 
-		var update = (function() {
-			this.update();
-			requestAnimationFrame(update);
-		}).bind(this);
+		var Self = this,
+			update = (function() {
+				Self.update();
+				requestAnimationFrame(update);
+			});
+
 		update();
 	}
 
