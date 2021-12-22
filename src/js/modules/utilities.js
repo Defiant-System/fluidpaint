@@ -15,6 +15,17 @@ var Utilities = {
 			y: event.clientY - boundingRect.top
 		};
 	}
+};
+
+
+function keysInObject(object) {
+	var count = 0;
+	for (var key in object) {
+		if (object.hasOwnProperty(key)) {
+			count += 1;
+		}
+	}
+	return count;
 }
 
 function buildShader(gl, type, source) {
