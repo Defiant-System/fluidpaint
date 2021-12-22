@@ -28,6 +28,13 @@ const Shaders = {
 };
 
 
+@import "modules/variables.js"
+
+@import "classes/snapshot.js"
+@import "classes/painter.js"
+
+
+@import "modules/color.js"
 @import "modules/wrappedgl.js"
 @import "modules/utilities.js"
 @import "modules/rectangle.js"
@@ -38,102 +45,31 @@ const Shaders = {
 
 let canvas = document.createElement('canvas'),
 	wgl = WrappedGL.create(canvas),
-	painter = new Paint(canvas, wgl);
+	painter = new Painter(canvas, wgl);
+	// painter = new Paint(canvas, wgl);
 
 
 const fluidpaint = {
 	init() {
 		// fast references
-		this.content = window.find("content");
+		this.wrapper = window.find(".wrapper");
 		this.doc = $(document);
-		this.cvs = this.content.append(canvas);
 
-		this.dispatch({ type: "window.resize" });
-
-		// bind event handlers
-		this.cvs.on("mousedown", this.cvsDnD);
-	},
-	cvsDnD(event) {
-		let Self = fluidpaint,
-			Drag = Self.drag;
-		switch (event.type) {
-			case "mousedown":
-				// create drag object
-				Self.drag = {
-					offset: {
-						x: event.clientX - event.offsetX,
-						y: event.clientY - event.offsetY,
-					}
-				};
-				painter.interactionState === InteractionMode.PAINTING;
-				painter.saveSnapshot();
-				// bind event
-				Self.doc.on("mousemove mouseup", Self.cvsDnD);
-				break;
-			case "mousemove":
-				let mouseX = event.clientX - Drag.offset.x,
-					mouseY = window.innerHeight - (event.clientY - Drag.offset.y);
-				
-				painter.mouseX =
-				painter.brushX = mouseX;
-				painter.mouseY =
-				painter.brushY = mouseY;
-
-				if (!painter.brushInitialized) {
-					painter.brush.initialize(painter.brushX, painter.brushY, BRUSH_HEIGHT * painter.brushScale, painter.brushScale);
-				}
-				painter.update();
-				break;
-			case "mouseup":
-				painter.interactionState === InteractionMode.NONE;
-				// bind event
-				Self.doc.off("mousemove mouseup", Self.cvsDnD);
-				break;
-		}
+		this.cvs = this.wrapper.append(canvas);
+		this.cvs.prop({ width: 700, height: 480 });
 	},
 	dispatch(event) {
 		let Self = fluidpaint,
+			value,
+			index,
 			el;
 		switch (event.type) {
 			// system events
 			case "window.open":
 				break;
-			case "window.resize":
-				// canvas
-				Self.cvs.prop({ width: window.innerWidth, height: window.innerHeight });
-				break;
 			// custom events
 			case "open-help":
 				defiant.shell("fs -u '~/help/index.md'");
-				break;
-			case "clear":
-				painter.clear();
-				break;
-			case "history-undo":
-				painter.undo();
-				break;
-			case "history-redo":
-				painter.redo();
-				break;
-			case "set-color":
-				painter.brushColorHSVA = [.5, 1, 1, 0.8];
-				break;
-			case "color-mode":
-				painter.colorModel = +event.arg;
-				painter.update();
-				break;
-			case "quality":
-				let index = +event.arg;
-				painter.saveSnapshot();
-				painter.resolutionScale = QUALITIES[index].resolutionScale;
-				painter.simulator.changeResolution(painter.getPaintingResolutionWidth(), painter.getPaintingResolutionHeight());
-				painter.update();
-
-				console.log( painter.getPaintingResolutionWidth() );
-				break;
-			case "save":
-			case "toggle-sidebar":
-				console.log(event);
 				break;
 		}
 	}

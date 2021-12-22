@@ -1,5 +1,5 @@
 <ToolBar>
-	<Group width="30%">
+	<Group width="20%">
 		<Options>
 			<Tool symbol="icon-undo" click="history-undo" state="1disabled"/>
 			<Tool symbol="icon-redo" click="history-redo" state="1disabled"/>
@@ -8,7 +8,7 @@
 		<Tool name="Save" click="save"/>
 		<!-- <Select name="100%" width="35" menu="view-zoom"/> -->
 	</Group>
-	<Group width="40%" align="center">
+	<Group width="60%" align="center">
 		<Options>
 			<Tool name="Low" click="quality" arg="0"/>
 			<Tool name="Medium" click="quality" arg="1"/>
@@ -20,10 +20,11 @@
 		</Options>
 		<Options>
 			<Tool name="Red" click="set-color" arg="#ff0000"/>
+			<Tool name="Green" click="set-color" arg="#00ff00"/>
 			<Tool name="Blue" click="set-color" arg="#0000ff"/>
 		</Options>
 	</Group>
-	<Group width="30%">
+	<Group width="20%">
 		<Tool symbol="icon-format" click="toggle-sidebar"/>
 	</Group>
 </ToolBar>

@@ -1,184 +1,5 @@
 
-const QUALITIES = [
-	{ name: "Low", resolutionScale: 1.0 },
-	{ name: "Medium", resolutionScale: 1.5 },
-	{ name: "High", resolutionScale: 2.0 }
-];
-
-const InteractionMode = {
-	NONE: 0,
-	PAINTING: 1,
-	RESIZING: 2,
-	PANNING: 3
-};
-
-var ResizingSide = {
-		NONE: 0,
-		LEFT: 1,
-		RIGHT: 2,
-		BOTTOM: 3,
-		TOP: 4,
-		TOP_LEFT: 5,
-		TOP_RIGHT: 6,
-		BOTTOM_LEFT: 7,
-		BOTTOM_RIGHT: 8
-	},
-	ColorModel = {
-		RYB: 0,
-		RGB: 1
-	},
-	INITIAL_QUALITY = 1,
-	// INITIAL_PADDING = 100,
-	INITIAL_WIDTH = 600,
-	INITIAL_HEIGHT = 400,
-	MIN_PAINTING_WIDTH = 300,
-	MAX_PAINTING_WIDTH = 4096, //this is further constrained by the maximum texture size
-	//brush parameters
-	MAX_BRISTLE_COUNT = 100,
-	MIN_BRISTLE_COUNT = 10,
-	MIN_BRUSH_SCALE = 5,
-	MAX_BRUSH_SCALE = 75,
-	BRUSH_HEIGHT = 2.0, //how high the brush is over the canvas - this is scaled with the brushScale
-	Z_THRESHOLD = 0.13333, //this is scaled with the brushScale
-	//splatting parameters
-	SPLAT_VELOCITY_SCALE = 0.14,
-	SPLAT_RADIUS = 0.05,
-	//for thin brush (fewest bristles)
-	THIN_MIN_ALPHA = 0.002,
-	THIN_MAX_ALPHA = 0.08,
-	//for thick brush (most bristles)
-	THICK_MIN_ALPHA = 0.002,
-	THICK_MAX_ALPHA = 0.025,
-	//panel is aligned with the top left
-	PANEL_WIDTH = 300,
-	PANEL_HEIGHT = 580,
-	PANEL_BLUR_SAMPLES = 13,
-	PANEL_BLUR_STRIDE = 8,
-	// COLOR_PICKER_LEFT = 20,
-	// COLOR_PICKER_TOP = 523,
-	RESIZING_RADIUS = 20,
-	RESIZING_FEATHER_SIZE = 8, //in pixels 
-	//box shadow parameters
-	BOX_SHADOW_SIGMA = 5.0,
-	BOX_SHADOW_WIDTH = 10.0,
-	PAINTING_SHADOW_ALPHA = 0.25,
-	PANEL_SHADOW_ALPHA = 1.0,
-	//rendering parameters
-	BACKGROUND_GRAY = 0.7,
-	NORMAL_SCALE = 7.0,
-	ROUGHNESS = 0.075,
-	F0 = 0.05,
-	SPECULAR_SCALE = 0.65,
-	DIFFUSE_SCALE = 0.15,
-	LIGHT_DIRECTION = [0, 1, 1],
-	HISTORY_SIZE = 4; //number of snapshots we store - this should be number of reversible actions + 1
-
-
 var Paint = (function() {
-
-
-	function pascalRow(n) {
-		var line = [1];
-		for (var k = 0; k < n; ++k) {
-			line.push(line[k] * (n - k) / (k + 1));
-		}
-		return line;
-	}
-
-	//width should be an odd number
-	function makeBlurShader(width) {
-		var coefficients = pascalRow(width - 1 + 2);
-
-		//take the 1s off the ends
-		coefficients.shift();
-		coefficients.pop();
-		
-		var normalizationFactor = 0;
-		for (var i = 0; i < coefficients.length; ++i) {
-			normalizationFactor += coefficients[i]; 
-		}
-
-		var shader = [
-			"precision highp float;",
-			"uniform sampler2D u_input;",
-			"uniform vec2 u_step;",
-			"uniform vec2 u_resolution;",
-			"void main () {",
-				"vec4 total = vec4(0.0);",
-				"vec2 coordinates = gl_FragCoord.xy / u_resolution;",
-				"vec2 delta = u_step / u_resolution;",
-		].join("\n");
-
-		shader += "\n";
-
-		for (var i = 0; i < width; ++i) {
-			var offset = i - (width - 1) / 2;
-			shader += "total += texture2D(u_input, coordinates + delta * " + offset.toFixed(1) + ") * " + coefficients[i].toFixed(1) + "; \n";
-		}
-
-		shader += "gl_FragColor = total / " + normalizationFactor.toFixed(1) + ";\n }";
-
-		return shader;
-	}
-
-
-	function hsvToRyb(h, s, v) {
-		h = h % 1;
-		var c = v * s,
-			hDash = h * 6,
-			x = c * (1 - Math.abs(hDash % 2 - 1)),
-			mod = Math.floor(hDash),
-			r = [c, x, 0, 0, x, c][mod],
-			g = [x, c, c, x, 0, 0][mod],
-			b = [0, 0, x, c, c, x][mod],
-			m = v - c;
-		r += m;
-		g += m;
-		b += m;
-		return [r, g, b];
-	}
-
-	function makeOrthographicMatrix(matrix, left, right, bottom, top, near, far) {
-		matrix[0] = 2 / (right - left);
-		matrix[1] = 0;
-		matrix[2] = 0;
-		matrix[3] = 0;
-		matrix[4] = 0;
-		matrix[5] = 2 / (top - bottom);
-		matrix[6] = 0;
-		matrix[7] = 0;
-		matrix[8] = 0;
-		matrix[9] = 0;
-		matrix[10] = -2 / (far - near);
-		matrix[11] = 0;
-		matrix[12] = -(right + left) / (right - left);
-		matrix[13] = -(top + bottom) / (top - bottom);
-		matrix[14] = -(far + near) / (far - near);
-		matrix[15] = 1;
-
-		return matrix;
-	}
-
-	function mix(a, b, t) {
-		return (1.0 - t) * a + t * b;
-	}
-
-	//the texture is always updated to be (paintingWidth x paintingHeight) x resolutionScale
-	function Snapshot(texture, paintingWidth, paintingHeight, resolutionScale) {
-		this.texture = texture;
-		this.paintingWidth = paintingWidth;
-		this.paintingHeight = paintingHeight;
-		this.resolutionScale = resolutionScale;
-	}
-
-	Snapshot.prototype.getTextureWidth = function() {
-		return Math.ceil(this.paintingWidth * this.resolutionScale);
-	};
-
-	Snapshot.prototype.getTextureHeight = function() {
-		return Math.ceil(this.paintingHeight * this.resolutionScale);
-	};
-
 
 	function Paint(canvas, wgl) {
 		this.canvas = canvas;
@@ -208,8 +29,7 @@ var Paint = (function() {
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
 
-		//position of painting on screen, and its dimensions
-		//units are pixels
+		// position of painting on screen, and its dimensions units are pixels
 		let width = Utilities.clamp(INITIAL_WIDTH, MIN_PAINTING_WIDTH, this.maxPaintingWidth),
 			height = Utilities.clamp(INITIAL_HEIGHT, MIN_PAINTING_WIDTH, this.maxPaintingWidth),
 			left = Math.round((canvas.width - width) / 2),
@@ -234,88 +54,25 @@ var Paint = (function() {
 		this.brushX = 0;
 		this.brushY = 0;
 		this.brushScale = 30;
-		// this.brushColorHSVA = [Math.random(), 1, 1, 0.8];
 		this.brushColorHSVA = [.75, 1, 1, 0.8];
 		this.colorModel = ColorModel.RGB;
-		this.needsRedraw = true; //whether we need to redraw the painting
 		this.brush = new Brush(wgl, MAX_BRISTLE_COUNT);
-		
-		// this.fluiditySlider = new Slider(document.getElementById("fluidity-slider"), this.simulator.fluidity, 0.6, 0.9, (function(fluidity) {
-		//   this.simulator.fluidity = fluidity;
-		// }).bind(this));
 
-		// this.bristleCountSlider = new Slider(document.getElementById("bristles-slider"), 1, 0, 1, (function(t) {
-		// 	var BRISTLE_SLIDER_POWER = 2.0;
-		// 	t = Math.pow(t, BRISTLE_SLIDER_POWER);
-		// 	var bristleCount = Math.floor(MIN_BRISTLE_COUNT + t * (MAX_BRISTLE_COUNT - MIN_BRISTLE_COUNT));
-		// 	this.brush.setBristleCount(bristleCount);
-		// }).bind(this));
-
-		// this.brushSizeSlider = new Slider(document.getElementById("size-slider"), this.brushScale, MIN_BRUSH_SCALE, MAX_BRUSH_SCALE, (function(size) {
-		// 	this.brushScale = size;
-		// }).bind(this));
-		
-		// this.qualityButtons = new Buttons(document.getElementById("qualities"),
-		// 	QUALITIES.map(function(q) { return q.name })
-		// , INITIAL_QUALITY, (function(index) {
-		// 	this.saveSnapshot();
-		// 	this.resolutionScale = QUALITIES[index].resolutionScale;
-		// 	this.simulator.changeResolution(this.getPaintingResolutionWidth(), this.getPaintingResolutionHeight());
-		// 	this.needsRedraw = true;
-		// }).bind(this)); 
-
-
-		// this.refreshDoButtons();
-		this.mainProjectionMatrix = makeOrthographicMatrix(new Float32Array(16), 0.0, this.canvas.width, 0, this.canvas.height, -5000.0, 5000.0);
-		this.onResize = function() {
-			this.canvas.width = window.innerWidth;
-			this.canvas.height = window.innerHeight;
-			this.paintingRectangle.left = Utilities.clamp(this.paintingRectangle.left, -this.paintingRectangle.width, this.canvas.width);
-			this.paintingRectangle.bottom = Utilities.clamp(this.paintingRectangle.bottom, -this.paintingRectangle.height, this.canvas.height);
-			// this.colorPicker.bottom = this.canvas.height - COLOR_PICKER_TOP;
-			this.mainProjectionMatrix = makeOrthographicMatrix(new Float32Array(16), 0.0, this.canvas.width, 0, this.canvas.height, -5000.0, 5000.0);
-			this.canvasTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, this.canvas.width, this.canvas.height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
-			// this.tempCanvasTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, this.canvas.width, this.canvas.height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
-			// this.blurredCanvasTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, this.canvas.width, this.canvas.height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
-			this.needsRedraw = true;
-		};
-		this.onResize();
-
-		// window.addEventListener("resize", this.onResize.bind(this));
+		this.paintingRectangle.left = Utilities.clamp(this.paintingRectangle.left, -this.paintingRectangle.width, canvas.width);
+		this.paintingRectangle.bottom = Utilities.clamp(this.paintingRectangle.bottom, -this.paintingRectangle.height, canvas.height);
+		this.mainProjectionMatrix = makeOrthographicMatrix(new Float32Array(16), 0.0, canvas.width, 0, canvas.height, -5000.0, 5000.0);
+		this.canvasTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, canvas.width, canvas.height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
+		this.needsRedraw = true;
 		
 		this.mouseX = 0;
 		this.mouseY = 0;
 		this.spaceDown = false;
 
-		/*
+		/**/
 		canvas.addEventListener("mousemove", this.onMouseMove.bind(this));
 		canvas.addEventListener("mousedown", this.onMouseDown.bind(this));
 		document.addEventListener("mouseup", this.onMouseUp.bind(this));
-		*/
 		
-		// canvas.addEventListener("mouseover", this.onMouseOver.bind(this));
-		// document.addEventListener("wheel", this.onWheel.bind(this));
-
-		document.addEventListener("keydown", (function(event) {
-			if (event.keyCode === 32) { //space
-				this.spaceDown = true;
-			} else if (event.keyCode === 90) { //z
-				this.undo();
-			} else if (event.keyCode === 82) { //r
-				this.redo();
-			}
-		}).bind(this));
-
-		document.addEventListener("keyup", (function(event) {
-			if (event.keyCode === 32) {
-				this.spaceDown = false;
-			}
-		}).bind(this));
-
-		// canvas.addEventListener("touchstart", this.onTouchStart.bind(this));
-		// canvas.addEventListener("touchmove", this.onTouchMove.bind(this));
-		// canvas.addEventListener("touchend", this.onTouchEnd.bind(this));
-		// canvas.addEventListener("touchcancel", this.onTouchCancel.bind(this));
 
 		//these are used while we"re resizing
 		this.resizingSide = ResizingSide.NONE; //which side we"re currently resizing
@@ -336,61 +93,6 @@ var Paint = (function() {
 		this.update();
 	}
 
-	Paint.prototype.getPaintingResolutionWidth = function() {
-		return Math.ceil(this.paintingRectangle.width * this.resolutionScale);
-	};
-
-	Paint.prototype.getPaintingResolutionHeight = function() {
-		return Math.ceil(this.paintingRectangle.height * this.resolutionScale);
-	};
-
-	Paint.prototype.drawShadow = function(alpha, rectangle) {
-		var wgl = this.wgl;
-		var shadowDrawState = wgl.createDrawState()
-		  .uniform2f("u_bottomLeft", rectangle.left, rectangle.bottom)
-		  .uniform2f("u_topRight", rectangle.getRight(), rectangle.getTop())
-		  .uniform1f("u_sigma", BOX_SHADOW_SIGMA) 
-		  .uniform1f("u_alpha", alpha) 
-		  .enable(wgl.BLEND)
-		  .blendFunc(wgl.ONE, wgl.ONE_MINUS_SRC_ALPHA)
-		  .useProgram(this.shadowProgram)
-		  .vertexAttribPointer(this.quadVertexBuffer, 0, 2, wgl.FLOAT, wgl.FALSE, 0, 0);
-
-		var rectangles = [
-			new Rectangle(rectangle.left - BOX_SHADOW_WIDTH, rectangle.bottom - BOX_SHADOW_WIDTH, rectangle.width + 2 * BOX_SHADOW_WIDTH, BOX_SHADOW_WIDTH), //bottom
-			new Rectangle(rectangle.left - BOX_SHADOW_WIDTH, rectangle.getTop(), rectangle.width + 2 * BOX_SHADOW_WIDTH, BOX_SHADOW_WIDTH), //top
-			new Rectangle(rectangle.left - BOX_SHADOW_WIDTH, rectangle.bottom, BOX_SHADOW_WIDTH, rectangle.height), //left
-			new Rectangle(rectangle.getRight(), rectangle.bottom, BOX_SHADOW_WIDTH, rectangle.height) // right
-		];
-
-		var screenRectangle = new Rectangle(0, 0, this.canvas.width, this.canvas.height);
-		for (var i = 0; i < rectangles.length; ++i) {
-			var rect = rectangles[i];
-			rect.intersectRectangle(screenRectangle);
-
-			if (rect.getArea() > 0) {
-				shadowDrawState.viewport(rect.left, rect.bottom, rect.width, rect.height);
-				wgl.drawArrays(shadowDrawState, wgl.TRIANGLE_STRIP, 0, 4);
-			}
-		}
-	};
-
-	function cursorForResizingSide(side) {
-		if (side === ResizingSide.LEFT || side === ResizingSide.RIGHT) {
-			return "ew-resize";
-		} else if (side === ResizingSide.BOTTOM || side === ResizingSide.TOP) {
-			return "ns-resize";
-		} else if (side === ResizingSide.TOP_LEFT) {
-			return "nw-resize";
-		} else if (side === ResizingSide.TOP_RIGHT) {
-			return "ne-resize";
-		} else if (side === ResizingSide.BOTTOM_LEFT) {
-			return "sw-resize";
-		} else if (side === ResizingSide.BOTTOM_RIGHT) {
-			return "se-resize";
-		}
-	}
-
 	Paint.prototype.update = function() {
 		var wgl = this.wgl;
 		var canvas = this.canvas;
@@ -399,6 +101,7 @@ var Paint = (function() {
 		if (this.brushInitialized) {
 			this.brush.update(this.brushX, this.brushY, BRUSH_HEIGHT * this.brushScale, this.brushScale);
 		}
+
 		//splat into paint and velocity textures
 		if (this.interactionState === InteractionMode.PAINTING) {
 			var splatRadius = SPLAT_RADIUS * this.brushScale;
@@ -415,18 +118,15 @@ var Paint = (function() {
 			this.simulator.splat(this.brush, Z_THRESHOLD * this.brushScale, this.paintingRectangle, splatColor, splatRadius, splatVelocityScale);
 		}
 
-		var simulationUpdated = this.simulator.simulate();
-		if (simulationUpdated) this.needsRedraw = true;
+		if (this.simulator.simulate()) this.needsRedraw = true;
 
 		//the rectangle we end up drawing the painting into
-		var clippedPaintingRectangle = (this.interactionState === InteractionMode.RESIZING ? this.newPaintingRectangle : this.paintingRectangle).clone()
-										   .intersectRectangle(new Rectangle(0, 0, canvas.width, canvas.height));
+		var clippedPaintingRectangle = this.paintingRectangle.clone().intersectRectangle(new Rectangle(0, 0, canvas.width, canvas.height));
 
 		if (this.needsRedraw) {
 			//draw painting into texture
 			wgl.framebufferTexture2D(this.framebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, this.canvasTexture, 0);
-			wgl.clear(this._clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
-
+			// wgl.clear(this._clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
 
 			var paintingProgram;
 			if (this.colorModel === ColorModel.RYB) {
@@ -467,7 +167,7 @@ var Paint = (function() {
 		this.drawShadow(PAINTING_SHADOW_ALPHA, clippedPaintingRectangle); //draw painting shadow
 
 		//draw brush to screen
-		if (this.interactionState !== InteractionMode.PAINTING || this.interactionState === InteractionMode.NONE && this.desiredInteractionMode(this.mouseX, this.mouseY) === InteractionMode.PAINTING) { //we draw the brush if we"re painting or you would start painting on click
+		if (this.interactionState !== InteractionMode.PAINTING) {
 			var brushDrawState = wgl.createDrawState()
 				.bindFramebuffer(null)
 				.viewport(0, 0, canvas.width, canvas.height)
@@ -483,40 +183,53 @@ var Paint = (function() {
 
 			wgl.drawElements(brushDrawState, wgl.LINES, this.brush.indexCount * this.brush.bristleCount / this.brush.maxBristleCount, wgl.UNSIGNED_SHORT, 0);
 		}
+		
+		this.needsRedraw = false;
+	};
 
-		//work out what cursor we want
-		var desiredCursor = "";
-		if (this.interactionState === InteractionMode.NONE) { //if there is no current interaction, we display a cursor based on what interaction would occur on click
-			var desiredMode = this.desiredInteractionMode(this.mouseX, this.mouseY);
+	Paint.prototype.getPaintingResolutionWidth = function() {
+		return Math.ceil(this.paintingRectangle.width * this.resolutionScale);
+	};
 
-			if (desiredMode === InteractionMode.PAINTING) {
-				desiredCursor = "none";
-			} else if (desiredMode === InteractionMode.RESIZING) {
-				desiredCursor = cursorForResizingSide(this.getResizingSide(this.mouseX, this.mouseY));
-			} else if (desiredMode === InteractionMode.PANNING) {
-				desiredCursor = "pointer";
-			} else {
-				desiredCursor = "default";
+	Paint.prototype.getPaintingResolutionHeight = function() {
+		return Math.ceil(this.paintingRectangle.height * this.resolutionScale);
+	};
+
+	Paint.prototype.drawShadow = function(alpha, rectangle) {
+		var wgl = this.wgl;
+		var shadowDrawState = wgl.createDrawState()
+		  .uniform2f("u_bottomLeft", rectangle.left, rectangle.bottom)
+		  .uniform2f("u_topRight", rectangle.getRight(), rectangle.getTop())
+		  .uniform1f("u_sigma", BOX_SHADOW_SIGMA) 
+		  .uniform1f("u_alpha", alpha) 
+		  .enable(wgl.BLEND)
+		  .blendFunc(wgl.ONE, wgl.ONE_MINUS_SRC_ALPHA)
+		  .useProgram(this.shadowProgram)
+		  .vertexAttribPointer(this.quadVertexBuffer, 0, 2, wgl.FLOAT, wgl.FALSE, 0, 0);
+
+		var rectangles = [
+			new Rectangle(rectangle.left - BOX_SHADOW_WIDTH, rectangle.bottom - BOX_SHADOW_WIDTH, rectangle.width + 2 * BOX_SHADOW_WIDTH, BOX_SHADOW_WIDTH), //bottom
+			new Rectangle(rectangle.left - BOX_SHADOW_WIDTH, rectangle.getTop(), rectangle.width + 2 * BOX_SHADOW_WIDTH, BOX_SHADOW_WIDTH), //top
+			new Rectangle(rectangle.left - BOX_SHADOW_WIDTH, rectangle.bottom, BOX_SHADOW_WIDTH, rectangle.height), //left
+			new Rectangle(rectangle.getRight(), rectangle.bottom, BOX_SHADOW_WIDTH, rectangle.height) // right
+		];
+
+		var screenRectangle = new Rectangle(0, 0, this.canvas.width, this.canvas.height);
+		for (var i = 0; i < rectangles.length; ++i) {
+			var rect = rectangles[i];
+			rect.intersectRectangle(screenRectangle);
+
+			if (rect.getArea() > 0) {
+				shadowDrawState.viewport(rect.left, rect.bottom, rect.width, rect.height);
+				wgl.drawArrays(shadowDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 			}
-		} else { //if there is an interaction going on, display appropriate cursor
-			if (this.interactionState === InteractionMode.PAINTING) {
-				desiredCursor = "none";
-			} else if (this.interactionState === InteractionMode.RESIZING) {
-				desiredCursor = cursorForResizingSide(this.resizingSide);
-			} else if (this.interactionState === InteractionMode.PANNING) {
-				desiredCursor = "pointer";
-			}
-		}
-
-		if (canvas.style.cursor !== desiredCursor) { //don"t thrash the style
-			// canvas.style.cursor = desiredCursor;
 		}
 	};
 
 
 	Paint.prototype.clear = function() {
 		this.simulator.clear();
-		// this.needsRedraw = true;
+		this.needsRedraw = true;
 		this.update();
 	};
 
@@ -531,7 +244,7 @@ var Paint = (function() {
 
 		this.undoing = false;
 		var snapshot = this.snapshots[this.snapshotIndex]; //the snapshot to save into
-		if (snapshot.getTextureWidth() !== this.simulator.resolutionWidth || snapshot.getTextureHeight() !== this.simulator.resolutionHeight) { //if we need to resize the snapshot"s texture
+		if (snapshot.textureWidth !== this.simulator.resolutionWidth || snapshot.textureHeight !== this.simulator.resolutionHeight) { //if we need to resize the snapshot"s texture
 			wgl.rebuildTexture(snapshot.texture, wgl.RGBA, wgl.FLOAT, this.simulator.resolutionWidth, this.simulator.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
 		}
 
@@ -588,7 +301,7 @@ var Paint = (function() {
 		}
 
 		this.refreshDoButtons();
-		// this.needsRedraw = true;
+		this.needsRedraw = true;
 		this.update();
 	};
 
@@ -599,22 +312,22 @@ var Paint = (function() {
 		}
 
 		this.refreshDoButtons();
-		// this.needsRedraw = true;
+		this.needsRedraw = true;
 		this.update();
 	};
 
 	Paint.prototype.refreshDoButtons = function() {
-		// if (this.canUndo()) {
-		// 	this.undoButton.className = "button do-button-active";
-		// } else {
-		// 	this.undoButton.className = "button do-button-inactive";
-		// }
+		if (this.canUndo()) {
+			// this.undoButton.className = "button do-button-active";
+		} else {
+			// this.undoButton.className = "button do-button-inactive";
+		}
 
-		// if (this.canRedo()) {
-		// 	this.redoButton.className = "button do-button-active";
-		// } else {
-		// 	this.redoButton.className = "button do-button-inactive";
-		// }
+		if (this.canRedo()) {
+			// this.redoButton.className = "button do-button-active";
+		} else {
+			// this.redoButton.className = "button do-button-inactive";
+		}
 	};
 
 	Paint.prototype.save = function() {
@@ -666,51 +379,6 @@ var Paint = (function() {
 		window.open(saveCanvas.toDataURL());
 	};
 
-	Paint.prototype.getResizingSide = function(mouseX, mouseY) {
-		//the side we"d be resizing with the current mouse position
-		//we can resize if our perpendicular distance to an edge is less than RESIZING_RADIUS
-		if (Math.abs(mouseX - this.paintingRectangle.left) <= RESIZING_RADIUS && Math.abs(mouseY - this.paintingRectangle.getTop()) <= RESIZING_RADIUS) { //top left
-			return ResizingSide.TOP_LEFT;
-		}
-		if (Math.abs(mouseX - this.paintingRectangle.getRight()) <= RESIZING_RADIUS && Math.abs(mouseY - this.paintingRectangle.getTop()) <= RESIZING_RADIUS) { //top right
-			return ResizingSide.TOP_RIGHT;
-		}
-		if (Math.abs(mouseX - this.paintingRectangle.left) <= RESIZING_RADIUS && Math.abs(mouseY - this.paintingRectangle.bottom) <= RESIZING_RADIUS) { //bottom left
-			return ResizingSide.BOTTOM_LEFT;
-		}
-		if (Math.abs(mouseX - this.paintingRectangle.getRight()) <= RESIZING_RADIUS && Math.abs(mouseY - this.paintingRectangle.bottom) <= RESIZING_RADIUS) { //bottom right
-			return ResizingSide.BOTTOM_RIGHT;
-		}
-		if (mouseY > this.paintingRectangle.bottom && mouseY <= this.paintingRectangle.getTop()) { //left or right
-			if (Math.abs(mouseX - this.paintingRectangle.left) <= RESIZING_RADIUS) { //left
-				return ResizingSide.LEFT;
-			} else if (Math.abs(mouseX - this.paintingRectangle.getRight()) <= RESIZING_RADIUS) { //right
-				return ResizingSide.RIGHT;
-			}
-		}
-		
-		if (mouseX > this.paintingRectangle.left && mouseX <= this.paintingRectangle.getRight()) { //bottom or top
-			if (Math.abs(mouseY - this.paintingRectangle.bottom) <= RESIZING_RADIUS) { //bottom
-				return ResizingSide.BOTTOM;
-			} else if (Math.abs(mouseY - this.paintingRectangle.getTop()) <= RESIZING_RADIUS) { //top
-				return ResizingSide.TOP;
-			}
-		}
-
-		return ResizingSide.NONE;
-	};
-
-	//what interaction mode would be triggered if we clicked with given mouse position
-	Paint.prototype.desiredInteractionMode = function(mouseX, mouseY) { 
-		if (this.spaceDown || this.mouseX < this.paintingRectangle.left - RESIZING_RADIUS || this.mouseX > this.paintingRectangle.left + this.paintingRectangle.width + RESIZING_RADIUS || this.mouseY < this.paintingRectangle.bottom - RESIZING_RADIUS || this.mouseY > this.paintingRectangle.bottom + this.paintingRectangle.height + RESIZING_RADIUS) {
-			return InteractionMode.PANNING;
-		} else if (this.getResizingSide(mouseX, mouseY) !== ResizingSide.NONE) {
-			return InteractionMode.RESIZING;
-		} else {
-			return InteractionMode.PAINTING;
-		}
-	};
-
 	Paint.prototype.onMouseMove = function(event) {
 		if (event.preventDefault) event.preventDefault();
 
@@ -726,43 +394,6 @@ var Paint = (function() {
 			this.brushInitialized = true;
 		}
 
-		if (this.interactionState === InteractionMode.PANNING) {
-			var deltaX = mouseX - this.mouseX;
-			var deltaY = mouseY - this.mouseY;
-
-			this.paintingRectangle.left += deltaX;
-			this.paintingRectangle.bottom += deltaY;
-			this.paintingRectangle.left = Utilities.clamp(this.paintingRectangle.left, -this.paintingRectangle.width, this.canvas.width);
-			this.paintingRectangle.bottom = Utilities.clamp(this.paintingRectangle.bottom, -this.paintingRectangle.height, this.canvas.height);
-			this.needsRedraw = true;
-		} else if (this.interactionState === InteractionMode.RESIZING) {
-			if (this.resizingSide === ResizingSide.LEFT || this.resizingSide === ResizingSide.TOP_LEFT || this.resizingSide === ResizingSide.BOTTOM_LEFT) {
-				this.newPaintingRectangle.left = Utilities.clamp(mouseX,
-					this.paintingRectangle.getRight() - this.maxPaintingWidth,
-					this.paintingRectangle.getRight() - MIN_PAINTING_WIDTH);
-				this.newPaintingRectangle.width = this.paintingRectangle.left + this.paintingRectangle.width - this.newPaintingRectangle.left;
-			}
-			
-			if (this.resizingSide === ResizingSide.RIGHT || this.resizingSide === ResizingSide.TOP_RIGHT || this.resizingSide === ResizingSide.BOTTOM_RIGHT) {
-				this.newPaintingRectangle.width = Utilities.clamp(mouseX - this.paintingRectangle.left, MIN_PAINTING_WIDTH, this.maxPaintingWidth);
-			}
-			
-			if (this.resizingSide === ResizingSide.BOTTOM || this.resizingSide === ResizingSide.BOTTOM_LEFT || this.resizingSide === ResizingSide.BOTTOM_RIGHT) {
-				this.newPaintingRectangle.bottom = Utilities.clamp(mouseY,
-					this.paintingRectangle.getTop() - this.maxPaintingWidth,
-					this.paintingRectangle.getTop() - MIN_PAINTING_WIDTH);
-
-				this.newPaintingRectangle.height = this.paintingRectangle.bottom + this.paintingRectangle.height - this.newPaintingRectangle.bottom;
-			}
-			
-			if (this.resizingSide === ResizingSide.TOP || this.resizingSide === ResizingSide.TOP_LEFT || this.resizingSide === ResizingSide.TOP_RIGHT) {
-				this.newPaintingRectangle.height = Utilities.clamp(mouseY - this.paintingRectangle.bottom, MIN_PAINTING_WIDTH, this.maxPaintingWidth);
-			}
-
-			this.needsRedraw = true;
-		}
-
-		// this.colorPicker.onMouseMove(position.x, this.canvas.height - position.y);
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
 		
@@ -781,106 +412,16 @@ var Paint = (function() {
 		this.mouseY = mouseY;
 		this.brushX = mouseX;
 		this.brushY = mouseY;
-		// this.colorPicker.onMouseDown(mouseX, mouseY);
 
-		// if (!this.colorPicker.isInUse()) {
-			var mode = this.desiredInteractionMode(mouseX, mouseY);
-			if (mode === InteractionMode.PANNING) {
-				this.interactionState = InteractionMode.PANNING;
-			} else if (mode === InteractionMode.RESIZING) {
-				this.saveSnapshot();
-				this.interactionState = InteractionMode.RESIZING;
-				this.resizingSide = this.getResizingSide(mouseX, mouseY);
-				this.newPaintingRectangle = this.paintingRectangle.clone();
-			} else if (mode === InteractionMode.PAINTING) {
-				this.interactionState = InteractionMode.PAINTING;
-				this.saveSnapshot();
-			}
-		// }
+		this.interactionState = InteractionMode.PAINTING;
+		this.saveSnapshot();
 	};
 
 	Paint.prototype.onMouseUp = function(event) {
 		if (event.preventDefault) event.preventDefault();
 
-		var position = Utilities.getMousePosition(event, this.canvas);
-		// this.colorPicker.onMouseUp(position.x, this.canvas.height - position.y);
-
-		if (this.interactionState === InteractionMode.RESIZING) { //if we"re stopping the resize
-			//resize simulator
-			var offsetX = 0,
-				offsetY = 0;
-			if (this.resizingSide === ResizingSide.LEFT || this.resizingSide === ResizingSide.TOP_LEFT || this.resizingSide === ResizingSide.BOTTOM_LEFT) {
-				offsetX = (this.paintingRectangle.left - this.newPaintingRectangle.left) * this.resolutionScale;
-			}
-			if (this.resizingSide === ResizingSide.BOTTOM || this.resizingSide === ResizingSide.BOTTOM_LEFT || this.resizingSide === ResizingSide.BOTTOM_RIGHT) {
-				offsetY = (this.paintingRectangle.bottom - this.newPaintingRectangle.bottom) * this.resolutionScale;
-			}
-
-			this.paintingRectangle = this.newPaintingRectangle;
-			this.simulator.resize(this.getPaintingResolutionWidth(), this.getPaintingResolutionHeight(), offsetX, offsetY, RESIZING_FEATHER_SIZE);
-			this.needsRedraw = true;
-		}
-
 		this.interactionState = InteractionMode.NONE;
 	};
-
-	Paint.prototype.onMouseOver = function(event) {
-		event.preventDefault();
-
-		var position = Utilities.getMousePosition(event, this.canvas);
-		var mouseX = position.x;
-		var mouseY = this.canvas.height - position.y;
-
-		this.brushX = mouseX;
-		this.brushY = mouseY;
-		this.brush.initialize(this.brushX, this.brushY, BRUSH_HEIGHT * this.brushScale, this.brushScale);
-		this.brushInitialized = true;
-	};
-
-	// Paint.prototype.onWheel = function(event) {
-	// 	event.preventDefault();
-
-	// 	var scrollDelta = event.deltaY < 0.0 ? -1.0 : 1.0;
-
-	// 	this.brushScale = Utilities.clamp(this.brushScale + scrollDelta * -5.0, MIN_BRUSH_SCALE, MAX_BRUSH_SCALE);
-	// 	this.brushSizeSlider.setValue(this.brushScale);
-	// };
-
-
-	// Paint.prototype.onTouchStart = function(event) {
-	// 	event.preventDefault();
-
-	// 	if (event.touches.length === 1) { //if this is the first touch
-	// 		this.onMouseDown(event.targetTouches[0]);
-
-	// 		//if we"ve just started painting then we need to initialize the brush at the touch location
-	// 		if (this.interactionState === InteractionMode.PAINTING) {
-	// 			this.brush.initialize(this.brushX, this.brushY, BRUSH_HEIGHT * this.brushScale, this.brushScale);
-	// 			this.brushInitialized = true;
-	// 		}
-	// 	} else if (event.touches.length === 2) { //if this is the second touch
-	// 		if (this.interactionState === InteractionMode.PAINTING) {
-	// 			this.interactionState = InteractionMode.PANNING; //switch to panning if we were already painting
-	// 		}
-	// 	}
-	// };
-
-	// Paint.prototype.onTouchMove = function(event) {
-	// 	event.preventDefault();
-	// 	this.onMouseMove(event.targetTouches[0]);
-	// };
-
-	// Paint.prototype.onTouchEnd = function(event) {
-	// 	event.preventDefault();
-	// 	if (event.touches.length > 0) return; //don"t fire if there are still touches remaining
-	// 	this.onMouseUp({});
-	// };
-
-	// Paint.prototype.onTouchCancel = function(event) {
-	// 	event.preventDefault();
-	// 	if (event.touches.length > 0) return; //don"t fire if there are still touches remaining
-	// 	this.onMouseUp({});
-	// };
 
 	return Paint;
 }());
