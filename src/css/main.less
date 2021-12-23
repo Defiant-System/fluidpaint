@@ -54,6 +54,9 @@ content {
 			padding: 10px;
 			width: 240px;
 			height: 200px;
+			--cp-hue: 90deg;
+			--cp-alpha: 170px;
+			--cp-alpha: 170px;
 
 			&.debug {
 				.picker-ring {
@@ -88,7 +91,7 @@ content {
 				width: 192px;
 				height: 192px;
 				border-radius: 50%;
-				transform: rotate(90deg);
+				transform: rotate(var(--cp-hue));
 				transform-origin: 50% 50%;
 				cursor: pointer;
 				z-index: 1;
@@ -103,6 +106,7 @@ content {
 					width: 20px;
 					height: 20px;
 					margin-left: -10px;
+					pointer-events: none;
 				}
 
 				&:after {
@@ -116,6 +120,7 @@ content {
 					bottom: 18px;
 					border-radius: 50%;
 					cursor: default;
+					pointer-events: none;
 				}
 			}
 
@@ -137,6 +142,7 @@ content {
 					left: 84px;
 					width: 20px;
 					height: 20px;
+					pointer-events: none;
 				}
 			}
 
@@ -153,10 +159,11 @@ content {
 					content: "";
 					background: red;
 					position: absolute;
-					top: 170px;
+					top: var(--cp-alpha);
 					left: 0;
 					width: 20px;
 					height: 20px;
+					pointer-events: none;
 				}
 			}
 		}
@@ -174,7 +181,7 @@ content {
 				position: relative;
 				display: inline-block;
 				width: 35px;
-				height: 35px;
+				height: 29px;
 				margin: 0 2px 2px 0;
 				border-radius: 3px;
 				cursor: pointer;
@@ -200,13 +207,13 @@ content {
 					&:after {
 	 					content: "";
 						position: absolute;
-						top: -1px;
-						left: -1px;
-						right: -1px;
-						bottom: -1px;
-						border: 3px solid #fff;
-						border-radius: inherit;
-						box-shadow: 0 0 2px rgba(0,0,0,.35);
+						top: -2px;
+						left: -2px;
+						right: -2px;
+						bottom: -2px;
+						border: 5px solid rgba(0,0,0,.25);
+						border-radius: 5px;
+						// box-shadow: 0 0 2px rgba(0,0,0,.35);
 						z-index: 2;
 					}
 				}

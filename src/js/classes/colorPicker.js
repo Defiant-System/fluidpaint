@@ -32,14 +32,14 @@ class ColorPicker {
 
 	draw() {
 		//we first render the painting to a WebGL texture
-		let saveTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, WIDTH, HEIGHT, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
-		let saveFramebuffer = wgl.createFramebuffer();
-		wgl.framebufferTexture2D(saveFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, saveTexture, 0);
+		let pickerTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, WIDTH, HEIGHT, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
+		let pickerFramebuffer = wgl.createFramebuffer();
+		wgl.framebufferTexture2D(pickerFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, pickerTexture, 0);
 		
-		let hsva = [0, 1, 1, 1];
-		// let hsva = painter.brushColorHSVA;
+		// let hsva = [0, 1, 1, 1];
+		let hsva = painter.brushColorHSVA;
 		let pickerDrawState = wgl.createDrawState()
-			.bindFramebuffer(saveFramebuffer)
+			.bindFramebuffer(pickerFramebuffer)
 			.viewport(0, 0, WIDTH, HEIGHT)
 			.vertexAttribPointer(this.quadVertexBuffer, 0, 2, wgl.FLOAT, wgl.FALSE, 0, 0)
 			.useProgram(this.pickerProgram)
@@ -60,17 +60,17 @@ class ColorPicker {
 		wgl.drawArrays(pickerDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 
 		//then we read back this texture
-		let savePixels = new Uint8Array(WIDTH * HEIGHT * 4);
-		wgl.readPixels(wgl.createReadState().bindFramebuffer(saveFramebuffer), 0, 0, WIDTH, HEIGHT, wgl.RGBA, wgl.UNSIGNED_BYTE, savePixels);
-		wgl.deleteTexture(saveTexture);
-		wgl.deleteFramebuffer(saveFramebuffer);
+		let pixels = new Uint8Array(WIDTH * HEIGHT * 4);
+		wgl.readPixels(wgl.createReadState().bindFramebuffer(pickerFramebuffer), 0, 0, WIDTH, HEIGHT, wgl.RGBA, wgl.UNSIGNED_BYTE, pixels);
+		wgl.deleteTexture(pickerTexture);
+		wgl.deleteFramebuffer(pickerFramebuffer);
 
 		// dim of canvas
 		this._el.prop({ width: WIDTH, height: HEIGHT });
 		// draw canvas element
 		let ctx = this._el[0].getContext("2d"),
 			imgData = ctx.createImageData(WIDTH, HEIGHT);
-		imgData.data.set(savePixels);
+		imgData.data.set(pixels);
 		ctx.putImageData(imgData, 0, 0);
 	}
 

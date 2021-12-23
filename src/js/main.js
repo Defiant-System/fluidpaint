@@ -24,7 +24,8 @@ canvas.width = 640;
 canvas.height = 480;
 
 let wgl = WrappedGL.create(canvas),
-	painter = new Painter(canvas, wgl);
+	painter = new Painter(canvas, wgl),
+	picker;
 
 
 const fluidpaint = {
@@ -39,7 +40,10 @@ const fluidpaint = {
 		this.els.cvs = this.els.wrapper.append(canvas);
 
 		let cvsEl = window.find(".sidebar .picker canvas");
-		new ColorPicker(cvsEl, painter, wgl);
+		picker = new ColorPicker(cvsEl, painter, wgl);
+
+		// temp
+		this.els.content.find(".palette span:nth-child(1)").trigger("click");
 	},
 	dispatch(event) {
 		let Self = fluidpaint,
@@ -53,6 +57,17 @@ const fluidpaint = {
 			// custom events
 			case "open-help":
 				defiant.shell("fs -u '~/help/index.md'");
+				break;
+			case "select-color":
+				if (event.el[0] === event.target) return;
+
+				event.el.find(".active").removeClass("active");
+				el = $(event.target).addClass("active");
+				value = "#"+ el.attr("style").split("#")[1].slice(0,6);
+				value = Color.hexToHsv(value);
+
+				painter.brushColorHSVA = value;
+				picker.draw();
 				break;
 			case "history-undo":
 				painter.undo();
