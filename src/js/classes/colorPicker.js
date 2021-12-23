@@ -20,7 +20,7 @@ class ColorPicker {
 		// references to elements
 		this._el = el;
 		this._doc = $(document);
-		this._debug = true;
+		this._debug = false;
 		// bind event handlers
 		this._el.parent().on("mousedown", this.move);
 		// prepare shader program
@@ -90,6 +90,7 @@ class ColorPicker {
 				let el = $(event.target),
 					type = el.prop("className"),
 					rect = el[0].parentNode.getBoundingClientRect(),
+					hsva = painter.brushColorHSVA,
 					_PI = 180 / Math.PI,
 					min = { x: 0, y: 0 },
 					max = { x: 0, y: 0 },
@@ -107,8 +108,6 @@ class ColorPicker {
 						if (click.deg < 0) click.deg += 360;
 						click.y = rect.top + 111;
 						click.x = rect.left + 111;
-						// UI update
-						el.css({ "--cp-hue": `${click.deg}deg` });
 						break;
 					case "picker-box":
 						max.x = 82;
@@ -117,18 +116,11 @@ class ColorPicker {
 						click.x -= event.offsetX;
 						mY = Math.min(Math.max(event.offsetY - 10, min.y), max.y);
 						mX = Math.min(Math.max(event.offsetX - 10, min.x), max.x);
-						// UI update
-						el.css({
-							"--cp-slY": `${mY}px`,
-							"--cp-slX": `${mX}px`,
-						});
 						break;
 					case "picker-alpha":
 						max.y = 170;
 						click.y -= event.offsetY;
 						mY = Math.min(Math.max(event.offsetY - 10, min.y), max.y);
-						// UI update
-						el.css({ "--cp-alpha": `${event.offsetY-10}px` });
 						break;
 					default: return;
 				}
@@ -139,13 +131,20 @@ class ColorPicker {
 					max,
 					_PI,
 					type,
+					hsva,
 					click,
+					painter,
 					_min: Math.min,
 					_max: Math.max,
 					_round: Math.round,
 					_atan2: Math.atan2,
 				};
-
+				// fake trigger event to update interface
+				Self.move({
+					type: "mousemove",
+					clientX: event.clientX,
+					clientY: event.clientY,
+				});
 				// bind event handler
 				Self._doc.on("mousemove mouseup", Self.move);
 				break;
@@ -158,19 +157,29 @@ class ColorPicker {
 						mX = event.clientX - Drag.click.x;
 						deg = Drag._round(Drag._atan2(mY, mX) * Drag._PI) + 90;
 						data["--cp-hue"] = `${deg}deg`;
+						// update hue value of HSVA
+						deg += 270;
+						Drag.hsva[0] = (deg % 360) / 360;
 						break;
 					case "picker-box":
 						mY = Drag._min(Drag._max(event.clientY - Drag.click.y - 10, Drag.min.y), Drag.max.y);
 						mX = Drag._min(Drag._max(event.clientX - Drag.click.x - 10, Drag.min.x), Drag.max.x);
 						data["--cp-slY"] = `${mY}px`;
 						data["--cp-slX"] = `${mX}px`;
+						// update saturation / lightness values of HSVA
+						Drag.hsva[1] = mX / Drag.max.x;
+						Drag.hsva[2] = mY / Drag.max.y;
 						break;
 					case "picker-alpha":
 						mY = Drag._min(Drag._max(event.clientY - Drag.click.y - 10, Drag.min.y), Drag.max.y);
 						data["--cp-alpha"] = `${mY}px`;
+						// update alpha value of HSVA
+						Drag.hsva[3] = mY / Drag.max.y;
 						break;
 				}
 				if (Self._debug) Drag.el.css(data);
+				Drag.painter.brushColorHSVA = Drag.hsva;
+				Self.draw();
 				break;
 			case "mouseup":
 				// unbind event handler
