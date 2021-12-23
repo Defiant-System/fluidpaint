@@ -38,8 +38,8 @@ const fluidpaint = {
 		// append canvas to workarea
 		this.els.cvs = this.els.wrapper.append(canvas);
 
-		let pEl = window.find(".sidebar .picker");
-		new ColorPicker(pEl, painter, wgl);
+		let cvsEl = window.find(".sidebar .picker canvas");
+		new ColorPicker(cvsEl, painter, wgl);
 	},
 	dispatch(event) {
 		let Self = fluidpaint,
