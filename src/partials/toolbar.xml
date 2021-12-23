@@ -1,4 +1,4 @@
-<ToolBar>
+<CaptionToolBar>
 	<Group width="20%">
 		<Options>
 			<Tool symbol="icon-undo" click="history-undo" state="disabled"/>
@@ -8,14 +8,8 @@
 		<Tool name="Save" click="save"/>
 		<!-- <Select name="100%" width="35" menu="view-zoom"/> -->
 	</Group>
-	<Group width="60%" align="center">
-		<Options>
-			<Tool name="Low" click="quality" arg="0"/>
-			<Tool name="Medium" click="quality" arg="1"/>
-			<Tool name="High" click="quality" arg="2"/>
-		</Options>
-	</Group>
+	<Group/>
 	<Group width="20%">
-		<Tool symbol="icon-format" click="toggle-sidebar"/>
+		<Tool symbol="icon-format" state="active" click="toggle-sidebar"/>
 	</Group>
-</ToolBar>
+</CaptionToolBar>

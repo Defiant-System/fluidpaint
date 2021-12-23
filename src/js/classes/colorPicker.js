@@ -17,12 +17,16 @@ var WIDTH = 240,
 
 class ColorPicker {
 	constructor(el, painter, wgl) {
-		this.el = el;
+		// references to elements
+		this._el = el;
+		this._doc = $(document);
+		// bind event handlers
+		this._el.on("mousedown", this.move.bind(this));
+		// prepare shader program
 		this.pickerProgram = wgl.createProgram(Shaders.Vertex.picker, Shaders.Fragment.picker, { "a_position": 0 });
 		this.quadVertexBuffer = wgl.createBuffer();
-
 		wgl.bufferData(this.quadVertexBuffer, wgl.ARRAY_BUFFER, new Float32Array([-1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0]), wgl.STATIC_DRAW);
-
+		// initial paint
 		this.draw();
 	}
 
@@ -32,8 +36,8 @@ class ColorPicker {
 		let saveFramebuffer = wgl.createFramebuffer();
 		wgl.framebufferTexture2D(saveFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, saveTexture, 0);
 		
-		// let hsva = [0, 1, 1, 1];
-		let hsva = painter.brushColorHSVA;
+		let hsva = [0, 1, 1, 1];
+		// let hsva = painter.brushColorHSVA;
 		let pickerDrawState = wgl.createDrawState()
 			.bindFramebuffer(saveFramebuffer)
 			.viewport(0, 0, WIDTH, HEIGHT)
@@ -62,11 +66,39 @@ class ColorPicker {
 		wgl.deleteFramebuffer(saveFramebuffer);
 
 		// dim of canvas
-		this.el.prop({ width: WIDTH, height: HEIGHT });
+		this._el.prop({ width: WIDTH, height: HEIGHT });
 		// draw canvas element
-		let ctx = this.el[0].getContext("2d"),
+		let ctx = this._el[0].getContext("2d"),
 			imgData = ctx.createImageData(WIDTH, HEIGHT);
 		imgData.data.set(savePixels);
 		ctx.putImageData(imgData, 0, 0);
+	}
+
+	move(event) {
+		let Self = this,
+			Drag = Self.drag;
+		switch (event.type) {
+			case "mousedown":
+				// prepare drag event
+				let el = $(event.target),
+					click = {
+						y: event.clientY,
+						x: event.clientX,
+					};
+
+				Self.drag = {
+					el,
+					click,
+				};
+				// bind event handler
+				Self._el.on("mousemove mouseup", Self.move.bind(Self));
+				break;
+			case "mousemove":
+				break;
+			case "mouseup":
+				// unbind event handler
+				Self._el.off("mousemove mouseup", Self.move.bind(Self));
+				break;
+		}
 	}
 }

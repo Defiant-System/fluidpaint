@@ -6,7 +6,7 @@ class Painter {
 
 		// references to elements
 		this._doc = $(document);
-		this._body = window.find("content");
+		this._body = window.find(".workarea");
 		// bind event handlers
 		this._body.on("mousedown mousemove", this.move.bind(this));
 		this._doc.on("mouseup", this.move.bind(this));
