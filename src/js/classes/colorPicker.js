@@ -25,6 +25,7 @@ class ColorPicker {
 		this._el.parent().on("mousedown", this.move);
 		// prepare shader program
 		this.pickerProgram = wgl.createProgram(Shaders.Vertex.picker, Shaders.Fragment.picker, { "a_position": 0 });
+		// this.pickerProgram = wgl.createProgram(Shaders.Vertex.picker, "#define RGB \n "+ Shaders.Fragment.picker, { "a_position": 0 });
 		this.quadVertexBuffer = wgl.createBuffer();
 		wgl.bufferData(this.quadVertexBuffer, wgl.ARRAY_BUFFER, new Float32Array([-1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0]), wgl.STATIC_DRAW);
 		// initial paint
@@ -159,6 +160,7 @@ class ColorPicker {
 						data["--cp-hue"] = `${deg}deg`;
 						// update hue value of HSVA
 						Drag.hsva[0] = ((deg + 270) % 360) / 360;
+						// console.log( Drag.hsva );
 						break;
 					case "picker-box":
 						mY = Drag._min(Drag._max(event.clientY - Drag.click.y - 10, Drag.min.y), Drag.max.y);

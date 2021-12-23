@@ -27,19 +27,20 @@ vec3 trilinearInterpolate(vec3 p, vec3 v000, vec3 v100, vec3 v010, vec3 v001, ve
 }
 
 vec3 rybToRgb(vec3 ryb) {
-#ifdef RGB
-	return 1.0 - ryb.yxz;
-#endif
+	#ifdef RGB
+		return 1.0 - ryb.yxz;
+	#endif
+	return ryb;
 
-	return trilinearInterpolate(ryb, 
-		vec3(1.0, 1.0, 1.0), 
-		vec3(1.0, 0.0, 0.0), 
-		vec3(0.163, 0.373, 0.6), 
-		vec3(1.0, 1.0, 0.0), 
-		vec3(1.0, 0.5, 0.0), 
-		vec3(0.0, 0.66, 0.2),
-		vec3(0.5, 0.0, 0.5),
-		vec3(0.2, 0.094, 0.0));
+	// return trilinearInterpolate(ryb, 
+	// 	vec3(1.0, 1.0, 1.0), 
+	// 	vec3(1.0, 0.0, 0.0), 
+	// 	vec3(0.163, 0.373, 0.6), 
+	// 	vec3(1.0, 1.0, 0.0), 
+	// 	vec3(1.0, 0.5, 0.0), 
+	// 	vec3(0.0, 0.66, 0.2),
+	// 	vec3(0.5, 0.0, 0.5),
+	// 	vec3(0.2, 0.094, 0.0));
 }
 
 vec3 hsv2ryb(vec3 c) {

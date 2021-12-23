@@ -42,6 +42,9 @@ const fluidpaint = {
 		let cvsEl = window.find(".sidebar .picker canvas");
 		picker = new ColorPicker(cvsEl, painter, wgl);
 
+		// let tmp = "#ff0000";
+		// console.log( Color.hexToHsv(tmp) );
+
 		// temp
 		this.els.content.find(".palette span:nth-child(1)").trigger("click");
 	},
@@ -74,6 +77,7 @@ const fluidpaint = {
 				el = $(event.target).addClass("active");
 				value = "#"+ el.attr("style").split("#")[1].slice(0,6);
 				value = Color.hexToHsv(value);
+				// value[0] = 1-value[0];
 
 				painter.brushColorHSVA = value;
 				picker.draw();
