@@ -3,6 +3,7 @@
 @import "classes/snapshot.js"
 @import "classes/painter.js"
 @import "classes/brush.js"
+@import "classes/colorPicker.js"
 @import "classes/rectangle.js"
 @import "classes/simulator.js"
 
@@ -36,6 +37,9 @@ const fluidpaint = {
 		};
 		// append canvas to workarea
 		this.els.cvs = this.els.wrapper.append(canvas);
+
+		let pEl = window.find(".sidebar .picker");
+		new ColorPicker(pEl, painter, wgl);
 	},
 	dispatch(event) {
 		let Self = fluidpaint,

@@ -13,6 +13,7 @@ const Shaders = {
 		panel: `@import "../shaders/panel.frag"`,
 		output: `@import "../shaders/output.frag"`,
 		shadow: `@import "../shaders/shadow.frag"`,
+		picker: `@import "../shaders/picker.frag"`,
 		setbristles: `@import "../shaders/setbristles.frag"`,
 		updatevelocity: `@import "../shaders/updatevelocity.frag"`,
 		planeconstraint: `@import "../shaders/planeconstraint.frag"`,
@@ -22,6 +23,7 @@ const Shaders = {
 	Vertex: {
 		splat: `@import "../shaders/splat.vert"`,
 		brush: `@import "../shaders/brush.vert"`,
+		picker: `@import "../shaders/picker.vert"`,
 		painting: `@import "../shaders/painting.vert"`,
 		fullscreen: `@import "../shaders/fullscreen.vert"`,
 	}
