@@ -51,7 +51,7 @@ class Painter {
 		this.brushY = 0;
 		this.brushScale = 30;
 		this.brushColorHSVA = [.75, 1, 1, 0.8];
-		this.colorModel = ColorModel.RGB;
+		this.colorModel = ColorModel.RYB;
 		this.brush = new Brush(wgl, MAX_BRISTLE_COUNT);
 
 		this.paintingRectangle.left = Utilities.clamp(this.paintingRectangle.left, -this.paintingRectangle.width, canvas.width);
@@ -143,14 +143,10 @@ class Painter {
 			wgl.framebufferTexture2D(this.framebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, this.canvasTexture, 0);
 			wgl.clear(this._clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
 
-			var paintingProgram = this.colorModel === ColorModel.RYB
-								? this.paintingProgram
-								: this.paintingProgramRGB;
-
 			var paintingDrawState = wgl.createDrawState()
 				.bindFramebuffer(this.framebuffer)
-				.vertexAttribPointer(this.quadVertexBuffer, paintingProgram.getAttribLocation("a_position"), 2, wgl.FLOAT, false, 0, 0)
-				.useProgram(paintingProgram)
+				.vertexAttribPointer(this.quadVertexBuffer, 0, 2, wgl.FLOAT, false, 0, 0)
+				.useProgram(this.paintingProgram)
 				.uniform1f("u_featherSize", RESIZING_FEATHER_SIZE)
 				.uniform1f("u_normalScale", NORMAL_SCALE / this.resolutionScale)
 				.uniform1f("u_roughness", ROUGHNESS)
@@ -169,10 +165,10 @@ class Painter {
 
 		//output painting to screen
 		var outputDrawState = wgl.createDrawState()
-		  .viewport(0, 0, cvsWidth, cvsHeight)
-		  .useProgram(this.outputProgram)
-		  .uniformTexture("u_input", 0, wgl.TEXTURE_2D, this.canvasTexture)
-		  .vertexAttribPointer(this.quadVertexBuffer, 0, 2, wgl.FLOAT, wgl.FALSE, 0, 0);
+			.viewport(0, 0, cvsWidth, cvsHeight)
+			.useProgram(this.outputProgram)
+			.uniformTexture("u_input", 0, wgl.TEXTURE_2D, this.canvasTexture)
+			.vertexAttribPointer(this.quadVertexBuffer, 0, 2, wgl.FLOAT, wgl.FALSE, 0, 0);
 
 		wgl.drawArrays(outputDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 

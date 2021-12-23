@@ -14,15 +14,6 @@
 			<Tool name="Medium" click="quality" arg="1"/>
 			<Tool name="High" click="quality" arg="2"/>
 		</Options>
-		<Options>
-			<Tool name="Natural" click="color-mode" arg="1"/>
-			<Tool name="Digital" click="color-mode" arg="0"/>
-		</Options>
-		<Options>
-			<Tool name="Red" click="set-color" arg="#ff0000"/>
-			<Tool name="Green" click="set-color" arg="#00ff00"/>
-			<Tool name="Blue" click="set-color" arg="#0000ff"/>
-		</Options>
 	</Group>
 	<Group width="20%">
 		<Tool symbol="icon-format" click="toggle-sidebar"/>

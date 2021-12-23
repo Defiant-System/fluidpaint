@@ -17,21 +17,24 @@ var WIDTH = 240,
 
 class ColorPicker {
 	constructor(el, painter, wgl) {
-
+		this.el = el;
 		this.pickerProgram = wgl.createProgram(Shaders.Vertex.picker, Shaders.Fragment.picker, { "a_position": 0 });
-		// this.pickerProgramRGB = wgl.createProgram(Shaders.Vertex.picker, "#define RGB \n"+ Shaders.Fragment.picker, { "a_position": 0 });
 		this.quadVertexBuffer = wgl.createBuffer();
 
 		wgl.bufferData(this.quadVertexBuffer, wgl.ARRAY_BUFFER, new Float32Array([-1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0]), wgl.STATIC_DRAW);
 
+		this.draw();
+	}
+
+	draw() {
 		//we first render the painting to a WebGL texture
-		var saveTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, WIDTH, HEIGHT, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
-		var saveFramebuffer = wgl.createFramebuffer();
+		let saveTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, WIDTH, HEIGHT, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
+		let saveFramebuffer = wgl.createFramebuffer();
 		wgl.framebufferTexture2D(saveFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, saveTexture, 0);
 		
-		var hsva = [0, 1, 1, 1];
-		// var hsva = painter.brushColorHSVA;
-		var pickerDrawState = wgl.createDrawState()
+		// let hsva = [0, 1, 1, 1];
+		let hsva = painter.brushColorHSVA;
+		let pickerDrawState = wgl.createDrawState()
 			.bindFramebuffer(saveFramebuffer)
 			.viewport(0, 0, WIDTH, HEIGHT)
 			.vertexAttribPointer(this.quadVertexBuffer, 0, 2, wgl.FLOAT, wgl.FALSE, 0, 0)
@@ -52,19 +55,16 @@ class ColorPicker {
 
 		wgl.drawArrays(pickerDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 
-
 		//then we read back this texture
-		var savePixels = new Uint8Array(WIDTH * HEIGHT * 4);
-		wgl.readPixels(wgl.createReadState().bindFramebuffer(saveFramebuffer),
-						0, 0, WIDTH, HEIGHT, wgl.RGBA, wgl.UNSIGNED_BYTE, savePixels);
-
+		let savePixels = new Uint8Array(WIDTH * HEIGHT * 4);
+		wgl.readPixels(wgl.createReadState().bindFramebuffer(saveFramebuffer), 0, 0, WIDTH, HEIGHT, wgl.RGBA, wgl.UNSIGNED_BYTE, savePixels);
 		wgl.deleteTexture(saveTexture);
 		wgl.deleteFramebuffer(saveFramebuffer);
 
-
-		el.prop({ width: WIDTH, height: HEIGHT });
-
-		let ctx = el[0].getContext("2d"),
+		// dim of canvas
+		this.el.prop({ width: WIDTH, height: HEIGHT });
+		// draw canvas element
+		let ctx = this.el[0].getContext("2d"),
 			imgData = ctx.createImageData(WIDTH, HEIGHT);
 		imgData.data.set(savePixels);
 		ctx.putImageData(imgData, 0, 0);
