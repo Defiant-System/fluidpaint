@@ -23,7 +23,12 @@ let canvas = document.createElement('canvas');
 canvas.width = 640;
 canvas.height = 480;
 
-let wgl = WrappedGL.create(canvas),
+let opt = {
+		// alpha: true,
+		// preserveDrawingBuffer: false,
+		premultipliedAlpha: false,
+	},
+	wgl = WrappedGL.create(canvas, opt),
 	painter = new Painter(canvas, wgl),
 	picker;
 

@@ -141,7 +141,7 @@ class Painter {
 		if (this.needsRedraw) {
 			//draw painting into texture
 			wgl.framebufferTexture2D(this.framebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, this.canvasTexture, 0);
-			wgl.clear(this._clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
+			// wgl.clear(this._clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
 
 			var paintingDrawState = wgl.createDrawState()
 				.bindFramebuffer(this.framebuffer)
@@ -158,12 +158,12 @@ class Painter {
 				.uniform2f("u_paintingResolution", this.simulator.resolutionWidth, this.simulator.resolutionHeight)
 				.uniform2f("u_paintingSize", this.paintingRectangle.width, this.paintingRectangle.height)
 				.uniform2f("u_screenResolution", cvsWidth, cvsHeight)
+				.uniformTexture("u_paintTexture", 0, wgl.TEXTURE_2D, this.simulator.paintTexture)
 
-				// .enable(wgl.BLEND)
-				// .blendFunc(wgl.SRC_ALPHA, wgl.ONE)
+				.enable(wgl.BLEND)
+				.blendFunc(wgl.SRC_ALPHA, wgl.ONE_MINUS_SRC_ALPHA)
 				// .disable(wgl.DEPTH_TEST)
 				
-				.uniformTexture("u_paintTexture", 0, wgl.TEXTURE_2D, this.simulator.paintTexture)
 				.viewport(clippedPaintingRectangle.left, clippedPaintingRectangle.bottom, clippedPaintingRectangle.width, clippedPaintingRectangle.height);
 			wgl.drawArrays(paintingDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 		}
