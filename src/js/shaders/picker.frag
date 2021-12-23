@@ -92,7 +92,7 @@ vec4 sbSquare () {
 	vec3 squareRYB = hsv2ryb(vec3(u_currentHSVA.x, saturation, lightness));
 	vec3 squareRGB = rybToRgb(squareRYB);
 
-	float squareAlpha = boxAlpha(coordinates, vec2(-u_squareWidth * 0.5), vec2(u_squareWidth), vec2(0.05));
+	float squareAlpha = boxAlpha(coordinates, vec2(-u_squareWidth * 0.5), vec2(u_squareWidth), vec2(1.0));
 
 	return vec4(squareRGB, squareAlpha);
 }
@@ -137,7 +137,7 @@ vec4 sbIndicator () {
 
 
 vec4 alphaSlider () {
-	float feather = 0.5;
+	float feather = 0.75;
 	float alpha = smoothstep(u_alphaSliderPosition.x - feather, u_alphaSliderPosition.x, v_coordinates.x) *
 					smoothstep(u_alphaSliderPosition.x + u_alphaSliderDimensions.x + feather, u_alphaSliderPosition.x + u_alphaSliderDimensions.x, v_coordinates.x) *
 					smoothstep(u_alphaSliderPosition.y - feather, u_alphaSliderPosition.y, v_coordinates.y) *
@@ -158,7 +158,9 @@ vec4 alphaIndicator () {
 	float indicatorHeight = 15.0;
 	float indicatorY = u_alphaSliderPosition.y + u_currentHSVA.a * (u_alphaSliderDimensions.y - indicatorHeight);
 
-	float alpha = boxStrokeAlpha(v_coordinates, vec2(u_alphaSliderPosition.x, indicatorY), vec2(u_alphaSliderDimensions.x, indicatorHeight), vec2(3.0), vec2(0.3));
+	float strokeWidth = 3.0;
+	float strokeFeather = 1.5;
+	float alpha = boxStrokeAlpha(v_coordinates, vec2(u_alphaSliderPosition.x, indicatorY), vec2(u_alphaSliderDimensions.x, indicatorHeight), vec2(strokeWidth), vec2(strokeFeather));
 
 	return vec4(1.0, 1.0, 1.0, alpha);
 }

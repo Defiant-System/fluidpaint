@@ -19,7 +19,7 @@ class ColorPicker {
 	constructor(el, painter, wgl) {
 
 		this.pickerProgram = wgl.createProgram(Shaders.Vertex.picker, Shaders.Fragment.picker, { "a_position": 0 });
-		this.pickerProgramRGB = wgl.createProgram(Shaders.Vertex.picker, "#define RGB \n"+ Shaders.Fragment.picker, { "a_position": 0 });
+		// this.pickerProgramRGB = wgl.createProgram(Shaders.Vertex.picker, "#define RGB \n"+ Shaders.Fragment.picker, { "a_position": 0 });
 		this.quadVertexBuffer = wgl.createBuffer();
 
 		wgl.bufferData(this.quadVertexBuffer, wgl.ARRAY_BUFFER, new Float32Array([-1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0]), wgl.STATIC_DRAW);
@@ -29,7 +29,8 @@ class ColorPicker {
 		var saveFramebuffer = wgl.createFramebuffer();
 		wgl.framebufferTexture2D(saveFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, saveTexture, 0);
 		
-		var hsva = painter.brushColorHSVA;
+		var hsva = [0, 1, 1, 1];
+		// var hsva = painter.brushColorHSVA;
 		var pickerDrawState = wgl.createDrawState()
 			.bindFramebuffer(saveFramebuffer)
 			.viewport(0, 0, WIDTH, HEIGHT)
