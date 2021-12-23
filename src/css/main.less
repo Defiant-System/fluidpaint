@@ -40,6 +40,7 @@ content {
 				display: inline-block;
 				// background: #fff;
 				box-shadow: 0 0 13px rgba(0,0,0,.35);
+				pointer-events: none;
 			}
 		}
 	}
@@ -49,21 +50,20 @@ content {
 		width: 260px;
 
 		.picker {
-			// background: rgba(0,0,0,.05);
 			position: relative;
 			padding: 10px;
 			width: 240px;
 			height: 200px;
-			--cp-hue: 90deg;
-			--cp-alpha: 170px;
+			--cp-hue: 0deg;
+			--cp-slX: 82px;
+			--cp-slY: 82px;
 			--cp-alpha: 170px;
 
 			&.debug {
 				.picker-ring {
 					background: rgba(0,0,255,.5);
 
-					&:before,
-					&:after { display: block; }
+					.hole { display: block; }
 				}
 
 				.picker-box {
@@ -80,6 +80,7 @@ content {
 			}
 
 			canvas {
+				// background: rgba(0,0,0,.05);
 				position: relative;
 				// z-index: 3;
 			}
@@ -91,25 +92,10 @@ content {
 				width: 192px;
 				height: 192px;
 				border-radius: 50%;
-				transform: rotate(var(--cp-hue));
-				transform-origin: 50% 50%;
 				cursor: pointer;
 				z-index: 1;
 
-				&:before {
-					display: none;
-					content: "";
-					background: red;
-					position: absolute;
-					top: 0;
-					left: 50%;
-					width: 20px;
-					height: 20px;
-					margin-left: -10px;
-					pointer-events: none;
-				}
-
-				&:after {
+				.hole {
 					display: none;
 					content: "";
 					background: rgba(255,255,255,1);
@@ -120,7 +106,20 @@ content {
 					bottom: 18px;
 					border-radius: 50%;
 					cursor: default;
-					pointer-events: none;
+					transform: rotate(var(--cp-hue));
+					transform-origin: 50% 50%;
+
+					&:before {
+						content: "";
+						background: red;
+						position: absolute;
+						top: -20px;
+						left: 50%;
+						width: 20px;
+						height: 20px;
+						margin-left: -10px;
+						pointer-events: none;
+					}
 				}
 			}
 
@@ -138,8 +137,8 @@ content {
 					content: "";
 					background: red;
 					position: absolute;
-					top: 84px;
-					left: 84px;
+					top: var(--cp-slY);
+					left: var(--cp-slX);
 					width: 20px;
 					height: 20px;
 					pointer-events: none;
@@ -180,11 +179,13 @@ content {
 			> span {
 				position: relative;
 				display: inline-block;
-				width: 35px;
-				height: 29px;
-				margin: 0 2px 2px 0;
+				width: 33px;
+				height: 26px;
+				margin: 0 4px 2px 0;
 				border-radius: 3px;
 				cursor: pointer;
+				box-shadow: inset 0 2px 3px rgba(0,0,0,.2),
+							inset 0 -2px 1px rgba(255,255,255,.3);
 
 				&:nth-child(6n) {
 					margin-right: 0;
@@ -207,13 +208,12 @@ content {
 					&:after {
 	 					content: "";
 						position: absolute;
-						top: -2px;
-						left: -2px;
-						right: -2px;
-						bottom: -2px;
-						border: 5px solid rgba(0,0,0,.25);
+						top: -3px;
+						left: -3px;
+						right: -3px;
+						bottom: -3px;
+						border: 2px solid #3583d077;
 						border-radius: 5px;
-						// box-shadow: 0 0 2px rgba(0,0,0,.35);
 						z-index: 2;
 					}
 				}

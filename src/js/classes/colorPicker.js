@@ -20,14 +20,19 @@ class ColorPicker {
 		// references to elements
 		this._el = el;
 		this._doc = $(document);
+		this._debug = true;
 		// bind event handlers
-		this._el.on("mousedown", this.move.bind(this));
+		this._el.parent().on("mousedown", this.move);
 		// prepare shader program
 		this.pickerProgram = wgl.createProgram(Shaders.Vertex.picker, Shaders.Fragment.picker, { "a_position": 0 });
 		this.quadVertexBuffer = wgl.createBuffer();
 		wgl.bufferData(this.quadVertexBuffer, wgl.ARRAY_BUFFER, new Float32Array([-1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0]), wgl.STATIC_DRAW);
 		// initial paint
 		this.draw();
+		// for dev / debug purposes
+		if (this._debug) {
+			el.parent().addClass("debug");
+		}
 	}
 
 	draw() {
@@ -75,29 +80,101 @@ class ColorPicker {
 	}
 
 	move(event) {
-		let Self = this,
-			Drag = Self.drag;
+		let Self = picker,
+			Drag = Self.drag,
+			mY,
+			mX;
 		switch (event.type) {
 			case "mousedown":
 				// prepare drag event
 				let el = $(event.target),
+					type = el.prop("className"),
+					rect = el[0].parentNode.getBoundingClientRect(),
+					_PI = 180 / Math.PI,
+					min = { x: 0, y: 0 },
+					max = { x: 0, y: 0 },
 					click = {
 						y: event.clientY,
 						x: event.clientX,
 					};
+				// operate on parent (root) element
+				el = el.parent();
+				switch (type) {
+					case "picker-ring":
+						mY = event.offsetY - 96;
+						mX = event.offsetX - 96;
+						click.deg = Math.round(Math.atan2(mY, mX) * _PI) + 90;
+						if (click.deg < 0) click.deg += 360;
+						click.y = rect.top + 111;
+						click.x = rect.left + 111;
+						// UI update
+						el.css({ "--cp-hue": `${click.deg}deg` });
+						break;
+					case "picker-box":
+						max.x = 82;
+						max.y = 82;
+						click.y -= event.offsetY;
+						click.x -= event.offsetX;
+						mY = Math.min(Math.max(event.offsetY - 10, min.y), max.y);
+						mX = Math.min(Math.max(event.offsetX - 10, min.x), max.x);
+						// UI update
+						el.css({
+							"--cp-slY": `${mY}px`,
+							"--cp-slX": `${mX}px`,
+						});
+						break;
+					case "picker-alpha":
+						max.y = 170;
+						click.y -= event.offsetY;
+						mY = Math.min(Math.max(event.offsetY - 10, min.y), max.y);
+						// UI update
+						el.css({ "--cp-alpha": `${event.offsetY-10}px` });
+						break;
+					default: return;
+				}
 
 				Self.drag = {
 					el,
+					min,
+					max,
+					_PI,
+					type,
 					click,
+					_min: Math.min,
+					_max: Math.max,
+					_round: Math.round,
+					_atan2: Math.atan2,
 				};
+
 				// bind event handler
-				Self._el.on("mousemove mouseup", Self.move.bind(Self));
+				Self._doc.on("mousemove mouseup", Self.move);
 				break;
 			case "mousemove":
+				let data = {},
+					deg;
+				switch (Drag.type) {
+					case "picker-ring":
+						mY = event.clientY - Drag.click.y;
+						mX = event.clientX - Drag.click.x;
+						deg = Drag._round(Drag._atan2(mY, mX) * Drag._PI) + 90;
+						data["--cp-hue"] = `${deg}deg`;
+						break;
+					case "picker-box":
+						mY = Drag._min(Drag._max(event.clientY - Drag.click.y - 10, Drag.min.y), Drag.max.y);
+						mX = Drag._min(Drag._max(event.clientX - Drag.click.x - 10, Drag.min.x), Drag.max.x);
+						data["--cp-slY"] = `${mY}px`;
+						data["--cp-slX"] = `${mX}px`;
+						break;
+					case "picker-alpha":
+						mY = Drag._min(Drag._max(event.clientY - Drag.click.y - 10, Drag.min.y), Drag.max.y);
+						data["--cp-alpha"] = `${mY}px`;
+						break;
+				}
+				if (Self._debug) Drag.el.css(data);
 				break;
 			case "mouseup":
 				// unbind event handler
-				Self._el.off("mousemove mouseup", Self.move.bind(Self));
+				Self._doc.off("mousemove mouseup", Self.move);
 				break;
 		}
 	}
