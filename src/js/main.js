@@ -49,6 +49,7 @@ const fluidpaint = {
 		let Self = fluidpaint,
 			value,
 			index,
+			pEl,
 			el;
 		switch (event.type) {
 			// system events
@@ -57,6 +58,14 @@ const fluidpaint = {
 			// custom events
 			case "open-help":
 				defiant.shell("fs -u '~/help/index.md'");
+				break;
+			case "select-tab":
+				event.el.find(".active").removeClass("active");
+				el = $(event.target).addClass("active");
+				
+				pEl = event.el.parent();
+				pEl.find(".sidebar-body.active").removeClass("active");
+				pEl.find(".sidebar-body").get(el.index()).addClass("active");
 				break;
 			case "select-color":
 				if (event.el[0] === event.target) return;

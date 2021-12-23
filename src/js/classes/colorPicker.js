@@ -158,8 +158,7 @@ class ColorPicker {
 						deg = Drag._round(Drag._atan2(mY, mX) * Drag._PI) + 90;
 						data["--cp-hue"] = `${deg}deg`;
 						// update hue value of HSVA
-						deg += 270;
-						Drag.hsva[0] = (deg % 360) / 360;
+						Drag.hsva[0] = ((deg + 270) % 360) / 360;
 						break;
 					case "picker-box":
 						mY = Drag._min(Drag._max(event.clientY - Drag.click.y - 10, Drag.min.y), Drag.max.y);
