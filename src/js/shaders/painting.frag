@@ -16,9 +16,9 @@ uniform float u_F0;
 uniform float u_diffuseScale;
 uniform float u_specularScale;
 
-#ifdef RESIZING
-uniform float u_featherSize;
-#endif
+// #ifdef RESIZING
+// uniform float u_featherSize;
+// #endif
 
 vec3 trilinearInterpolate(vec3 p, vec3 v000, vec3 v100, vec3 v010, vec3 v001, vec3 v101, vec3 v011, vec3 v110, vec3 v111) {
 	return v000 * (1.0 - p.x) * (1.0 - p.y) * (1.0 - p.z) +
@@ -53,14 +53,14 @@ vec3 rybToRgb(vec3 ryb) {
 vec4 samplePaintTexture (vec2 coordinates) {
 	vec4 value = texture2D(u_paintTexture, coordinates);
 
-#ifdef RESIZING
-	vec2 featherSize = u_featherSize / u_paintingResolution;
-	float scale = smoothstep(-featherSize.x, 0.0, coordinates.x) * smoothstep(-featherSize.y, 0.0, coordinates.y)
-				  * smoothstep(1.0 + featherSize.x, 1.0, coordinates.x) * smoothstep(1.0 + featherSize.y, 1.0, coordinates.y);
-	return value * scale;
-#else
-	return value;
-#endif
+	// #ifdef RESIZING
+	// 	vec2 featherSize = u_featherSize / u_paintingResolution;
+	// 	float scale = smoothstep(-featherSize.x, 0.0, coordinates.x) * smoothstep(-featherSize.y, 0.0, coordinates.y)
+	// 				  * smoothstep(1.0 + featherSize.x, 1.0, coordinates.x) * smoothstep(1.0 + featherSize.y, 1.0, coordinates.y);
+	// 	return value * scale;
+	// #else
+		return value;
+	// #endif
 }
 
 float getHeight (vec2 coordinates) {
@@ -135,14 +135,8 @@ float specularBRDF (vec3 lightDirection, vec3 eyeDirection, vec3 normal, float r
 }
 
 void main () {
-#ifdef SAVE
-	vec2 coordinates = vec2(v_coordinates.x, 1.0 - v_coordinates.y);
-#else
 	vec2 coordinates = (gl_FragCoord.xy - u_paintingPosition) / u_paintingSize;
-#endif
-
 	vec4 value = samplePaintTexture(coordinates); //r, g, b, height
-
 	vec2 gradient = computeGradient(coordinates);
 	vec3 normal = normalize(vec3(
 		gradient.x,
@@ -159,8 +153,8 @@ void main () {
 
 	float specular = specularBRDF(lightDirection, eyeDirection, normal, u_roughness, u_F0);
 
-	vec3 color = rybToRgb(value.rgb);
-
+	// vec3 color = rybToRgb(value.rgb);
+	vec3 color = value.rgb;
 	vec3 surfaceColor = color * diffuse + specular * u_specularScale;
 	
 	gl_FragColor = vec4(surfaceColor, 1.0);

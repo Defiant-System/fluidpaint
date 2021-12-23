@@ -46,7 +46,8 @@ const fluidpaint = {
 		// console.log( Color.hexToHsv(tmp) );
 
 		// temp
-		this.els.content.find(".palette span:nth-child(1)").trigger("click");
+		let r = Math.round(Math.random() * 15) + 1;
+		this.els.content.find(`.palette span:nth-child(${r})`).trigger("click");
 	},
 	dispatch(event) {
 		let Self = fluidpaint,
