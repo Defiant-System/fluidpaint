@@ -50,9 +50,60 @@ content {
 		padding: 10px;
 
 		.picker {
-			background: rgba(0,0,0,.05);
+			// background: rgba(0,0,0,.05);
+			position: relative;
 			width: 240px;
 			height: 200px;
+
+			canvas {
+				position: relative;
+				z-index: 3;
+			}
+
+			.picker-ring {
+				// background: rgba(255,0,0,.1);
+				position: absolute;
+				top: 5px;
+				left: 5px;
+				width: 190px;
+				height: 190px;
+				border-radius: 50%;
+				cursor: pointer;
+				z-index: 1;
+
+				&:after {
+					content: "";
+					position: absolute;
+					top: 18px;
+					left: 18px;
+					right: 18px;
+					bottom: 18px;
+					border-radius: 50%;
+					cursor: default;
+				}
+			}
+
+			.picker-box {
+				// background: rgba(255,0,0,.5);
+				position: absolute;
+				top: 49px;
+				left: 49px;
+				width: 102px;
+				height: 102px;
+				z-index: 2;
+				cursor: pointer;
+			}
+
+			.picker-alpha {
+				// background: rgba(255,0,0,.5);
+				position: absolute;
+				top: 5px;
+				left: 210px;
+				width: 20px;
+				height: 190px;
+				cursor: pointer;
+				// box-shadow: 0 0 0 1px rgba(0,0,0,.125);
+			}
 		}
 	}
 }
