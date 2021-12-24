@@ -34,7 +34,7 @@ let opt = {
 	picker;
 
 
-const fluidpaint = {
+const goya = {
 	init() {
 		// fast references
 		this.els = {
@@ -59,7 +59,7 @@ const fluidpaint = {
 		this.els.content.find(`.palette span:nth-child(${r})`).trigger("click");
 	},
 	dispatch(event) {
-		let Self = fluidpaint,
+		let Self = goya,
 			value,
 			index,
 			pEl,
@@ -108,4 +108,4 @@ const fluidpaint = {
 	}
 };
 
-window.exports = fluidpaint;
+window.exports = goya;

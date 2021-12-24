@@ -1,8 +1,8 @@
 <Application>
 	<Head>
-		<meta name="id" value="fluidpaint"/>
-		<meta name="title" value="Fluid Paint" version="1.0"/>
-		<meta name="author" value="David Li" namespace="ant" ported="Hakan Bilgin"/>
+		<meta name="id" value="goya"/>
+		<meta name="title" value="Goya" version="1.0"/>
+		<meta name="author" value="Hakan Bilgin" namespace="ant"/>
 		<meta name="license" value="AGPL-3.0"/>
 		<meta name="width" value="1050"/>
 		<meta name="height" value="720"/>

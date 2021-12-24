@@ -324,7 +324,7 @@ class Painter {
 		imageData.data.set(savePixels);
 		saveContext.putImageData(imageData, 0, 0);
 
-		// fluidpaint.els.content.append(saveCanvas);
+		// goya.els.content.append(saveCanvas);
 	}
 
 }
