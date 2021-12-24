@@ -17,8 +17,8 @@ class WrappedGL {
 
 	constructor(gl) {
 		this.gl = gl;
-		this.gl.clearColor(1, 1, 1, 0.25);
-		this.gl.clear(gl.COLOR_BUFFER_BIT);
+		this.gl.clearColor(1, 1, 1, 1.0);
+		// this.gl.clear(gl.COLOR_BUFFER_BIT);
 
 		for (var i = 0; i < CONSTANT_NAMES.length; i += 1) {
 			this[CONSTANT_NAMES[i]] = gl[CONSTANT_NAMES[i]];
@@ -246,7 +246,8 @@ class WrappedGL {
 	getExtension(name) {
 		var gl = this.gl;
 
-		//for certain extensions, we need to expose additional, wrapped rendering compatible, methods directly on WrappedGL and DrawState
+		// for certain extensions, we need to expose additional, wrapped rendering compatible,
+		// methods directly on WrappedGL and DrawState
 		if (name === "ANGLE_instanced_arrays") {
 			var instancedExt = gl.getExtension("ANGLE_instanced_arrays");
 

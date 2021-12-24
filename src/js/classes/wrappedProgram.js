@@ -8,40 +8,39 @@ class WrappedProgram {
 		this.uniformLocations = {};
 		this.uniforms = {}; // TODO: if we want to cache uniform values in the future
 
-		var gl = wgl.gl;
+		let gl = wgl.gl;
 
 		// build shaders from source
-		var vertexShader = buildShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-		var fragmentShader = buildShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+		let vertexShader = buildShader(gl, gl.VERTEX_SHADER, vertexShaderSource),
+			fragmentShader = buildShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
 
 		// create program and attach shaders
-		var program = this.program = gl.createProgram();
+		let program = this.program = gl.createProgram();
 		gl.attachShader(program, vertexShader);
 		gl.attachShader(program, fragmentShader);
 		
 		// bind the attribute locations that have been specified in attributeLocations
 		if (requestedAttributeLocations !== undefined) {
-			for (var attributeName in requestedAttributeLocations) {
+			for (let attributeName in requestedAttributeLocations) {
 				gl.bindAttribLocation(program, requestedAttributeLocations[attributeName], attributeName);
 			}
 		}
 		gl.linkProgram(program);
 
-
 		// construct this.attributeLocations (maps attribute names to locations)
 		this.attributeLocations = {};
-		var numberOfAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
-		for (var i = 0; i < numberOfAttributes; ++i) {
-			var activeAttrib = gl.getActiveAttrib(program, i);
-			var attributeName = activeAttrib.name;
+		let numberOfAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
+		for (let i = 0; i < numberOfAttributes; ++i) {
+			let activeAttrib = gl.getActiveAttrib(program, i);
+			let attributeName = activeAttrib.name;
 			this.attributeLocations[attributeName] = gl.getAttribLocation(program, attributeName);
 		}
 
 		// cache uniform locations
-		var uniformLocations = this.uniformLocations = {};
-		var numberOfUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
-		for (var i = 0; i < numberOfUniforms; i += 1) {
-			var activeUniform = gl.getActiveUniform(program, i),
+		let uniformLocations = this.uniformLocations = {};
+		let numberOfUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+		for (let i = 0; i < numberOfUniforms; i += 1) {
+			let activeUniform = gl.getActiveUniform(program, i),
 				uniformLocation = gl.getUniformLocation(program, activeUniform.name);
 			uniformLocations[activeUniform.name] = uniformLocation;
 		}

@@ -136,7 +136,7 @@ class Painter {
 		if (this.needsRedraw) {
 			//draw painting into texture
 			wgl.framebufferTexture2D(this.framebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, this.canvasTexture, 0);
-			wgl.clear(this._clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
+			// wgl.clear(this._clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
 
 			var paintingDrawState = wgl.createDrawState()
 				.bindFramebuffer(this.framebuffer)
@@ -155,10 +155,6 @@ class Painter {
 				.uniform2f("u_paintingSize", cvsWidth, cvsHeight)
 				.uniform2f("u_screenResolution", cvsWidth, cvsHeight)
 				.uniformTexture("u_paintTexture", 0, wgl.TEXTURE_2D, this.simulator.paintTexture);
-				// .disable(wgl.DEPTH_TEST)
-				// .enable(wgl.BLEND)
-				// .blendFunc(wgl.ONE, wgl.ONE_MINUS_SRC_ALPHA);
-			// console.log( this.paintingRectangle.width, this.paintingRectangle.height );
 			wgl.drawArrays(paintingDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 		}
 
@@ -168,7 +164,7 @@ class Painter {
 			.useProgram(this.outputProgram)
 			.uniformTexture("u_input", 0, wgl.TEXTURE_2D, this.canvasTexture)
 			.vertexAttribPointer(this.quadVertexBuffer, 0, 2, wgl.FLOAT, wgl.FALSE, 0, 0)
-			// .disable(wgl.DEPTH_TEST)
+			.disable(wgl.DEPTH_TEST)
 			.enable(wgl.BLEND)
 			.blendFunc(wgl.ONE, wgl.ONE_MINUS_SRC_ALPHA);
 
@@ -176,17 +172,19 @@ class Painter {
 
 		//draw brush to screen
 		if (this.interactionState !== InteractionMode.PAINTING) {
+			var hsva = hsvToRyb(this.brushColorHSVA[0], this.brushColorHSVA[1], this.brushColorHSVA[2]);
 			var brushDrawState = wgl.createDrawState()
 				.bindFramebuffer(null)
 				.viewport(0, 0, cvsWidth, cvsHeight)
 				.vertexAttribPointer(this.brush.brushTextureCoordinatesBuffer, 0, 2, wgl.FLOAT, wgl.FALSE, 0, 0)
 				.useProgram(this.brushProgram)
 				.bindIndexBuffer(this.brush.brushIndexBuffer)
-				.uniform4f("u_color", 0.6, 0.6, 0.6, 1.0)
+				.uniform4f("u_color", hsva[0], hsva[1], hsva[2], 1.0)
+				// .uniform4f("u_color", 0.9, 0.1, 0.0, 1.0)
 				.uniformMatrix4fv("u_projectionViewMatrix", false, this.mainProjectionMatrix)
-				.enable(wgl.DEPTH_TEST)
-				.enable(wgl.BLEND)
-				.blendFunc(wgl.DST_COLOR, wgl.ZERO)
+				// .enable(wgl.DEPTH_TEST)
+				// .enable(wgl.BLEND)
+				// .blendFunc(wgl.DST_COLOR, wgl.ZERO)
 				.uniformTexture("u_positionsTexture", 0, wgl.TEXTURE_2D, this.brush.positionsTexture);
 
 			wgl.drawElements(brushDrawState, wgl.LINES, this.brush.indexCount * this.brush.bristleCount / this.brush.maxBristleCount, wgl.UNSIGNED_SHORT, 0);
