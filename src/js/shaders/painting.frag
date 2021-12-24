@@ -158,7 +158,4 @@ void main () {
 	vec3 surfaceColor = color * diffuse + specular * u_specularScale;
 	
 	gl_FragColor = vec4(surfaceColor, 1.0);
-
-	// gl_FragColor = texture2D(surfaceColor, v_coordinates);
-	gl_FragColor.rgb *= gl_FragColor.a;
 }

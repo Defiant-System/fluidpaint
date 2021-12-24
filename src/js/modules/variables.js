@@ -37,23 +37,6 @@ let QUALITIES = [
 	InteractionMode = {
 		NONE: 0,
 		PAINTING: 1,
-		RESIZING: 2,
-		PANNING: 3
-	},
-	ResizingSide = {
-		NONE: 0,
-		LEFT: 1,
-		RIGHT: 2,
-		BOTTOM: 3,
-		TOP: 4,
-		TOP_LEFT: 5,
-		TOP_RIGHT: 6,
-		BOTTOM_LEFT: 7,
-		BOTTOM_RIGHT: 8
-	},
-	ColorModel = {
-		RYB: 0,
-		RGB: 1
 	},
 	INITIAL_QUALITY = 1,
 	INITIAL_WIDTH = 600,
@@ -85,11 +68,6 @@ let QUALITIES = [
 	// COLOR_PICKER_TOP = 523,
 	RESIZING_RADIUS = 20,
 	RESIZING_FEATHER_SIZE = 8, //in pixels 
-	//box shadow parameters
-	BOX_SHADOW_SIGMA = 5.0,
-	BOX_SHADOW_WIDTH = 10.0,
-	PAINTING_SHADOW_ALPHA = 0.25,
-	PANEL_SHADOW_ALPHA = 1.0,
 	//rendering parameters
 	NORMAL_SCALE = 7.0,
 	ROUGHNESS = 0.075,
@@ -100,7 +78,9 @@ let QUALITIES = [
 	HISTORY_SIZE = 4; //number of snapshots we store - this should be number of reversible actions + 1
 
 // Brush variables
-let N_PREVIOUS_SPEEDS = 15, // how many previous speeds we store
+let BRUSH_SCALE = 20,
+	COLOR_HSVA = [.75, 1, 1, 0.8],
+	N_PREVIOUS_SPEEDS = 15, // how many previous speeds we store
 	SPLATS_PER_SEGMENT = 8,
 	VERTICES_PER_BRISTLE = 10,
 	BRISTLE_LENGTH = 4.5, // relative to a scale of 1

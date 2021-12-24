@@ -49,9 +49,8 @@ class Painter {
 		this.brushInitialized = false;
 		this.brushX = 0;
 		this.brushY = 0;
-		this.brushScale = 30;
-		this.brushColorHSVA = [.75, 1, 1, 0.8];
-		this.colorModel = ColorModel.RYB;
+		this.brushScale = BRUSH_SCALE;
+		this.brushColorHSVA = COLOR_HSVA;
 		this.brush = new Brush(wgl, MAX_BRISTLE_COUNT);
 
 		this.paintingRectangle.left = Utilities.clamp(this.paintingRectangle.left, -this.paintingRectangle.width, canvas.width);
@@ -66,7 +65,6 @@ class Painter {
 		this.interactionState = InteractionMode.NONE;
 
 		this._clearState = wgl.createClearState().bindFramebuffer(this.framebuffer);
-		this._update = true;
 
 		var update = () => {
 				this.update();
@@ -135,16 +133,14 @@ class Painter {
 
 		if (this.simulator.simulate()) this.needsRedraw = true;
 
-		//the rectangle we end up drawing the painting into
-		var clippedPaintingRectangle = this.paintingRectangle.clone().intersectRectangle(new Rectangle(0, 0, cvsWidth, cvsHeight));
-
 		if (this.needsRedraw) {
 			//draw painting into texture
 			wgl.framebufferTexture2D(this.framebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, this.canvasTexture, 0);
-			// wgl.clear(this._clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
+			wgl.clear(this._clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
 
 			var paintingDrawState = wgl.createDrawState()
 				.bindFramebuffer(this.framebuffer)
+				.viewport(0, 0, cvsWidth, cvsHeight)
 				.vertexAttribPointer(this.quadVertexBuffer, 0, 2, wgl.FLOAT, false, 0, 0)
 				.useProgram(this.paintingProgram)
 				.uniform1f("u_featherSize", RESIZING_FEATHER_SIZE)
@@ -154,17 +150,15 @@ class Painter {
 				.uniform1f("u_specularScale", SPECULAR_SCALE)
 				.uniform1f("u_F0", F0)
 				.uniform3f("u_lightDirection", LIGHT_DIRECTION[0], LIGHT_DIRECTION[1], LIGHT_DIRECTION[2])
-				.uniform2f("u_paintingPosition", this.paintingRectangle.left, this.paintingRectangle.bottom)
+				.uniform2f("u_paintingPosition", 0, 0)
 				.uniform2f("u_paintingResolution", this.simulator.resolutionWidth, this.simulator.resolutionHeight)
-				.uniform2f("u_paintingSize", this.paintingRectangle.width, this.paintingRectangle.height)
+				.uniform2f("u_paintingSize", cvsWidth, cvsHeight)
 				.uniform2f("u_screenResolution", cvsWidth, cvsHeight)
-				.uniformTexture("u_paintTexture", 0, wgl.TEXTURE_2D, this.simulator.paintTexture)
-
-				.enable(wgl.BLEND)
-				.blendFunc(wgl.SRC_ALPHA, wgl.ONE_MINUS_SRC_ALPHA)
+				.uniformTexture("u_paintTexture", 0, wgl.TEXTURE_2D, this.simulator.paintTexture);
 				// .disable(wgl.DEPTH_TEST)
-				
-				.viewport(clippedPaintingRectangle.left, clippedPaintingRectangle.bottom, clippedPaintingRectangle.width, clippedPaintingRectangle.height);
+				// .enable(wgl.BLEND)
+				// .blendFunc(wgl.ONE, wgl.ONE_MINUS_SRC_ALPHA);
+			// console.log( this.paintingRectangle.width, this.paintingRectangle.height );
 			wgl.drawArrays(paintingDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 		}
 
@@ -173,7 +167,10 @@ class Painter {
 			.viewport(0, 0, cvsWidth, cvsHeight)
 			.useProgram(this.outputProgram)
 			.uniformTexture("u_input", 0, wgl.TEXTURE_2D, this.canvasTexture)
-			.vertexAttribPointer(this.quadVertexBuffer, 0, 2, wgl.FLOAT, wgl.FALSE, 0, 0);
+			.vertexAttribPointer(this.quadVertexBuffer, 0, 2, wgl.FLOAT, wgl.FALSE, 0, 0)
+			// .disable(wgl.DEPTH_TEST)
+			.enable(wgl.BLEND)
+			.blendFunc(wgl.ONE, wgl.ONE_MINUS_SRC_ALPHA);
 
 		wgl.drawArrays(outputDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 
@@ -291,7 +288,6 @@ class Painter {
 		var saveTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, saveWidth, saveHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
 		var saveFramebuffer = wgl.createFramebuffer();
 		wgl.framebufferTexture2D(saveFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, saveTexture, 0);
-		// var paintingProgram = this.colorModel === ColorModel.RYB ? this.savePaintingProgram : this.savePaintingProgramRGB;
 		var paintingProgram = this.savePaintingProgram;
 		
 		var saveDrawState = wgl.createDrawState()

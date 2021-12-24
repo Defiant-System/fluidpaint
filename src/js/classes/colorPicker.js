@@ -42,7 +42,6 @@ class ColorPicker {
 		let pickerFramebuffer = wgl.createFramebuffer();
 		wgl.framebufferTexture2D(pickerFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, pickerTexture, 0);
 		
-		// let hsva = [0, 1, 1, 1];
 		let hsva = painter.brushColorHSVA;
 		let pickerDrawState = wgl.createDrawState()
 			.bindFramebuffer(pickerFramebuffer)
