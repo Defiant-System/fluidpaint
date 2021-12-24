@@ -59,11 +59,6 @@ let QUALITIES = [
 	//for thick brush (most bristles)
 	THICK_MIN_ALPHA = 0.002,
 	THICK_MAX_ALPHA = 0.025,
-	//panel is aligned with the top left
-	PANEL_WIDTH = 300,
-	PANEL_HEIGHT = 580,
-	PANEL_BLUR_SAMPLES = 13,
-	PANEL_BLUR_STRIDE = 8,
 	// COLOR_PICKER_LEFT = 20,
 	// COLOR_PICKER_TOP = 523,
 	RESIZING_RADIUS = 20,
@@ -87,7 +82,7 @@ let BRUSH_SCALE = 20,
 	BRISTLE_JITTER = 0.5,
 	ITERATIONS = 20,
 	GRAVITY = 30.0,
-	BRUSH_DAMPING = 0.75,
+	BRUSH_DAMPING = 0.15,
 	STIFFNESS_VARIATION = 0.3;
 
 // Simulator variables
