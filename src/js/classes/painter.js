@@ -172,7 +172,6 @@ class Painter {
 		//draw brush to screen
 		if (this.interactionState !== InteractionMode.PAINTING) {
 			var hsva = hsvToRyb(this.brushColorHSVA[0], this.brushColorHSVA[1], this.brushColorHSVA[2]);
-					// [0.9, 0.1, 0.0, 1.0]
 			var brushDrawState = wgl.createDrawState()
 				.bindFramebuffer(null)
 				.viewport(0, 0, cvsWidth, cvsHeight)
@@ -192,7 +191,8 @@ class Painter {
 		this.needsRedraw = false;
 	}
 
-	clear() {
+	clear(hsl) {
+		if (hsl) this.wgl.gl.clearColor(...hsl, 0);
 		this.simulator.clear();
 		this.needsRedraw = true;
 	}

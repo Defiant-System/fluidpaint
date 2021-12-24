@@ -45,6 +45,8 @@ const fluidpaint = {
 		// append canvas to workarea
 		this.els.cvs = this.els.wrapper.append(canvas);
 
+		// painter.clear([1, 1, 1]);
+
 		let cvsEl = window.find(".sidebar .picker canvas");
 		picker = new ColorPicker(cvsEl, painter, wgl);
 
@@ -53,6 +55,7 @@ const fluidpaint = {
 
 		// temp
 		let r = Math.round(Math.random() * 15) + 1;
+		// r = 1;
 		this.els.content.find(`.palette span:nth-child(${r})`).trigger("click");
 	},
 	dispatch(event) {
