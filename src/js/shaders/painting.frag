@@ -1,67 +1,23 @@
 precision highp float;
 
 varying vec2 v_coordinates;
-
 uniform sampler2D u_paintTexture;
-
 uniform vec2 u_paintingSize; //painting size in pixels
 uniform vec2 u_paintingPosition; //bottom left position in pixels
 uniform vec2 u_paintingResolution;
-
 uniform float u_normalScale;
-
 uniform vec3 u_lightDirection;
 uniform float u_roughness;
 uniform float u_F0;
 uniform float u_diffuseScale;
 uniform float u_specularScale;
 
-// #ifdef RESIZING
-// uniform float u_featherSize;
-// #endif
-
-vec3 trilinearInterpolate(vec3 p, vec3 v000, vec3 v100, vec3 v010, vec3 v001, vec3 v101, vec3 v011, vec3 v110, vec3 v111) {
-	return v000 * (1.0 - p.x) * (1.0 - p.y) * (1.0 - p.z) +
-		   v100 * p.x * (1.0 - p.y) * (1.0 - p.z) +
-		   v010 * (1.0 - p.x) * p.y * (1.0 - p.z) +
-		   v001 * (1.0 - p.x) * (1.0 - p.y) * p.z +
-		   v101 * p.x * (1.0 - p.y) * p.z +
-		   v011 * (1.0 - p.x) * p.y * p.z +
-		   v110 * p.x * p.y * (1.0 - p.z) +
-		   v111 * p.x * p.y * p.z;
-}
-
-vec3 rybToRgb(vec3 ryb) {
-	#ifdef RGB
-		return 1.0 - ryb.yxz;
-	#endif
-
-	return ryb;
-
-	// return trilinearInterpolate(ryb, 
-	// 	vec3(1.0, 1.0, 1.0), 
-	// 	vec3(1.0, 0.0, 0.0), 
-	// 	vec3(0.163, 0.373, 0.6), 
-	// 	vec3(1.0, 1.0, 0.0), 
-	// 	vec3(1.0, 0.5, 0.0), 
-	// 	vec3(0.0, 0.66, 0.2),
-	// 	vec3(0.5, 0.0, 0.5),
-	// 	vec3(0.2, 0.094, 0.0));
-}
-
 //samples with feathering at the edges
 vec4 samplePaintTexture (vec2 coordinates) {
 	vec4 value = texture2D(u_paintTexture, coordinates);
-
-	// #ifdef RESIZING
-	// 	vec2 featherSize = u_featherSize / u_paintingResolution;
-	// 	float scale = smoothstep(-featherSize.x, 0.0, coordinates.x) * smoothstep(-featherSize.y, 0.0, coordinates.y)
-	// 				  * smoothstep(1.0 + featherSize.x, 1.0, coordinates.x) * smoothstep(1.0 + featherSize.y, 1.0, coordinates.y);
-	// 	return value * scale;
-	// #else
-		return value;
-	// #endif
+	return value;
 }
+
 
 float getHeight (vec2 coordinates) {
 	return samplePaintTexture(coordinates).a;
@@ -74,10 +30,8 @@ vec2 computeGradient(vec2 coordinates) { //sobel operator
 	float topLeft = getHeight(coordinates + vec2(-delta.x, delta.y));
 	float top = getHeight(coordinates + vec2(0.0, delta.y));
 	float topRight = getHeight(coordinates + vec2(delta.x, delta.y));
-
 	float left = getHeight(coordinates + vec2(-delta.x, 0.0));
 	float right = getHeight(coordinates + vec2(delta.x, 0.0));
-
 	float bottomLeft = getHeight(coordinates + vec2(-delta.x, -delta.y));
 	float bottom = getHeight(coordinates + vec2(0.0, -delta.y));
 	float bottomRight = getHeight(coordinates + vec2(delta.x, -delta.y));
@@ -150,12 +104,10 @@ void main () {
 	float diffuse = saturate(dot(lightDirection, normal));
 	diffuse = diffuse * u_diffuseScale + (1.0 - u_diffuseScale);
 
-
 	float specular = specularBRDF(lightDirection, eyeDirection, normal, u_roughness, u_F0);
-
-	// vec3 color = rybToRgb(value.rgb);
-	vec3 color = value.rgb;
-	vec3 surfaceColor = color * diffuse + specular * u_specularScale;
+	vec3 surfaceColor = value.rgb * diffuse + specular * u_specularScale;
 	
-	gl_FragColor = vec4(surfaceColor, 1.0);
+	// gl_FragColor = vec4(surfaceColor.rgb * surfaceColor.a, surfaceColor.a);
+	gl_FragColor = vec4(surfaceColor.rgb, value.a);
+	// gl_FragColor.rgb *= gl_FragColor.a;
 }

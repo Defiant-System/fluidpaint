@@ -13,13 +13,12 @@ class Simulator {
 
 		// use float if half float not available
 		this.simulationTextureType = wgl.hasHalfFloatTextureSupport() ? halfFloatExt.HALF_FLOAT_OES : wgl.FLOAT;
-		this.fluidity = 0.8;
+		this.fluidity = PAINT_FLUIDITY;
 		this.frameNumber = 0;
 		// the splat areas that we"re currently still simulating
 		// more recent are at the front of the array
 		this.splatAreas = [];
 
-		//////////////////////////////////////////////////
 		// create shader programs
 		this.splatProgram = wgl.createProgram(Shaders.Vertex.splat, Shaders.Fragment.splat);
 		this.velocitySplatProgram = wgl.createProgram("#define VELOCITY \n" + Shaders.Vertex.splat, "#define VELOCITY \n" + Shaders.Fragment.splat);
@@ -30,7 +29,6 @@ class Simulator {
 		this.copyProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.output);
 		this.resizeProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.resize);
 
-		///////////////////////////////////////////////
 		// create buffers
 		this.quadVertexBuffer = wgl.createBuffer();
 		wgl.bufferData(this.quadVertexBuffer, wgl.ARRAY_BUFFER, new Float32Array([-1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0]), wgl.STATIC_DRAW);
@@ -55,9 +53,7 @@ class Simulator {
 		var wgl = this.wgl;
 		for (var i = 0; i < textures.length; ++i) {
 			wgl.framebufferTexture2D(this.simulationFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, textures[i], 0);
-			wgl.clear(
-				wgl.createClearState().bindFramebuffer(this.simulationFramebuffer),
-				wgl.COLOR_BUFFER_BIT);
+			wgl.clear(wgl.createClearState().bindFramebuffer(this.simulationFramebuffer), wgl.COLOR_BUFFER_BIT);
 		}
 	}
 
@@ -149,17 +145,14 @@ class Simulator {
 	// returns the area we"re currently simulating
 	get simulationArea() {
 		var simulationBorder = 0;
-
 		// now let"s work out the total simulation area we need to simulate
 		var simulationArea = this.splatAreas[0].rectangle.clone(); // start with the first rectangle
 
 		for (var i = 1; i < this.splatAreas.length; ++i) { // and add the others
-			var splatArea = this.splatAreas[i];
-			var area = splatArea.rectangle.clone();
-
+			var splatArea = this.splatAreas[i],
+				area = splatArea.rectangle.clone();
 			simulationArea.includeRectangle(area);
 		}
-
 		simulationArea.round();
 		simulationArea.intersectRectangle(new Rectangle(0, 0, this.resolutionWidth, this.resolutionHeight));
 

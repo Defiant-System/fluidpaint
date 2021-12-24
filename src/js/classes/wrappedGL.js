@@ -17,7 +17,7 @@ class WrappedGL {
 
 	constructor(gl) {
 		this.gl = gl;
-		this.gl.clearColor(1, 1, 1, 1.0);
+		this.gl.clearColor(0, 0, 0, 0);
 		// this.gl.clear(gl.COLOR_BUFFER_BIT);
 
 		for (var i = 0; i < CONSTANT_NAMES.length; i += 1) {
@@ -44,18 +44,14 @@ class WrappedGL {
 		this.parameters = {
 			framebuffer: {
 				defaults: [null],
-				setter: function(framebuffer) {
-					gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-				},
+				setter: framebuffer => gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer),
 				usedInDraw: true,
 				usedInClear: true,
 				usedInRead: true
 			},
 			program: {
 				defaults: [ {program: null} ],
-				setter: function(wrappedProgram) {
-					gl.useProgram(wrappedProgram.program);
-				},
+				setter: wrappedProgram => gl.useProgram(wrappedProgram.program),
 				usedInDraw: true
 			},
 			viewport: {
@@ -66,20 +62,12 @@ class WrappedGL {
 			},
 			indexBuffer: {
 				defaults: [null],
-				setter: function(buffer) {
-					gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
-				},
+				setter: buffer => gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer),
 				usedInDraw: true
 			},
 			depthTest: {
 				defaults: [false],
-				setter: function(enabled) {
-					if (enabled) {
-						gl.enable(gl.DEPTH_TEST);
-					} else {
-						gl.disable(gl.DEPTH_TEST);
-					}
-				},
+				enabled: enabled => enabled ? gl.enable(gl.DEPTH_TEST) : gl.disable(gl.DEPTH_TEST),
 				usedInDraw: true
 			},
 			depthFunc: {
@@ -89,13 +77,7 @@ class WrappedGL {
 			},
 			cullFace: {
 				defaults: [false],
-				setter: function(enabled) {
-					if (enabled) {
-						gl.enable(gl.CULL_FACE);
-					} else {
-						gl.disable(gl.CULL_FACE);
-					}
-				},
+				setter: enabled => enabled ? gl.enable(gl.CULL_FACE) : gl.disable(gl.CULL_FACE),
 				usedInDraw: true
 			},
 			frontFace: {
@@ -104,13 +86,7 @@ class WrappedGL {
 			},
 			blend: {
 				defaults: [false],
-				setter: function(enabled) {
-					if (enabled) {
-						gl.enable(gl.BLEND);
-					} else {
-						gl.disable(gl.BLEND);
-					}
-				},
+				setter: enabled => enabled ? gl.enable(gl.BLEND) : gl.disable(gl.BLEND),
 				usedInDraw: true
 			},
 			blendEquation: {
@@ -125,13 +101,7 @@ class WrappedGL {
 			},
 			polygonOffsetFill: {
 				defaults: [false],
-				setter: function(enabled) {
-					if (enabled) {
-						gl.enable(gl.POLYGON_OFFSET_FILL);
-					} else {
-						gl.disable(gl.POLYGON_OFFSET_FILL);
-					}
-				},
+				setter: enabled => enabled ? gl.enable(gl.POLYGON_OFFSET_FILL) : gl.disable(gl.POLYGON_OFFSET_FILL),
 				usedInDraw: true
 			},
 			polygonOffset: {
@@ -141,13 +111,7 @@ class WrappedGL {
 			},
 			scissorTest: {
 				defaults: [false],
-				setter: function(enabled) {
-					if (enabled) {
-						gl.enable(gl.SCISSOR_TEST);
-					} else {
-						gl.disable(gl.SCISSOR_TEST);
-					}
-				},
+				setter: enabled => enabled ? gl.enable(gl.SCISSOR_TEST) : gl.disable(gl.SCISSOR_TEST),
 				usedInDraw: true,
 				usedInClear: true
 			},
@@ -208,7 +172,6 @@ class WrappedGL {
 				setter: (function() {
 					//we need to capture the unit in a closure
 					var unit = i;
-
 					return (target, texture) => {
 						gl.activeTexture(gl.TEXTURE0 + unit);
 						gl.bindTexture(target, texture);

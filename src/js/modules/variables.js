@@ -94,7 +94,8 @@ let BRUSH_SCALE = 20,
 let PRESSURE_JACOBI_ITERATIONS = 2,
 	FRAMES_TO_SIMULATE = 60, // how many frames to simulate the area induced by each splat for
 	SPLAT_PADDING = 4.5, // approximately sqrt(BRISTLE_LENGTH * BRISTLE_LENGTH - BRUSH_HEIGHT * BRUSH_HEIGHT)
-	SPEED_PADDING = 1.1;
+	SPEED_PADDING = 1.1,
+	PAINT_FLUIDITY = 0.8;
 
 
 let CONSTANT_NAMES = [

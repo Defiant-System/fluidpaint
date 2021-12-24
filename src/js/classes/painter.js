@@ -37,7 +37,6 @@ class Painter {
 			wgl.clear(wgl.createClearState().bindFramebuffer(this.framebuffer), wgl.COLOR_BUFFER_BIT);
 			this.snapshots.push(new Snapshot(texture, this.paintingRectangle.width, this.paintingRectangle.height, this.resolutionScale));
 		}
-
 		// while not undoing, the next snapshot index we"d save into; when undoing,
 		// our current position in the snapshots - undo to snapshotIndex - 1,
 		// redo to snapshotIndex + 1
@@ -61,7 +60,6 @@ class Painter {
 
 		//this is updated during resizing according to the new mouse position
 		//when we finish resizing, we then resize the simulator to match
-		this.newPaintingRectangle = null;
 		this.interactionState = InteractionMode.NONE;
 
 		this._clearState = wgl.createClearState().bindFramebuffer(this.framebuffer);
@@ -164,15 +162,17 @@ class Painter {
 			.useProgram(this.outputProgram)
 			.uniformTexture("u_input", 0, wgl.TEXTURE_2D, this.canvasTexture)
 			.vertexAttribPointer(this.quadVertexBuffer, 0, 2, wgl.FLOAT, wgl.FALSE, 0, 0)
-			.disable(wgl.DEPTH_TEST)
-			.enable(wgl.BLEND)
-			.blendFunc(wgl.ONE, wgl.ONE_MINUS_SRC_ALPHA);
+			// .disable(wgl.DEPTH_TEST)
+			// .enable(wgl.BLEND)
+			// .blendFunc(wgl.ONE, wgl.ONE_MINUS_SRC_ALPHA);
+			// .blendFunc(wgl.SRC_ALPHA, wgl.ONE_MINUS_SRC_ALPHA);
 
 		wgl.drawArrays(outputDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 
 		//draw brush to screen
 		if (this.interactionState !== InteractionMode.PAINTING) {
 			var hsva = hsvToRyb(this.brushColorHSVA[0], this.brushColorHSVA[1], this.brushColorHSVA[2]);
+					// [0.9, 0.1, 0.0, 1.0]
 			var brushDrawState = wgl.createDrawState()
 				.bindFramebuffer(null)
 				.viewport(0, 0, cvsWidth, cvsHeight)
@@ -180,7 +180,6 @@ class Painter {
 				.useProgram(this.brushProgram)
 				.bindIndexBuffer(this.brush.brushIndexBuffer)
 				.uniform4f("u_color", hsva[0], hsva[1], hsva[2], 1.0)
-				// .uniform4f("u_color", 0.9, 0.1, 0.0, 1.0)
 				.uniformMatrix4fv("u_projectionViewMatrix", false, this.mainProjectionMatrix)
 				// .enable(wgl.DEPTH_TEST)
 				// .enable(wgl.BLEND)

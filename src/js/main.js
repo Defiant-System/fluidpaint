@@ -27,6 +27,7 @@ let opt = {
 		// alpha: true,
 		// preserveDrawingBuffer: false,
 		premultipliedAlpha: false,
+		// antialias: false,
 	},
 	wgl = WrappedGL.create(canvas, opt),
 	painter = new Painter(canvas, wgl),

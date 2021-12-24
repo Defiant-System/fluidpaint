@@ -58,9 +58,9 @@ class ColorPicker {
 			.uniform4f("u_currentHSVA", hsva[0], hsva[1], hsva[2], hsva[3])
 			.uniform2f("u_screenResolution", WIDTH, HEIGHT)
 			.uniform2f("u_position", 0, 0)
-			.uniform2f("u_dimensions", WIDTH, HEIGHT)
-			.enable(wgl.BLEND)
-			.blendFunc(wgl.ONE, wgl.ONE_MINUS_SRC_ALPHA); //premultiplied alpha
+			.uniform2f("u_dimensions", WIDTH, HEIGHT);
+			// .enable(wgl.BLEND)
+			// .blendFunc(wgl.ONE, wgl.ONE_MINUS_SRC_ALPHA); //premultiplied alpha
 
 		wgl.drawArrays(pickerDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 

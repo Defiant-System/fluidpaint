@@ -17,7 +17,6 @@ var Utilities = {
 	}
 };
 
-
 function keysInObject(object) {
 	var count = 0;
 	for (var key in object) {
@@ -32,7 +31,6 @@ function buildShader(gl, type, source) {
 	var shader = gl.createShader(type);
 	gl.shaderSource(shader, source);
 	gl.compileShader(shader);
-
 	//log any errors
 	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
 		console.log(gl.getShaderInfoLog(shader));
@@ -55,43 +53,6 @@ function pascalRow(n) {
 	}
 	return line;
 }
-
-//width should be an odd number
-function makeBlurShader(width) {
-	var coefficients = pascalRow(width - 1 + 2);
-
-	//take the 1s off the ends
-	coefficients.shift();
-	coefficients.pop();
-	
-	var normalizationFactor = 0;
-	for (var i = 0; i < coefficients.length; ++i) {
-		normalizationFactor += coefficients[i]; 
-	}
-
-	var shader = [
-		"precision highp float;",
-		"uniform sampler2D u_input;",
-		"uniform vec2 u_step;",
-		"uniform vec2 u_resolution;",
-		"void main () {",
-			"vec4 total = vec4(0.0);",
-			"vec2 coordinates = gl_FragCoord.xy / u_resolution;",
-			"vec2 delta = u_step / u_resolution;",
-	].join("\n");
-
-	shader += "\n";
-
-	for (var i = 0; i < width; ++i) {
-		var offset = i - (width - 1) / 2;
-		shader += "total += texture2D(u_input, coordinates + delta * " + offset.toFixed(1) + ") * " + coefficients[i].toFixed(1) + "; \n";
-	}
-
-	shader += "gl_FragColor = total / " + normalizationFactor.toFixed(1) + ";\n }";
-
-	return shader;
-}
-
 
 function hsvToRyb(h, s, v) {
 	h = h % 1;
