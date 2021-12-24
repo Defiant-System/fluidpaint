@@ -26,7 +26,7 @@ canvas.height = 480;
 let opt = {
 		// alpha: true,
 		// preserveDrawingBuffer: false,
-		premultipliedAlpha: false,
+		// premultipliedAlpha: false,
 		// antialias: false,
 	},
 	wgl = WrappedGL.create(canvas, opt),

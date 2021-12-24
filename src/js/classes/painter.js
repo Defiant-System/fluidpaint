@@ -161,7 +161,7 @@ class Painter {
 			.viewport(0, 0, cvsWidth, cvsHeight)
 			.useProgram(this.outputProgram)
 			.uniformTexture("u_input", 0, wgl.TEXTURE_2D, this.canvasTexture)
-			.vertexAttribPointer(this.quadVertexBuffer, 0, 2, wgl.FLOAT, wgl.FALSE, 0, 0)
+			.vertexAttribPointer(this.quadVertexBuffer, 0, 2, wgl.FLOAT, wgl.FALSE, 0, 0);
 			// .disable(wgl.DEPTH_TEST)
 			// .enable(wgl.BLEND)
 			// .blendFunc(wgl.ONE, wgl.ONE_MINUS_SRC_ALPHA);

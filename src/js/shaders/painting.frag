@@ -107,7 +107,6 @@ void main () {
 	float specular = specularBRDF(lightDirection, eyeDirection, normal, u_roughness, u_F0);
 	vec3 surfaceColor = value.rgb * diffuse + specular * u_specularScale;
 	
-	// gl_FragColor = vec4(surfaceColor.rgb * surfaceColor.a, surfaceColor.a);
 	gl_FragColor = vec4(surfaceColor.rgb, value.a);
-	// gl_FragColor.rgb *= gl_FragColor.a;
+	// gl_FragColor = vec4(surfaceColor.rgb, 1.0);
 }
