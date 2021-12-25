@@ -23,13 +23,7 @@ let canvas = document.createElement('canvas');
 canvas.width = 640;
 canvas.height = 480;
 
-let opt = {
-		// alpha: true,
-		// preserveDrawingBuffer: false,
-		// premultipliedAlpha: false,
-		// antialias: false,
-	},
-	wgl = WrappedGL.create(canvas, opt),
+let wgl = WrappedGL.create(canvas),
 	painter = new Painter(canvas, wgl),
 	picker;
 
@@ -37,33 +31,22 @@ let opt = {
 const goya = {
 	init() {
 		// fast references
-		this.els = {
-			doc: $(document),
-			content: window.find("content"),
-			wrapper: window.find(".wrapper"),
-		};
-		// append canvas to workarea
-		this.els.cvs = this.els.wrapper.append(canvas);
-
-		// painter.clear([1, 1, 1]);
-
+		window.find(".wrapper").append(canvas);
 		let cvsEl = window.find(".sidebar .picker canvas");
 		picker = new ColorPicker(cvsEl, painter, wgl);
 
-
-		// temp
-		this.els.content.find(`.sidebar-head span:nth-child(3)`).trigger("click");
-
-		// let r = Math.round(Math.random() * 15) + 1;
-		// // r = 1;
-		// this.els.content.find(`.palette span:nth-child(${r})`).trigger("click");
+		// init all sub-objects
+		Object.keys(this)
+			.filter(i => typeof this[i].init === "function")
+			.map(i => this[i].init());
 	},
 	dispatch(event) {
 		let Self = goya,
+			name,
 			value,
-			index,
 			pEl,
 			el;
+		// console.log(event);
 		switch (event.type) {
 			// system events
 			case "window.open":
@@ -87,7 +70,6 @@ const goya = {
 				el = $(event.target).addClass("active");
 				value = "#"+ el.attr("style").split("#")[1].slice(0,6);
 				value = Color.hexToHsv(value);
-				// value[0] = 1-value[0];
 
 				painter.brushColorHSVA = value;
 				picker.draw();
@@ -104,8 +86,26 @@ const goya = {
 			case "save":
 				painter.save();
 				break;
+			// forwards events
+			case "toggle-sidebar":
+				return Self.sidebar.dispatch(event);
+			default:
+				el = event.el || (event.origin && event.origin.el);
+				if (el) {
+					pEl = el.data("area") ? el : el.parents("[data-area]");
+					name = pEl.data("area");
+					if (pEl.length) {
+						if (Self[name] && Self[name].dispatch) {
+							return Self[name].dispatch(event);
+						}
+						if (Self.tools[name].dispatch) {
+							return Self.tools[name].dispatch(event);
+						}
+					}
+				}
 		}
-	}
+	},
+	sidebar: @import "sidebar/sidebar.js"
 };
 
 window.exports = goya;

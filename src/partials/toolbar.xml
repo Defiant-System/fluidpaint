@@ -10,6 +10,6 @@
 	</Group>
 	<Group/>
 	<Group width="20%">
-		<Tool symbol="icon-format" state="active" click="toggle-sidebar"/>
+		<Tool symbol="icon-format" click="toggle-sidebar"/>
 	</Group>
 </CaptionToolBar>
