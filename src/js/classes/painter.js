@@ -48,13 +48,14 @@ class Painter {
 		this.brushInitialized = false;
 		this.brushX = 0;
 		this.brushY = 0;
+		
+		this.initalBrisleCount = 20;
+		this.splatVelocityScale = 0.14;
+		this.splatRadius = 0.05;
 		this.brushScale = 20;
 		this.brushHeight = 1.0;
 		this.brushColorHSVA = COLOR_HSVA;
-		this.brush = new Brush(wgl, MAX_BRISTLE_COUNT);
-		
-		this.splatVelocityScale = 0.14;
-		this.splatRadius = 0.05;
+		this.brush = new Brush(wgl, 25, MAX_BRISTLE_COUNT);
 
 		this.paintingRectangle.left = Utilities.clamp(this.paintingRectangle.left, -this.paintingRectangle.width, canvas.width);
 		this.paintingRectangle.bottom = Utilities.clamp(this.paintingRectangle.bottom, -this.paintingRectangle.height, canvas.height);

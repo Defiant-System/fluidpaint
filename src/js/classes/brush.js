@@ -1,13 +1,13 @@
 
 class Brush {
-	constructor(wgl, maxBristleCount) {
+	constructor(wgl, initialCount, maxBristleCount) {
 		this.wgl = wgl;
 		this.stiffnessVariation = 0.3;
 		this.brushDamping = 0.15;
 		this.gravity = 30;
 
 		this.maxBristleCount = maxBristleCount;
-		this._bristleCount = maxBristleCount; // number of bristles currently being used
+		this._bristleCount = initialCount; // number of bristles currently being used
 		this.projectProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.project);
 		this.distanceConstraintProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.distanceconstraint);
 		this.planeConstraintProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.planeconstraint);
@@ -134,11 +134,11 @@ class Brush {
 		var wgl = this.wgl;
 		var setBristlesDrawState = wgl.createDrawState()
 			.bindFramebuffer(this.simulationFramebuffer)
-			.viewport(0, 0, this._bristleCount, VERTICES_PER_BRISTLE)
+			.viewport(0, 0, this.bristleCount, VERTICES_PER_BRISTLE)
 			.useProgram(this.setBristlesProgram)
 			.uniform3f("u_brushPosition", this.positionX, this.positionY, this.positionZ)
 			.uniform1f("u_brushScale", this.scale)
-			.uniform1f("u_bristleCount", this._bristleCount)
+			.uniform1f("u_bristleCount", this.bristleCount)
 			.uniform1f("u_bristleLength", BRISTLE_LENGTH)
 			.uniform1f("u_verticesPerBristle", VERTICES_PER_BRISTLE)
 			.uniform1f("u_jitter", BRISTLE_JITTER)
@@ -155,17 +155,18 @@ class Brush {
 	}
 
 	set bristleCount(newBristleCount) {
-		var wgl = this.wgl;
+		var wgl = this.wgl,
+			bristleCount = this._bristleCount;
 
 		// we set all the bristle vertices that weren"t previously being simulated
-		if (newBristleCount > this._bristleCount) {
+		if (newBristleCount > bristleCount * 100) {
 			var setBristlesDrawState = wgl.createDrawState()
 				.bindFramebuffer(this.simulationFramebuffer)
-				.viewport(this._bristleCount, 0, (newBristleCount - this._bristleCount), VERTICES_PER_BRISTLE)
+				.viewport(bristleCount, 0, (newBristleCount - bristleCount), VERTICES_PER_BRISTLE)
 				.useProgram(this.setBristlesProgram)
 				.uniform3f("u_brushPosition", this.positionX, this.positionY, this.positionZ)
 				.uniform1f("u_brushScale", this.scale)
-				.uniform1f("u_bristleCount", this._bristleCount)
+				.uniform1f("u_bristleCount", bristleCount)
 				.uniform1f("u_bristleLength", BRISTLE_LENGTH)
 				.uniform1f("u_verticesPerBristle", VERTICES_PER_BRISTLE)
 				.uniform1f("u_jitter", BRISTLE_JITTER)
