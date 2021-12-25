@@ -71,10 +71,6 @@ let BRUSH_SCALE = 20,
 	MAX_BRUSH_SCALE = 75,
 	BRUSH_HEIGHT = 2.0, //how high the brush is over the canvas - this is scaled with the brushScale
 	Z_THRESHOLD = 0.13333, //this is scaled with the brushScale
-	//splatting parameters
-	SPLAT_VELOCITY_SCALE = 0.14,
-	SPLAT_RADIUS = 0.05,
-	SPLATS_PER_SEGMENT = 8,
 	VERTICES_PER_BRISTLE = 10,
 	BRISTLE_LENGTH = 4.5, // relative to a scale of 1
 	BRISTLE_JITTER = 0.5,
@@ -86,9 +82,12 @@ let BRUSH_SCALE = 20,
 // Simulator variables
 let PRESSURE_JACOBI_ITERATIONS = 2,
 	FRAMES_TO_SIMULATE = 60, // how many frames to simulate the area induced by each splat for
+	//splatting parameters
+	SPLAT_VELOCITY_SCALE = 0.14,
+	SPLAT_RADIUS = 0.05,
+	SPLATS_PER_SEGMENT = 8,
 	SPLAT_PADDING = 4.5, // approximately sqrt(BRISTLE_LENGTH * BRISTLE_LENGTH - BRUSH_HEIGHT * BRUSH_HEIGHT)
-	SPEED_PADDING = 1.1,
-	PAINT_FLUIDITY = 0.8;
+	SPEED_PADDING = 1.1;
 
 
 let CONSTANT_NAMES = [

@@ -37,12 +37,13 @@ class ColorPicker {
 	}
 
 	draw() {
+		let wgl = STUDIO.wgl;
 		//we first render the painting to a WebGL texture
 		let pickerTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, WIDTH, HEIGHT, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
 		let pickerFramebuffer = wgl.createFramebuffer();
 		wgl.framebufferTexture2D(pickerFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, pickerTexture, 0);
 		
-		let hsva = painter.brushColorHSVA;
+		let hsva = STUDIO.painter.brushColorHSVA;
 		let pickerDrawState = wgl.createDrawState()
 			.bindFramebuffer(pickerFramebuffer)
 			.viewport(0, 0, WIDTH, HEIGHT)
@@ -80,7 +81,7 @@ class ColorPicker {
 	}
 
 	move(event) {
-		let Self = picker,
+		let Self = STUDIO.picker,
 			Drag = Self.drag,
 			mY,
 			mX;
@@ -90,6 +91,7 @@ class ColorPicker {
 				let el = $(event.target),
 					type = el.prop("className"),
 					rect = el[0].parentNode.getBoundingClientRect(),
+					painter = STUDIO.painter,
 					hsva = painter.brushColorHSVA,
 					_PI = 180 / Math.PI,
 					min = { x: 0, y: 0 },

@@ -3,7 +3,7 @@
 
 {
 	init() {
-		// painter.clear([1, 1, 1]);
+		// STUDIO.painter.clear([1, 1, 1]);
 	},
 	dispatch(event) {
 		

@@ -17,23 +17,25 @@
 @import "modules/variables.js"
 @import "modules/utilities.js"
 @import "modules/color.js"
+@import "modules/ui.js"
 
 
-let canvas = document.createElement('canvas');
-canvas.width = 640;
-canvas.height = 480;
 
-let wgl = WrappedGL.create(canvas),
-	painter = new Painter(canvas, wgl),
-	picker;
+const STUDIO = {
+		canvas: document.createElement('canvas'),
+	};
+STUDIO.canvas.width = 640;
+STUDIO.canvas.height = 480;
+STUDIO.wgl = WrappedGL.create(STUDIO.canvas);
+STUDIO.painter = new Painter(STUDIO.canvas, STUDIO.wgl);
 
 
 const goya = {
 	init() {
 		// fast references
-		window.find(".wrapper").append(canvas);
+		window.find(".wrapper").append(STUDIO.canvas);
 		let cvsEl = window.find(".sidebar .picker canvas");
-		picker = new ColorPicker(cvsEl, painter, wgl);
+		STUDIO.picker = new ColorPicker(cvsEl, STUDIO.painter, STUDIO.wgl);
 
 		// init all sub-objects
 		Object.keys(this)
@@ -55,10 +57,10 @@ const goya = {
 			case "open-help":
 				defiant.shell("fs -u '~/help/index.md'");
 				break;
-			case "history-undo": painter.undo(); break;
-			case "history-redo": painter.redo(); break;
-			case "clear": painter.clear(); break;
-			case "save": painter.save(); break;
+			case "history-undo": STUDIO.painter.undo(); break;
+			case "history-redo": STUDIO.painter.redo(); break;
+			case "clear": STUDIO.painter.clear(); break;
+			case "save": STUDIO.painter.save(); break;
 			// forwards events
 			case "toggle-sidebar":
 				return Self.sidebar.dispatch(event);

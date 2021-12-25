@@ -16,7 +16,7 @@
 			.map(i => this[i].init(this));
 
 		// temp
-		this.els.content.find(`.sidebar-head span:nth-child(2)`).trigger("click");
+		this.els.content.find(`.sidebar-head span:nth-child(1)`).trigger("click");
 
 		// let r = Math.round(Math.random() * 15) + 1;
 		// this.els.content.find(`.palette span:nth-child(${r})`).trigger("click");

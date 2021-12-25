@@ -13,7 +13,7 @@ class Simulator {
 
 		// use float if half float not available
 		this.simulationTextureType = wgl.hasHalfFloatTextureSupport() ? halfFloatExt.HALF_FLOAT_OES : wgl.FLOAT;
-		this.fluidity = PAINT_FLUIDITY;
+		this.fluidity = 0.8;
 		this.frameNumber = 0;
 		// the splat areas that we"re currently still simulating
 		// more recent are at the front of the array
@@ -62,6 +62,7 @@ class Simulator {
 	}
 
 	copyTexture(destinationWidth, destinationHeight, sourceTexture, destinationTexture) {
+		var wgl = this.wgl;
 		var copyDrawState = wgl.createDrawState()
 			.bindFramebuffer(this.simulationFramebuffer)
 			.viewport(0, 0, destinationWidth, destinationHeight)
@@ -75,7 +76,6 @@ class Simulator {
 	// resizes the canvas with direct texel correspondence, offsetting the previous painting
 	resize(newWidth, newHeight, offsetX, offsetY, featherSize) {
 		var wgl = this.wgl;
-
 		var resizeDrawState = wgl.createDrawState()
 			.bindFramebuffer(this.simulationFramebuffer)
 			.viewport(0, 0, newWidth, newHeight)

@@ -51,6 +51,9 @@ class Painter {
 		this.brushScale = BRUSH_SCALE;
 		this.brushColorHSVA = COLOR_HSVA;
 		this.brush = new Brush(wgl, MAX_BRISTLE_COUNT);
+		
+		this.splatVelocityScale = SPLAT_VELOCITY_SCALE;
+		this.splatRadius = SPLAT_RADIUS;
 
 		this.paintingRectangle.left = Utilities.clamp(this.paintingRectangle.left, -this.paintingRectangle.width, canvas.width);
 		this.paintingRectangle.bottom = Utilities.clamp(this.paintingRectangle.bottom, -this.paintingRectangle.height, canvas.height);
@@ -115,7 +118,7 @@ class Painter {
 
 		//splat into paint and velocity textures
 		if (this.interactionState === InteractionMode.PAINTING) {
-			var splatRadius = SPLAT_RADIUS * this.brushScale;
+			var splatRadius = this.splatRadius * this.brushScale;
 			var splatColor = hsvToRyb(this.brushColorHSVA[0], this.brushColorHSVA[1], this.brushColorHSVA[2]);
 			var alphaT = this.brushColorHSVA[3];
 			//we scale alpha based on the number of bristles
@@ -124,7 +127,7 @@ class Painter {
 			var maxAlpha = mix(THIN_MAX_ALPHA, THICK_MAX_ALPHA, bristleT);
 			var alpha = mix(minAlpha, maxAlpha, alphaT);
 			splatColor[3] = alpha;
-			var splatVelocityScale = SPLAT_VELOCITY_SCALE * splatColor[3] * this.resolutionScale;
+			var splatVelocityScale = this.splatVelocityScale * splatColor[3] * this.resolutionScale;
 			//splat paint
 			this.simulator.splat(this.brush, Z_THRESHOLD * this.brushScale, this.paintingRectangle, splatColor, splatRadius, splatVelocityScale);
 		}
