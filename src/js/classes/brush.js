@@ -2,6 +2,10 @@
 class Brush {
 	constructor(wgl, maxBristleCount) {
 		this.wgl = wgl;
+		this.stiffnessVariation = 0.3;
+		this.brushDamping = 0.15;
+		this.gravity = 30;
+
 		this.maxBristleCount = maxBristleCount;
 		this._bristleCount = maxBristleCount; // number of bristles currently being used
 		this.projectProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.project);
@@ -40,14 +44,15 @@ class Brush {
 		}
 		this.randomsTexture = wgl.buildTexture(wgl.RGBA, wgl.FLOAT, maxBristleCount, VERTICES_PER_BRISTLE, new Float32Array(randoms), wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR); // contains projected positions
 
-		let splatCoordinates = [],
+		let splatsPerSegment = 8,
+			splatCoordinates = [],
 			splatIndices = [],
 			splatIndex = 0;
 		for (let bristle = 0; bristle < maxBristleCount; ++bristle) {
 			for (let vertex = 0; vertex < VERTICES_PER_BRISTLE - 1; ++vertex) {
 				// we create a quad for each bristle vertex
-				for (let i = 0; i < SPLATS_PER_SEGMENT; ++i) {
-					let t = (i + 0.5) / SPLATS_PER_SEGMENT,
+				for (let i = 0; i < splatsPerSegment; ++i) {
+					let t = (i + 0.5) / splatsPerSegment,
 						textureX = (bristle + 0.5) / maxBristleCount,
 						textureY = (vertex + 0.5 + t) / VERTICES_PER_BRISTLE;
 					// bottom left
@@ -201,8 +206,8 @@ class Brush {
 			.uniformTexture("u_positionsTexture", 0, wgl.TEXTURE_2D, this.positionsTexture)
 			.uniformTexture("u_velocitiesTexture", 1, wgl.TEXTURE_2D, this.velocitiesTexture)
 			.uniformTexture("u_randomsTexture", 2, wgl.TEXTURE_2D, this.randomsTexture)
-			.uniform1f("u_gravity", GRAVITY)
-			.uniform1f("u_damping", BRUSH_DAMPING)
+			.uniform1f("u_gravity", this.gravity)
+			.uniform1f("u_damping", this.brushDamping)
 			.uniform1f("u_verticesPerBristle", VERTICES_PER_BRISTLE)
 			.uniform2f("u_resolution", this.maxBristleCount, VERTICES_PER_BRISTLE)
 			.vertexAttribPointer(this.quadVertexBuffer, this.projectProgram.getAttribLocation("a_position"), 2, wgl.FLOAT, false, 0, 0);
@@ -258,7 +263,7 @@ class Brush {
 					.uniformTexture("u_positionsTexture", 0, wgl.TEXTURE_2D, this.projectedPositionsTexture)
 					.uniformTexture("u_randomsTexture", 1, wgl.TEXTURE_2D, this.randomsTexture)
 					.uniform1f("u_pointCount", VERTICES_PER_BRISTLE)
-					.uniform1f("u_stiffnessVariation", STIFFNESS_VARIATION)
+					.uniform1f("u_stiffnessVariation", this.stiffnessVariation)
 					.uniform1i("u_pass", pass)
 					.uniform2f("u_resolution", this.maxBristleCount, VERTICES_PER_BRISTLE)
 					.vertexAttribPointer(this.quadVertexBuffer, this.bendingConstraintProgram.getAttribLocation("a_position"), 2, wgl.FLOAT, false, 0, 0);

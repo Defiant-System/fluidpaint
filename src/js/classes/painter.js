@@ -48,12 +48,13 @@ class Painter {
 		this.brushInitialized = false;
 		this.brushX = 0;
 		this.brushY = 0;
-		this.brushScale = BRUSH_SCALE;
+		this.brushScale = 20;
+		this.brushHeight = 1.0;
 		this.brushColorHSVA = COLOR_HSVA;
 		this.brush = new Brush(wgl, MAX_BRISTLE_COUNT);
 		
-		this.splatVelocityScale = SPLAT_VELOCITY_SCALE;
-		this.splatRadius = SPLAT_RADIUS;
+		this.splatVelocityScale = 0.14;
+		this.splatRadius = 0.05;
 
 		this.paintingRectangle.left = Utilities.clamp(this.paintingRectangle.left, -this.paintingRectangle.width, canvas.width);
 		this.paintingRectangle.bottom = Utilities.clamp(this.paintingRectangle.bottom, -this.paintingRectangle.height, canvas.height);
@@ -87,7 +88,7 @@ class Painter {
 				this.brushY = this.canvas.height - pos.y;
 
 				if (!this.brushInitialized) {
-					this.brush.initialize(this.brushX, this.brushY, BRUSH_HEIGHT * this.brushScale, this.brushScale);
+					this.brush.initialize(this.brushX, this.brushY, this.brushHeight * this.brushScale, this.brushScale);
 					this.brushInitialized = true;
 				}
 				break;
@@ -113,7 +114,7 @@ class Painter {
 
 		//update brush
 		if (this.brushInitialized) {
-			this.brush.update(this.brushX, this.brushY, BRUSH_HEIGHT * this.brushScale, this.brushScale);
+			this.brush.update(this.brushX, this.brushY, this.brushHeight * this.brushScale, this.brushScale);
 		}
 
 		//splat into paint and velocity textures
