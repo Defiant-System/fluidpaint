@@ -16,7 +16,7 @@
 			.map(i => this[i].init(this));
 
 		// temp
-		this.els.content.find(`.sidebar-head span:nth-child(1)`).trigger("click");
+		this.els.content.find(`.sidebar-head span:nth-child(2)`).trigger("click");
 
 		// let r = Math.round(Math.random() * 15) + 1;
 		// this.els.content.find(`.palette span:nth-child(${r})`).trigger("click");
@@ -28,11 +28,20 @@
 			value,
 			pEl,
 			el;
+		// console.log(event);
 		switch (event.type) {
 			case "toggle-sidebar":
 				value = Self.els.content.hasClass("show-sidebar");
 				Self.els.content.toggleClass("show-sidebar", value);
 				return !value;
+			case "select-tab":
+				event.el.find(".active").removeClass("active");
+				el = $(event.target).addClass("active");
+				
+				pEl = event.el.parent();
+				pEl.find(".sidebar-body.active").removeClass("active");
+				pEl.find(".sidebar-body").get(el.index()).addClass("active");
+				break;
 			default:
 				el = event.el || (event.origin && event.origin.el) || $(event.target);
 				pEl = el.parents("[data-section]");

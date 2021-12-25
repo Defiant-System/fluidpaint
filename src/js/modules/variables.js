@@ -43,24 +43,6 @@ let QUALITIES = [
 	INITIAL_HEIGHT = 400,
 	MIN_PAINTING_WIDTH = 300,
 	MAX_PAINTING_WIDTH = 4096, //this is further constrained by the maximum texture size
-	//brush parameters
-	MAX_BRISTLE_COUNT = 100,
-	MIN_BRISTLE_COUNT = 10,
-	MIN_BRUSH_SCALE = 5,
-	MAX_BRUSH_SCALE = 75,
-	BRUSH_HEIGHT = 2.0, //how high the brush is over the canvas - this is scaled with the brushScale
-	Z_THRESHOLD = 0.13333, //this is scaled with the brushScale
-	//splatting parameters
-	SPLAT_VELOCITY_SCALE = 0.14,
-	SPLAT_RADIUS = 0.05,
-	//for thin brush (fewest bristles)
-	THIN_MIN_ALPHA = 0.002,
-	THIN_MAX_ALPHA = 0.08,
-	//for thick brush (most bristles)
-	THICK_MIN_ALPHA = 0.002,
-	THICK_MAX_ALPHA = 0.025,
-	// COLOR_PICKER_LEFT = 20,
-	// COLOR_PICKER_TOP = 523,
 	RESIZING_RADIUS = 20,
 	RESIZING_FEATHER_SIZE = 8, //in pixels 
 	//rendering parameters
@@ -72,10 +54,26 @@ let QUALITIES = [
 	LIGHT_DIRECTION = [0, 1, 1],
 	HISTORY_SIZE = 4; //number of snapshots we store - this should be number of reversible actions + 1
 
-// Brush variables
+// Brush parameters
 let BRUSH_SCALE = 20,
 	COLOR_HSVA = [.75, 1, 1, 0.8],
 	N_PREVIOUS_SPEEDS = 15, // how many previous speeds we store
+	//for thin brush (fewest bristles)
+	THIN_MIN_ALPHA = 0.002,
+	THIN_MAX_ALPHA = 0.08,
+	//for thick brush (most bristles)
+	THICK_MIN_ALPHA = 0.002,
+	THICK_MAX_ALPHA = 0.025,
+	
+	MAX_BRISTLE_COUNT = 100,
+	MIN_BRISTLE_COUNT = 10,
+	MIN_BRUSH_SCALE = 5,
+	MAX_BRUSH_SCALE = 75,
+	BRUSH_HEIGHT = 2.0, //how high the brush is over the canvas - this is scaled with the brushScale
+	Z_THRESHOLD = 0.13333, //this is scaled with the brushScale
+	//splatting parameters
+	SPLAT_VELOCITY_SCALE = 0.14,
+	SPLAT_RADIUS = 0.05,
 	SPLATS_PER_SEGMENT = 8,
 	VERTICES_PER_BRISTLE = 10,
 	BRISTLE_LENGTH = 4.5, // relative to a scale of 1

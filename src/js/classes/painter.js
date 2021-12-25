@@ -192,7 +192,8 @@ class Painter {
 	}
 
 	clear(hsl) {
-		if (hsl) this.wgl.gl.clearColor(...hsl, 0);
+		hsl = hsl || [1, 1, 1];
+		this.wgl.gl.clearColor(...hsl, 0);
 		this.simulator.clear();
 		this.needsRedraw = true;
 	}

@@ -55,37 +55,10 @@ const goya = {
 			case "open-help":
 				defiant.shell("fs -u '~/help/index.md'");
 				break;
-			case "select-tab":
-				event.el.find(".active").removeClass("active");
-				el = $(event.target).addClass("active");
-				
-				pEl = event.el.parent();
-				pEl.find(".sidebar-body.active").removeClass("active");
-				pEl.find(".sidebar-body").get(el.index()).addClass("active");
-				break;
-			case "select-color":
-				if (event.el[0] === event.target) return;
-
-				event.el.find(".active").removeClass("active");
-				el = $(event.target).addClass("active");
-				value = "#"+ el.attr("style").split("#")[1].slice(0,6);
-				value = Color.hexToHsv(value);
-
-				painter.brushColorHSVA = value;
-				picker.draw();
-				break;
-			case "history-undo":
-				painter.undo();
-				break;
-			case "history-redo":
-				painter.redo();
-				break;
-			case "clear":
-				painter.clear();
-				break;
-			case "save":
-				painter.save();
-				break;
+			case "history-undo": painter.undo(); break;
+			case "history-redo": painter.redo(); break;
+			case "clear": painter.clear(); break;
+			case "save": painter.save(); break;
 			// forwards events
 			case "toggle-sidebar":
 				return Self.sidebar.dispatch(event);
