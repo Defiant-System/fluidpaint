@@ -50,13 +50,13 @@ const goya = {
 		let cvsEl = window.find(".sidebar .picker canvas");
 		picker = new ColorPicker(cvsEl, painter, wgl);
 
-		// let tmp = "#ff0000";
-		// console.log( Color.hexToHsv(tmp) );
 
 		// temp
-		let r = Math.round(Math.random() * 15) + 1;
-		// r = 1;
-		this.els.content.find(`.palette span:nth-child(${r})`).trigger("click");
+		this.els.content.find(`.sidebar-head span:nth-child(3)`).trigger("click");
+
+		// let r = Math.round(Math.random() * 15) + 1;
+		// // r = 1;
+		// this.els.content.find(`.palette span:nth-child(${r})`).trigger("click");
 	},
 	dispatch(event) {
 		let Self = goya,

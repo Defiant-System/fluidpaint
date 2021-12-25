@@ -1,8 +1,8 @@
 <MenuBar>
-	<Menu name="Fluid Paint">
-		<Menu name="About Fluid Paint" shell="win -a"/>
+	<Menu name="Goya">
+		<Menu name="About Goya" shell="win -a"/>
 		<Menu type="divider"/>
-		<Menu name="Quit Fluid Paint" shell="win -c"/>
+		<Menu name="Quit Goya" shell="win -c"/>
 	</Menu>
 	<Menu name="Help">
 		<Menu name="Help" click="open-help"/>
