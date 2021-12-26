@@ -74,7 +74,7 @@ class Simulator {
 	}
 
 	// resizes the canvas with direct texel correspondence, offsetting the previous painting
-	resize(newWidth, newHeight, offsetX, offsetY, featherSize) {
+	resize(newWidth, newHeight, featherSize) {
 		var wgl = this.wgl;
 		var resizeDrawState = wgl.createDrawState()
 			.bindFramebuffer(this.simulationFramebuffer)
@@ -82,7 +82,7 @@ class Simulator {
 			.useProgram(this.resizeProgram)
 			.uniformTexture("u_paintTexture", 0, wgl.TEXTURE_2D, this.paintTexture)
 			.uniform2f("u_oldResolution", this.resolutionWidth, this.resolutionHeight)
-			.uniform2f("u_offset", offsetX, offsetY)
+			.uniform2f("u_offset", 0, 0)
 			.uniform1f("u_featherSize", featherSize)
 			.vertexAttribPointer(this.quadVertexBuffer, this.resizeProgram.getAttribLocation("a_position"), 2, wgl.FLOAT, false, 0, 0);
 

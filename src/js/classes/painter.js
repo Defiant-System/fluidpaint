@@ -10,7 +10,7 @@ class Painter {
 
 		this.framebuffer = wgl.createFramebuffer();
 		this.paintingProgram = wgl.createProgram(Shaders.Vertex.painting, Shaders.Fragment.painting);
-		this.paintingProgramRGB = wgl.createProgram(Shaders.Vertex.painting, "#define RGB \n "+ Shaders.Fragment.painting);
+		this.resizingPaintingProgram = wgl.createProgram(Shaders.Vertex.painting, "#define RESIZING \n "+ Shaders.Fragment.painting);
 		this.brushProgram = wgl.createProgram(Shaders.Vertex.brush, Shaders.Fragment.brush, { "a_position": 0 });
 		this.outputProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.output, { "a_position": 0 });
 		this.savePaintingProgram = wgl.createProgram(Shaders.Vertex.painting, "#define SAVE \n "+ Shaders.Fragment.painting);
@@ -58,6 +58,7 @@ class Painter {
 
 		//this is updated during resizing according to the new mouse position
 		//when we finish resizing, we then resize the simulator to match
+		this.newPaintingRectangle = null;
 		this.interactionState = InteractionMode.NONE;
 
 		this._clearState = wgl.createClearState().bindFramebuffer(this.framebuffer);
@@ -87,7 +88,9 @@ class Painter {
 		this.mainProjectionMatrix = makeOrthographicMatrix(new Float32Array(16), 0.0, dim.width, 0, dim.height, -5000.0, 5000.0);
 		this.canvasTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, dim.width, dim.height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
 
-		// this.simulator.resize(this.paintingResolutionWidth, this.paintingResolutionHeight, offsetX, offsetY, RESIZING_FEATHER_SIZE);
+		this.newPaintingRectangle.width = dim.width;
+		this.newPaintingRectangle.height = dim.height;
+
 		this.needsRedraw = true;
 	}
 
@@ -120,16 +123,21 @@ class Painter {
 
 		if (this.simulator.simulate()) this.needsRedraw = true;
 
+		//the rectangle we end up drawing the painting into
+		var clippedPaintingRectangle = (this.newPaintingRectangle || this.paintingRectangle).clone()
+										.intersectRectangle(new Rectangle(0, 0, this.canvas.width, this.canvas.height));
+
 		if (this.needsRedraw) {
 			//draw painting into texture
 			wgl.framebufferTexture2D(this.framebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, this.canvasTexture, 0);
-			// wgl.clear(this._clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
+			wgl.clear(this._clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
 
+			var paintingProgram = this.interactionState === InteractionMode.RESIZING ? this.resizingPaintingProgram : this.paintingProgram;
 			var paintingDrawState = wgl.createDrawState()
 				.bindFramebuffer(this.framebuffer)
 				.viewport(0, 0, cvsWidth, cvsHeight)
 				.vertexAttribPointer(this.quadVertexBuffer, 0, 2, wgl.FLOAT, false, 0, 0)
-				.useProgram(this.paintingProgram)
+				.useProgram(paintingProgram)
 				.uniform1f("u_featherSize", RESIZING_FEATHER_SIZE)
 				.uniform1f("u_normalScale", NORMAL_SCALE / this.resolutionScale)
 				.uniform1f("u_roughness", ROUGHNESS)
@@ -141,7 +149,8 @@ class Painter {
 				.uniform2f("u_paintingResolution", this.simulator.resolutionWidth, this.simulator.resolutionHeight)
 				.uniform2f("u_paintingSize", cvsWidth, cvsHeight)
 				.uniform2f("u_screenResolution", cvsWidth, cvsHeight)
-				.uniformTexture("u_paintTexture", 0, wgl.TEXTURE_2D, this.simulator.paintTexture);
+				.uniformTexture("u_paintTexture", 0, wgl.TEXTURE_2D, this.simulator.paintTexture)
+				.viewport(clippedPaintingRectangle.left, clippedPaintingRectangle.bottom, clippedPaintingRectangle.width, clippedPaintingRectangle.height);
 			wgl.drawArrays(paintingDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 		}
 

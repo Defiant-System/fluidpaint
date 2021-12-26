@@ -12,10 +12,22 @@ uniform float u_F0;
 uniform float u_diffuseScale;
 uniform float u_specularScale;
 
+#ifdef RESIZING
+uniform float u_featherSize;
+#endif
+
 //samples with feathering at the edges
 vec4 samplePaintTexture (vec2 coordinates) {
 	vec4 value = texture2D(u_paintTexture, coordinates);
-	return value;
+
+	#ifdef RESIZING
+		vec2 featherSize = u_featherSize / u_paintingResolution;
+		float scale = smoothstep(-featherSize.x, 0.0, coordinates.x) * smoothstep(-featherSize.y, 0.0, coordinates.y)
+					  * smoothstep(1.0 + featherSize.x, 1.0, coordinates.x) * smoothstep(1.0 + featherSize.y, 1.0, coordinates.y);
+		return value * scale;
+	#else
+		return value;
+	#endif
 }
 
 
