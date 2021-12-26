@@ -12,32 +12,19 @@
 	dispatch(event) {
 		let APP = goya,
 			Self = APP.tools.brush,
+			canvas = STUDIO.canvas,
+			painter = STUDIO.painter,
+			pos,
 			el;
 		// console.log(event);
 		switch (event.type) {
-			case "focus-tool":
-				// bind event handlers
-				Self.els.body.on("mousedown mousemove", Self.move);
-				Self.els.doc.on("mouseup", Self.move);
-				break;
-			case "blur-tool":
-				// unbind event handlers
-				Self.els.body.off("mousedown mousemove", Self.move);
-				Self.els.doc.off("mouseup", Self.move);
-				break;
-		}
-	},
-	move(event) {
-		let Self = goya.tools.brush,
-			canvas = STUDIO.canvas,
-			painter = STUDIO.painter;
-		switch (event.type) {
+			// native events
 			case "mousedown":
 				painter.interactionState = InteractionMode.PAINTING;
 				painter.saveSnapshot();
 				break;
 			case "mousemove":
-				let pos = Utilities.getMousePosition(event, canvas);
+				pos = Utilities.getMousePosition(event, canvas);
 				painter.brushX = pos.x;
 				painter.brushY = canvas.height - pos.y;
 
@@ -48,6 +35,17 @@
 				break;
 			case "mouseup":
 				painter.interactionState = InteractionMode.NONE;
+				break;
+			// custom events
+			case "focus-tool":
+				// bind event handlers
+				Self.els.body.on("mousedown mousemove", Self.dispatch);
+				Self.els.doc.on("mouseup", Self.dispatch);
+				break;
+			case "blur-tool":
+				// unbind event handlers
+				Self.els.body.off("mousedown mousemove", Self.dispatch);
+				Self.els.doc.off("mouseup", Self.dispatch);
 				break;
 		}
 	}
