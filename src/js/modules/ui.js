@@ -38,8 +38,7 @@ const UI = {
 				Self.drag = {
 					el,
 					value,
-					section: el.parents("[data-section]").data("section"),
-					change: el.data("change"),
+					type: el.data("change"),
 					arg: el.data("arg"),
 					clientY: event.clientY,
 					clientX: event.clientX,
@@ -73,11 +72,10 @@ const UI = {
 				Self.doc.off("mousemove mouseup", Self.doKnob);
 
 				// emit change event
-				name = Drag.section;
-				type = Drag.change;
+				type = Drag.type;
 				value = +Drag.val.el.text();
-				if (name && type) {
-					APP.sidebar[name].dispatch({ type, arg: Drag.arg, value });
+				if (type) {
+					APP.sidebar.dispatch({ type, arg: Drag.arg, value });
 				}
 				break;
 		}

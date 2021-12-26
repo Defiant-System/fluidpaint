@@ -8,8 +8,6 @@
 	dispatch(event) {
 		let APP = goya,
 			Self = APP.sidebar.colors,
-			list,
-			entry,
 			name,
 			value,
 			pEl,
@@ -26,13 +24,6 @@
 
 				STUDIO.painter.brushColorHSVA = value;
 				STUDIO.picker.draw();
-				break;
-			case "set-variable":
-				entry = STUDIO;
-				list = event.arg.split(".");
-				name = list.pop();
-				list.map(item => (entry = entry[item]));
-				entry[name] = event.value;
 				break;
 		}
 	}

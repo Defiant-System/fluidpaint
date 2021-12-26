@@ -32,11 +32,8 @@
 			<div class="knob" data-value="2" data-min="0" data-max="4" data-step="0.5" data-change="set-variable" data-arg="painter.brushHeight"></div>
 			<span class="value"><!-- value --></span>
 		</div>
-	</div>
 
-	<div class="controls">
-		<legend></legend>
-
+		<legend>&#160;</legend>
 		<div class="control">
 			<span class="label">Stiffness</span>
 			<div class="knob" data-value="0.3" data-min="0" data-max="4" data-step="0.1" data-change="set-variable" data-arg="painter.brush.stiffnessVariation"></div>
@@ -52,6 +49,28 @@
 		<div class="control">
 			<span class="label">Gravity</span>
 			<div class="knob" data-value="30" data-min="3" data-max="40" data-step="1" data-change="set-variable" data-arg="painter.brush.gravity"></div>
+			<span class="value"><!-- value --></span>
+		</div>
+	</div>
+
+	<div class="controls">
+		<legend>Color Splat</legend>
+
+		<div class="control">
+			<span class="label">Fluidity</span>
+			<div class="knob" data-value="0.8" data-min="0.35" data-max="0.85" data-step="0.01" data-change="set-variable" data-arg="painter.simulator.fluidity"></div>
+			<span class="value"><!-- value --></span>
+		</div>
+
+		<div class="control">
+			<span class="label">Velocity</span>
+			<div class="knob" data-value="0.14" data-min="0.1" data-max="0.5" data-step="0.01" data-change="set-variable" data-arg="painter.splatVelocityScale"></div>
+			<span class="value"><!-- value --></span>
+		</div>
+
+		<div class="control">
+			<span class="label">Radius</span>
+			<div class="knob" data-value="0.05" data-min="0.05" data-max="0.35" data-step="0.01" data-change="set-variable" data-arg="painter.splatRadius"></div>
 			<span class="value"><!-- value --></span>
 		</div>
 	</div>

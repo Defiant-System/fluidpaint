@@ -24,6 +24,8 @@
 	dispatch(event) {
 		let APP = goya,
 			Self = APP.sidebar,
+			list,
+			entry,
 			name,
 			value,
 			pEl,
@@ -41,6 +43,13 @@
 				pEl = event.el.parent();
 				pEl.find(".sidebar-body.active").removeClass("active");
 				pEl.find(".sidebar-body").get(el.index()).addClass("active");
+				break;
+			case "set-variable":
+				entry = STUDIO;
+				list = event.arg.split(".");
+				name = list.pop();
+				list.map(item => (entry = entry[item]));
+				entry[name] = event.value;
 				break;
 			default:
 				el = event.el || (event.origin && event.origin.el) || $(event.target);
