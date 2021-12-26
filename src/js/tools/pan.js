@@ -15,7 +15,7 @@
 				break;
 			case "focus-tool":
 				// update interaction state
-				painter.interactionState = InteractionMode.PANNING;
+				STUDIO.painter.interactionState = InteractionMode.PANNING;
 				break;
 		}
 	}
