@@ -1,15 +1,19 @@
 <CaptionToolBar>
-	<Group width="20%">
+	<Group width="50%">
 		<Options>
 			<Tool symbol="icon-undo" click="history-undo" state="disabled"/>
 			<Tool symbol="icon-redo" click="history-redo" state="disabled"/>
 		</Options>
+		<Options>
+			<Tool symbol="icon-crop" click="select-tool" arg="resize"/>
+			<Tool symbol="icon-hand" click="select-tool" arg="pan"/>
+			<!-- <Tool symbol="icon-zoom" click="select-tool" arg="zoom"/> -->
+			<Tool symbol="icon-brush" state="active" click="select-tool" arg="brush"/>
+		</Options>
+	</Group>
+	<Group width="50%">
 		<Tool name="Clear" click="clear"/>
 		<Tool name="Save" click="save"/>
-		<!-- <Select name="100%" width="35" menu="view-zoom"/> -->
-	</Group>
-	<Group/>
-	<Group width="20%">
 		<Tool symbol="icon-format" state="active" click="toggle-sidebar"/>
 	</Group>
 </CaptionToolBar>

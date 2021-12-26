@@ -4,13 +4,6 @@ class Painter {
 		this.canvas = canvas;
 		this.wgl = wgl;
 
-		// references to elements
-		this._doc = $(document);
-		this._body = window.find(".workarea");
-		// bind event handlers
-		this._body.on("mousedown mousemove", this.move.bind(this));
-		this._doc.on("mouseup", this.move.bind(this));
-
 		wgl.getExtension("OES_texture_float");
 		wgl.getExtension("OES_texture_float_linear");
 		let maxTextureSize = wgl.getParameter(wgl.MAX_TEXTURE_SIZE);
@@ -75,28 +68,6 @@ class Painter {
 			};
 
 		update();
-	}
-
-	move(event) {
-		switch (event.type) {
-			case "mousedown":
-				this.interactionState = InteractionMode.PAINTING;
-				this.saveSnapshot();
-				break;
-			case "mousemove":
-				let pos = Utilities.getMousePosition(event, this.canvas);
-				this.brushX = pos.x;
-				this.brushY = this.canvas.height - pos.y;
-
-				if (!this.brushInitialized) {
-					this.brush.initialize(this.brushX, this.brushY, this.brushHeight * this.brushScale, this.brushScale);
-					this.brushInitialized = true;
-				}
-				break;
-			case "mouseup":
-				this.interactionState = InteractionMode.NONE;
-				break;
-		}
 	}
 
 	get paintingResolutionWidth() {

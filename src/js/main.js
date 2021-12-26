@@ -62,6 +62,8 @@ const goya = {
 			case "clear": STUDIO.painter.clear(); break;
 			case "save": STUDIO.painter.save(); break;
 			// forwards events
+			case "select-tool":
+				return Self.tools.dispatch(event);
 			case "toggle-sidebar":
 				return Self.sidebar.dispatch(event);
 			default:
@@ -80,7 +82,8 @@ const goya = {
 				}
 		}
 	},
-	sidebar: @import "sidebar/sidebar.js"
+	sidebar: @import "sidebar/sidebar.js",
+	tools: @import "tools/tools.js"
 };
 
 window.exports = goya;
