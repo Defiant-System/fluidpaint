@@ -41,8 +41,6 @@ let QUALITIES = [
 		PANNING: 3
 	},
 	INITIAL_QUALITY = 1,
-	INITIAL_WIDTH = 600,
-	INITIAL_HEIGHT = 400,
 	MIN_PAINTING_WIDTH = 300,
 	MAX_PAINTING_WIDTH = 4096, //this is further constrained by the maximum texture size
 	RESIZING_RADIUS = 20,

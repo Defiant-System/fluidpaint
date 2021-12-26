@@ -90,7 +90,6 @@ content {
 			text-align: center;
 
 			.easel {
-				background: red;
 				position: relative;
 				display: inline-block;
 
@@ -113,46 +112,42 @@ content {
 				.resize {
 					display: none;
 					position: absolute;
-					width: 11px;
-					height: 11px;
-					opacity: .75;
-					background: #b6500e;
-					border-radius: 3px;
+					background: #e8e8e8;
+					box-shadow: 0 0 5px rgba(0,0,0,.225),
+								inset 1px 1px 0 rgba(255,255,255,.9),
+								inset -1px -1px 0 rgba(0,0,0,.175);
+					border-radius: 9px;
 					z-index: 2;
-
-					&:hover {
-						opacity: 1;
-					}
 
 					&.north {
 						top: -7px;
-						left: 50%;
-						width: 400px;
-						margin-left: -200px;
+						left: 47px;
+						right: 47px;
+						height: 11px;
 						cursor: ns-resize;
 					}
 
 					&.south {
 						bottom: -7px;
-						left: 50%;
-						width: 400px;
-						margin-left: -200px;
+						left: 47px;
+						right: 47px;
+						height: 11px;
 						cursor: ns-resize;
 					}
 
 					&.east {
 						left: -7px;
-						top: 50%;
-						height: 350px;
-						margin-top: -175px;
+						top: 47px;
+						bottom: 47px;
+						width: 11px;
 						cursor: ew-resize;
 					}
 
 					&.west {
 						right: -7px;
-						top: 50%;
-						height: 350px;
-						margin-top: -175px;
+						top: 47px;
+						bottom: 47px;
+						width: 11px;
 						cursor: ew-resize;
 					}
 				}

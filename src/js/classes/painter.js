@@ -78,6 +78,19 @@ class Painter {
 		return Math.ceil(this.paintingRectangle.height * this.resolutionScale);
 	}
 
+	resize(dim) {
+		let wgl = this.wgl;
+
+		this.paintingRectangle.left = Utilities.clamp(this.paintingRectangle.left, -this.paintingRectangle.width, dim.width);
+		this.paintingRectangle.bottom = Utilities.clamp(this.paintingRectangle.bottom, -this.paintingRectangle.height, dim.height);
+		
+		this.mainProjectionMatrix = makeOrthographicMatrix(new Float32Array(16), 0.0, dim.width, 0, dim.height, -5000.0, 5000.0);
+		this.canvasTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, dim.width, dim.height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
+
+		// this.simulator.resize(this.paintingResolutionWidth, this.paintingResolutionHeight, offsetX, offsetY, RESIZING_FEATHER_SIZE);
+		this.needsRedraw = true;
+	}
+
 	update() {
 		let wgl = this.wgl,
 			canvas = this.canvas,

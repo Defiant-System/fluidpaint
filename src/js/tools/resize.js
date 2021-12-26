@@ -52,16 +52,14 @@
 			case "mousemove":
 				let data = {};
 				switch (Drag.direction) {
-					case "north": 
-					case "south":
-						data.height = Drag.offset.height + (event.clientY - Drag.click.y);
-						break;
-					case "east": 
-					case "west":
-						data.width = Drag.offset.width + (event.clientX - Drag.click.x);
-						break;
+					case "north":  data.height = Drag.offset.height + (Drag.click.y - event.clientY); break;
+					case "south": data.height = Drag.offset.height + (event.clientY - Drag.click.y); break;
+					case "east": data.width = Drag.offset.width + (Drag.click.x - event.clientX); break; 
+					case "west": data.width = Drag.offset.width + (event.clientX - Drag.click.x); break;
 				}
 				Drag.el.prop(data);
+
+				STUDIO.painter.resize({ ...Drag.offset, ...data });
 				break;
 			case "mouseup":
 				// uncover layout
