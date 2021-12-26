@@ -37,6 +37,8 @@ let QUALITIES = [
 	InteractionMode = {
 		NONE: 0,
 		PAINTING: 1,
+		RESIZING: 2,
+		PANNING: 3
 	},
 	INITIAL_QUALITY = 1,
 	INITIAL_WIDTH = 600,

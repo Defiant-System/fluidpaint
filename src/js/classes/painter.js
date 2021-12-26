@@ -146,7 +146,7 @@ class Painter {
 		wgl.drawArrays(outputDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 
 		//draw brush to screen
-		if (this.interactionState !== InteractionMode.PAINTING) {
+		if (this.interactionState === InteractionMode.NONE) {
 			var hsva = hsvToRyb(this.brushColorHSVA[0], this.brushColorHSVA[1], this.brushColorHSVA[2]);
 			var brushDrawState = wgl.createDrawState()
 				.bindFramebuffer(null)

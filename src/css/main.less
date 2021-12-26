@@ -89,12 +89,66 @@ content {
 			flex: 1;
 			text-align: center;
 
-			canvas {
+			.easel {
+				background: red;
+				position: relative;
 				display: inline-block;
-				background: #f1f1f1;
-				box-shadow: 0 0 13px rgba(0,0,0,.35),
-							inset 0 1px 0 rgba(255,255,255,.75);
-				pointer-events: none;
+
+				canvas {
+					display: inline-block;
+					background: #f1f1f1;
+					box-shadow: 0 0 13px rgba(0,0,0,.35),
+								inset 0 1px 0 rgba(255,255,255,.75);
+					pointer-events: none;
+					margin-bottom: -2px;
+					z-index: 1;
+				}
+
+				.resize {
+					position: absolute;
+					width: 11px;
+					height: 11px;
+					opacity: .75;
+					background: #b6500e;
+					border-radius: 3px;
+					z-index: 2;
+
+					&:hover {
+						opacity: 1;
+					}
+
+					&.north {
+						top: -7px;
+						left: 50%;
+						width: 400px;
+						margin-left: -200px;
+						cursor: ns-resize;
+					}
+
+					&.south {
+						bottom: -7px;
+						left: 50%;
+						width: 400px;
+						margin-left: -200px;
+						cursor: ns-resize;
+					}
+
+					&.east {
+						left: -7px;
+						top: 50%;
+						height: 350px;
+						margin-top: -175px;
+						cursor: ew-resize;
+					}
+
+					&.west {
+						right: -7px;
+						top: 50%;
+						height: 350px;
+						margin-top: -175px;
+						cursor: ew-resize;
+					}
+				}
 			}
 		}
 	}

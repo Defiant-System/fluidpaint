@@ -32,8 +32,8 @@ STUDIO.painter = new Painter(STUDIO.canvas, STUDIO.wgl);
 
 const goya = {
 	init() {
-		// fast references
-		window.find(".wrapper").append(STUDIO.canvas);
+		// insert main canvas to workarea
+		window.find(".easel").append(STUDIO.canvas);
 		let cvsEl = window.find(".sidebar .picker canvas");
 		STUDIO.picker = new ColorPicker(cvsEl, STUDIO.painter, STUDIO.wgl);
 

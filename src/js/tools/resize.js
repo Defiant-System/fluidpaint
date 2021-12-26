@@ -14,6 +14,8 @@
 			case "blur-tool":
 				break;
 			case "focus-tool":
+				// update interaction state
+				STUDIO.painter.interactionState = InteractionMode.RESIZING;
 				break;
 		}
 	}

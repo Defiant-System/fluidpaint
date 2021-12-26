@@ -41,6 +41,8 @@
 				// bind event handlers
 				Self.els.body.on("mousedown mousemove", Self.dispatch);
 				Self.els.doc.on("mouseup", Self.dispatch);
+				// update interaction state
+				painter.interactionState = InteractionMode.NONE;
 				break;
 			case "blur-tool":
 				// unbind event handlers

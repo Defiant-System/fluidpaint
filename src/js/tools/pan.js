@@ -14,6 +14,8 @@
 			case "blur-tool":
 				break;
 			case "focus-tool":
+				// update interaction state
+				painter.interactionState = InteractionMode.PANNING;
 				break;
 		}
 	}
