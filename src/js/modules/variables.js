@@ -55,7 +55,7 @@ let QUALITIES = [
 	HISTORY_SIZE = 4; //number of snapshots we store - this should be number of reversible actions + 1
 
 // Brush parameters
-let COLOR_HSVA = [.75, 1, 1, 0.8],
+let COLOR_HSVA = [Math.random(), 1, 1, 0.8],
 	N_PREVIOUS_SPEEDS = 15, // how many previous speeds we store
 	//for thin brush (fewest bristles)
 	THIN_MIN_ALPHA = 0.002,

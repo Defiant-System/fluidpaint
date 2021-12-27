@@ -52,6 +52,7 @@
 					direction,
 				};
 
+				// clone painting rectangle
 				Painter.newPaintingRectangle = Painter.paintingRectangle.clone();
 
 				// bind event
@@ -60,17 +61,31 @@
 			case "mousemove":
 				let data = {};
 				switch (Drag.direction) {
-					case "north":  data.height = Math.max(Drag.offset.height + (Drag.click.y - event.clientY), Drag.min.height); break;
-					case "south": data.height = Math.max(Drag.offset.height + (event.clientY - Drag.click.y), Drag.min.height); break;
-					case "east": data.width = Math.max(Drag.offset.width + (Drag.click.x - event.clientX), Drag.min.width); break;
-					case "west": data.width = Math.max(Drag.offset.width + (event.clientX - Drag.click.x), Drag.min.width); break;
+					case "north":
+						data.height = Math.max(Drag.offset.height + (Drag.click.y - event.clientY), Drag.min.height);
+						Painter.newPaintingRectangle.height = data.height;
+						break;
+					case "south":
+						data.height = Math.max(Drag.offset.height + (event.clientY - Drag.click.y), Drag.min.height);
+						Painter.newPaintingRectangle.height = data.height;
+						break;
+					case "east":
+						data.width = Math.max(Drag.offset.width + (Drag.click.x - event.clientX), Drag.min.width);
+						Painter.newPaintingRectangle.width = data.width;
+						break;
+					case "west":
+						data.width = Math.max(Drag.offset.width + (event.clientX - Drag.click.x), Drag.min.width);
+						Painter.newPaintingRectangle.width = data.width;
+						break;
 				}
 				Drag.el.prop(data);
 
 				Painter.resize({ ...Drag.offset, ...data });
 				break;
 			case "mouseup":
+				Painter.paintingRectangle = Painter.newPaintingRectangle;
 				Painter.simulator.resize(Painter.paintingResolutionWidth, Painter.paintingResolutionHeight, RESIZING_FEATHER_SIZE);
+				Painter.newPaintingRectangle = null;
 				// uncover layout
 				Self.els.content.removeClass("no-cursor");
 				// unbind event
