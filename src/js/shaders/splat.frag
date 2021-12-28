@@ -47,10 +47,10 @@ void main () {
 	float multiplier = max(1.0 - splatDistance / u_splatRadius, 0.0);
 
 
-#ifdef VELOCITY
-	vec2 velocity = mix(v_previousVelocity, v_velocity, v_coordinates.x * 0.5 + 0.5);
-	gl_FragColor = vec4(clampVelocity(velocity * u_velocityScale), 0.0, multiplier);
-#else
-	gl_FragColor = vec4(u_splatColor.rgb, u_splatColor.a * multiplier);
-#endif
+	#ifdef VELOCITY
+		vec2 velocity = mix(v_previousVelocity, v_velocity, v_coordinates.x * 0.5 + 0.5);
+		gl_FragColor = vec4(clampVelocity(velocity * u_velocityScale), 0.0, multiplier);
+	#else
+		gl_FragColor = vec4(u_splatColor.rgb, u_splatColor.a * multiplier);
+	#endif
 }

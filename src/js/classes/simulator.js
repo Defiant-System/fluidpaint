@@ -138,7 +138,6 @@ class Simulator {
 	applyPaintTexture(texture) {
 		this.copyTexture(this.resolutionWidth, this.resolutionHeight, texture, this.paintTexture);
 		this.copyTexture(this.resolutionWidth, this.resolutionHeight, texture, this.paintTextureTemp);
-
 		this.clearTextures([this.velocityTexture, this.velocityTextureTemp]);
 	}
 

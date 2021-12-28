@@ -18,7 +18,12 @@ class Painter {
 		this.quadVertexBuffer = wgl.createBuffer();
 		wgl.bufferData(this.quadVertexBuffer, wgl.ARRAY_BUFFER, new Float32Array([-1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0]), wgl.STATIC_DRAW);
 
+		// this is updated during resizing according to the new mouse position
+		// when we finish resizing, we then resize the simulator to match
+		this.newPaintingRectangle = null;
 		this.paintingRectangle = new Rectangle(0, 0, canvas.width, canvas.height);
+		this.paintingRectangle.left = 0;
+		this.paintingRectangle.bottom = 0;
 
 		//simulation resolution = painting resolution * resolution scale
 		this.resolutionScale = QUALITIES[INITIAL_QUALITY].resolutionScale;
@@ -47,21 +52,14 @@ class Painter {
 		this.splatRadius = 0.05;
 		this.brushScale = 20;
 		this.brushHeight = 1.0;
-		this.brushColorHSVA = COLOR_HSVA;
+		// this.brushColorHSVA = [Math.random(), 1, 1, 0.8];
+		this.brushColorHSVA = [.75, 1, 1, 0.8];
 		this.brush = new Brush(wgl, 25, MAX_BRISTLE_COUNT);
-
-		this.paintingRectangle.left = 0;
-		this.paintingRectangle.bottom = 0;
 		this.mainProjectionMatrix = makeOrthographicMatrix(new Float32Array(16), 0.0, canvas.width, 0, canvas.height, -5000.0, 5000.0);
 		this.canvasTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, canvas.width, canvas.height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
 		this.needsRedraw = true;
 
-		//this is updated during resizing according to the new mouse position
-		//when we finish resizing, we then resize the simulator to match
-		this.newPaintingRectangle = null;
 		this.interactionState = InteractionMode.NONE;
-
-		this._clearState = wgl.createClearState().bindFramebuffer(this.framebuffer);
 
 		var update = () => {
 				this.update();
@@ -125,7 +123,9 @@ class Painter {
 		if (this.needsRedraw) {
 			//draw painting into texture
 			wgl.framebufferTexture2D(this.framebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, this.canvasTexture, 0);
-			wgl.clear(this._clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
+
+			let clearState = wgl.createClearState().bindFramebuffer(this.framebuffer);
+			wgl.clear(clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
 
 			let pW = this.newPaintingRectangle ? this.newPaintingRectangle.width : this.paintingRectangle.width,
 				pH = this.newPaintingRectangle ? this.newPaintingRectangle.height : this.paintingRectangle.height,
@@ -161,6 +161,8 @@ class Painter {
 			.useProgram(this.outputProgram)
 			.uniformTexture("u_input", 0, wgl.TEXTURE_2D, this.canvasTexture)
 			.vertexAttribPointer(this.quadVertexBuffer, 0, 2, wgl.FLOAT, wgl.FALSE, 0, 0);
+			// .enable(wgl.BLEND)
+			// .blendFunc(wgl.ONE, wgl.ONE_MINUS_SRC_ALPHA);
 		wgl.drawArrays(outputDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 
 		//draw brush to screen
@@ -215,17 +217,12 @@ class Painter {
 	applySnapshot(snapshot) {
 		this.paintingRectangle.width = snapshot.paintingWidth;
 		this.paintingRectangle.height = snapshot.paintingHeight;
-		if (this.resolutionScale !== snapshot.resolutionScale) {
-			for (var i = 0; i < QUALITIES.length; ++i) {
-				if (QUALITIES[i].resolutionScale === snapshot.resolutionScale) {
-					this.qualityButtons.setIndex(i);
-				}
-			}
-			this.resolutionScale = snapshot.resolutionScale;
-		}
-		if (this.simulator.width !== this.paintingResolutionWidth || this.simulator.height !== this.paintingResolutionHeight) {
-			this.simulator.changeResolution(this.paintingResolutionWidth, this.paintingResolutionHeight);
-		}
+		// if (this.resolutionScale !== snapshot.resolutionScale) {
+		// 	this.resolutionScale = snapshot.resolutionScale;
+		// }
+		// if (this.simulator.width !== this.paintingResolutionWidth || this.simulator.height !== this.paintingResolutionHeight) {
+		// 	this.simulator.changeResolution(this.paintingResolutionWidth, this.paintingResolutionHeight);
+		// }
 		this.simulator.applyPaintTexture(snapshot.texture);
 	}
 

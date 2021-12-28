@@ -10,9 +10,9 @@
 		// initial tool
 		this.dispatch({ type: "select-tool", arg: "brush" });
 
-		setTimeout(() => {
-			window.find(`.toolbar-tool_[data-arg="resize"]`).trigger("click");
-		}, 2000);
+		// setTimeout(() => {
+		// 	window.find(`.toolbar-tool_[data-arg="resize"]`).trigger("click");
+		// }, 2000);
 	},
 	dispatch(event) {
 		let APP = goya,

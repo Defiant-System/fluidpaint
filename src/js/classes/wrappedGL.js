@@ -18,7 +18,7 @@ class WrappedGL {
 	constructor(gl) {
 		this.gl = gl;
 		this.gl.clearColor(1, 1, 1, 0);
-		// this.gl.clear(gl.COLOR_BUFFER_BIT);
+		this.gl.clear(gl.COLOR_BUFFER_BIT);
 
 		for (var i = 0; i < CONSTANT_NAMES.length; i += 1) {
 			this[CONSTANT_NAMES[i]] = gl[CONSTANT_NAMES[i]];
@@ -544,12 +544,6 @@ class WrappedGL {
 
 	createProgram(vertexShaderSource, fragmentShaderSource, attributeLocations) {
 		return new WrappedProgram(this, vertexShaderSource, fragmentShaderSource, attributeLocations); 
-	}
-
-	createProgramFromFiles(vertexShaderPath, fragmentShaderPath, attributeLocations, successCallback, failureCallback) {
-	}
-
-	createProgramsFromFiles(programParameters, successCallback, failureCallback) {
 	}
 
 	createDrawState() {
