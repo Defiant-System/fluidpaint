@@ -3,6 +3,7 @@ class Painter {
 	constructor(canvas, wgl) {
 		this.canvas = canvas;
 		this.wgl = wgl;
+		// wgl.gl.clearColor(1, 1, 1, 1);
 
 		wgl.getExtension("OES_texture_float");
 		wgl.getExtension("OES_texture_float_linear");
@@ -185,8 +186,8 @@ class Painter {
 	}
 
 	clear(hsl) {
-		hsl = hsl || [1, 1, 1];
-		this.wgl.gl.clearColor(...hsl, 0);
+		// hsl = hsl || [1, 1, 1];
+		// this.wgl.gl.clearColor(...hsl, 0);
 		this.simulator.clear();
 		this.needsRedraw = true;
 	}
