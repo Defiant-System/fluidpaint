@@ -43,11 +43,12 @@ const goya = {
 			.map(i => this[i].init());
 
 		setTimeout(() => {
-			this.dispatch({ type: "load-image" });
+			this.dispatch({ type: "load-image", src: "~/img/lotus.jpg" });
 		}, 100);
 	},
 	dispatch(event) {
 		let Self = goya,
+			Paint = STUDIO.painter,
 			name,
 			value,
 			pEl,
@@ -62,33 +63,23 @@ const goya = {
 				defiant.shell("fs -u '~/help/index.md'");
 				break;
 			case "load-image":
-				
 				let img = new Image(),
 					wgl = STUDIO.wgl,
-					gl = wgl.gl,
-					painter = STUDIO.painter;
-
-				let texture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, 1, 1, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
-
-				// let texture = gl.createTexture();
-				// gl.bindTexture(gl.TEXTURE_2D, texture);
-				// gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));
-
+					texture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, 0, 0, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
+				
 				img.onload = () => {
-					gl.bindTexture(gl.TEXTURE_2D, texture);
-					gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+					wgl.texImage2D(wgl.TEXTURE_2D, texture, 0, wgl.RGBA, wgl.RGBA, wgl.UNSIGNED_BYTE, img);
 
-					painter.simulator.applyPaintTexture(texture);
-					painter.needsRedraw = true;
-					painter.update();
+					Paint.simulator.applyPaintTexture(texture);
+					Paint.needsRedraw = true;
+					Paint.update();
 				};
-				img.src = "~/img/lotus.jpg";
-
+				img.src = event.src;
 				break;
-			case "history-undo": STUDIO.painter.undo(); break;
-			case "history-redo": STUDIO.painter.redo(); break;
-			case "clear": STUDIO.painter.clear(); break;
-			case "save": STUDIO.painter.save(); break;
+			case "history-undo": Paint.undo(); break;
+			case "history-redo": Paint.redo(); break;
+			case "clear": Paint.clear(); break;
+			case "save": Paint.save(); break;
 			// forwards events
 			case "select-tool":
 				return Self.tools.dispatch(event);

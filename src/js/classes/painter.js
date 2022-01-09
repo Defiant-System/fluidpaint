@@ -54,7 +54,7 @@ class Painter {
 		this.brushScale = 20;
 		this.brushHeight = 1.0;
 		// this.brushColorHSVA = [Math.random(), 1, 1, 0.8];
-		this.brushColorHSVA = [.75, 1, 1, 0.8];
+		this.brushColorHSVA = [.175, 1, 1, 0.8];
 		this.brush = new Brush(wgl, 25, MAX_BRISTLE_COUNT);
 		this.mainProjectionMatrix = makeOrthographicMatrix(new Float32Array(16), 0.0, canvas.width, 0, canvas.height, -5000.0, 5000.0);
 		this.canvasTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, canvas.width, canvas.height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
