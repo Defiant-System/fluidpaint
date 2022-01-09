@@ -26,7 +26,7 @@ class Rectangle {
 	set top(v) { this._height = v - this._bottom; }
 
 	clone() {
-		return new Rectangle(this._left, this._bottom, this.width, this.height);
+		return new Rectangle(this.left, this.bottom, this.width, this.height);
 	}
 
 	includeRectangle(rectangle) {

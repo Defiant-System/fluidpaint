@@ -73,15 +73,13 @@ const goya = {
 
 					// console.log( sim.resolutionWidth, sim.resolutionHeight );
 					let dim = {
-							bottom: 10,
-							left: 10,
+							bottom: 40,
+							left: 40,
 							width: img.width,
 							height: img.height,
 						};
 
-					sim.copyTexture(dim, texture, sim.paintTexture);
-					sim.copyTexture(dim, texture, sim.paintTextureTemp);
-					// sim.applyPaintTexture(texture);
+					sim.applyPaintTexture(texture, dim);
 					Paint.needsRedraw = true;
 					Paint.update();
 				};
