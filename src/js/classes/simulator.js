@@ -147,7 +147,7 @@ class Simulator {
 		// now let"s work out the total simulation area we need to simulate
 		var simulationArea = this.splatAreas[0].rectangle.clone(); // start with the first rectangle
 
-		for (var i = 1; i < this.splatAreas.length; ++i) { // and add the others
+		for (var i = 1, il = this.splatAreas.length; i < il; ++i) { // and add the others
 			var splatArea = this.splatAreas[i],
 				area = splatArea.rectangle.clone();
 			simulationArea.includeRectangle(area);

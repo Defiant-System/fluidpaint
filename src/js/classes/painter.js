@@ -86,7 +86,9 @@ class Painter {
 
 		this.paintingRectangle.left = 0;
 		this.paintingRectangle.bottom = 0;
+		// this.canvas.width =
 		this.newPaintingRectangle.width = dim.width;
+		// this.canvas.height =
 		this.newPaintingRectangle.height = dim.height;
 
 		this.needsRedraw = true;
@@ -218,12 +220,12 @@ class Painter {
 	applySnapshot(snapshot) {
 		this.paintingRectangle.width = snapshot.paintingWidth;
 		this.paintingRectangle.height = snapshot.paintingHeight;
-		// if (this.resolutionScale !== snapshot.resolutionScale) {
-		// 	this.resolutionScale = snapshot.resolutionScale;
-		// }
-		// if (this.simulator.width !== this.paintingResolutionWidth || this.simulator.height !== this.paintingResolutionHeight) {
-		// 	this.simulator.changeResolution(this.paintingResolutionWidth, this.paintingResolutionHeight);
-		// }
+		if (this.resolutionScale !== snapshot.resolutionScale) {
+			this.resolutionScale = snapshot.resolutionScale;
+		}
+		if (this.simulator.resolutionWidth !== this.paintingResolutionWidth || this.simulator.resolutionHeight !== this.paintingResolutionHeight) {
+			this.simulator.changeResolution(this.paintingResolutionWidth, this.paintingResolutionHeight);
+		}
 		this.simulator.applyPaintTexture(snapshot.texture);
 	}
 

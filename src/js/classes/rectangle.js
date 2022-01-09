@@ -64,10 +64,10 @@ class Rectangle {
 	}
 
 	round() {
-		this._left = Math.round(this.left);
-		this._bottom = Math.round(this.bottom);
-		this._width = Math.round(this.width);
-		this._height = Math.round(this.height);
+		this._left = Math.round(this._left);
+		this._bottom = Math.round(this._bottom);
+		this._width = Math.round(this._width);
+		this._height = Math.round(this._height);
 	}
 
 	getArea() {
