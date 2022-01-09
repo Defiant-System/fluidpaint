@@ -28,6 +28,7 @@ class Painter {
 
 		//simulation resolution = painting resolution * resolution scale
 		this.resolutionScale = QUALITIES[INITIAL_QUALITY].resolutionScale;
+
 		this.simulator = new Simulator(wgl, this.paintingResolutionWidth, this.paintingResolutionHeight);
 		this.snapshots = [];
 		for (let i = 0; i < HISTORY_SIZE; ++i) { //we always keep around HISTORY_SIZE snapshots to avoid reallocating textures

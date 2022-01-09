@@ -61,11 +61,16 @@ class Simulator {
 		this.clearTextures([this.paintTexture, this.paintTextureTemp]);
 	}
 
-	copyTexture(destinationWidth, destinationHeight, sourceTexture, destinationTexture) {
-		var wgl = this.wgl;
+	copyTexture(destination, sourceTexture, destinationTexture) {
+		var wgl = this.wgl,
+			dest = {
+				bottom: 0,
+				left: 0,
+				...destination
+			};
 		var copyDrawState = wgl.createDrawState()
 			.bindFramebuffer(this.simulationFramebuffer)
-			.viewport(0, 0, destinationWidth, destinationHeight)
+			.viewport(dest.left, dest.bottom, dest.width, dest.height)
 			.useProgram(this.copyProgram)
 			.uniformTexture("u_input", 0, wgl.TEXTURE_2D, sourceTexture)
 			.vertexAttribPointer(this.quadVertexBuffer, this.copyProgram.getAttribLocation("a_position"), 2, wgl.FLOAT, false, 0, 0);
@@ -96,7 +101,12 @@ class Simulator {
 		this.resolutionHeight = newHeight;
 
 		wgl.rebuildTexture(this.paintTextureTemp, wgl.RGBA, wgl.FLOAT, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
-		this.copyTexture(newWidth, newHeight, this.paintTexture, this.paintTextureTemp);
+
+		let dest = {
+			width: newWidth,
+			height: newHeight,
+		};
+		this.copyTexture(dest, this.paintTexture, this.paintTextureTemp);
 
 		wgl.rebuildTexture(this.velocityTexture, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
 		wgl.rebuildTexture(this.velocityTextureTemp, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
@@ -112,14 +122,18 @@ class Simulator {
 		var wgl = this.wgl;
 
 		wgl.rebuildTexture(this.paintTextureTemp, wgl.RGBA, wgl.FLOAT, newWidth, newHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
-		this.copyTexture(newWidth, newHeight, this.paintTexture, this.paintTextureTemp);
+		let dest = {
+			width: newWidth,
+			height: newHeight,
+		};
+		this.copyTexture(dest, this.paintTexture, this.paintTextureTemp);
 		Utilities.swap(this, "paintTexture", "paintTextureTemp");
 
 		this.resolutionWidth = newWidth;
 		this.resolutionHeight = newHeight;
 
 		wgl.rebuildTexture(this.paintTextureTemp, wgl.RGBA, wgl.FLOAT, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
-		this.copyTexture(newWidth, newHeight, this.paintTexture, this.paintTextureTemp);
+		this.copyTexture(dest, this.paintTexture, this.paintTextureTemp);
 
 		wgl.rebuildTexture(this.velocityTexture, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
 		wgl.rebuildTexture(this.velocityTextureTemp, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
@@ -132,12 +146,20 @@ class Simulator {
 
 	// assumes destination texture has dimensions resolutionWidth x resolutionHeight
 	copyPaintTexture(destinationTexture) {
-		this.copyTexture(this.resolutionWidth, this.resolutionHeight, this.paintTexture, destinationTexture);
+		let dest = {
+			width: this.resolutionWidth,
+			height: this.resolutionHeight,
+		};
+		this.copyTexture(dest, this.paintTexture, destinationTexture);
 	}
 
 	applyPaintTexture(texture) {
-		this.copyTexture(this.resolutionWidth, this.resolutionHeight, texture, this.paintTexture);
-		this.copyTexture(this.resolutionWidth, this.resolutionHeight, texture, this.paintTextureTemp);
+		let dest = {
+			width: this.resolutionWidth,
+			height: this.resolutionHeight,
+		};
+		this.copyTexture(dest, texture, this.paintTexture);
+		this.copyTexture(dest, texture, this.paintTextureTemp);
 		this.clearTextures([this.velocityTexture, this.velocityTextureTemp]);
 	}
 

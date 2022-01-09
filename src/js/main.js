@@ -43,7 +43,7 @@ const goya = {
 			.map(i => this[i].init());
 
 		setTimeout(() => {
-			this.dispatch({ type: "load-image", src: "~/img/lotus.jpg" });
+			this.dispatch({ type: "load-image", src: "~/img/blue-rose.jpg" });
 		}, 100);
 	},
 	dispatch(event) {
@@ -65,12 +65,23 @@ const goya = {
 			case "load-image":
 				let img = new Image(),
 					wgl = STUDIO.wgl,
+					sim = Paint.simulator,
 					texture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, 0, 0, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
 				
 				img.onload = () => {
 					wgl.texImage2D(wgl.TEXTURE_2D, texture, 0, wgl.RGBA, wgl.RGBA, wgl.UNSIGNED_BYTE, img);
 
-					Paint.simulator.applyPaintTexture(texture);
+					// console.log( sim.resolutionWidth, sim.resolutionHeight );
+					let dim = {
+							bottom: 10,
+							left: 10,
+							width: img.width,
+							height: img.height,
+						};
+
+					sim.copyTexture(dim, texture, sim.paintTexture);
+					sim.copyTexture(dim, texture, sim.paintTextureTemp);
+					// sim.applyPaintTexture(texture);
 					Paint.needsRedraw = true;
 					Paint.update();
 				};
