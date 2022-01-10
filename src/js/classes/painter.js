@@ -13,7 +13,7 @@ class Painter {
 		this.paintingProgram = wgl.createProgram(Shaders.Vertex.painting, Shaders.Fragment.painting);
 		this.resizingPaintingProgram = wgl.createProgram(Shaders.Vertex.painting, "#define RESIZING \n "+ Shaders.Fragment.painting);
 		this.brushProgram = wgl.createProgram(Shaders.Vertex.brush, Shaders.Fragment.brush, { "a_position": 0 });
-		this.outputProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.output, { "a_position": 0 });
+		this.outputProgram = wgl.createProgram(Shaders.Vertex.fullscreen, "#define OUTPUT \n"+ Shaders.Fragment.output, { "a_position": 0 });
 		this.savePaintingProgram = wgl.createProgram(Shaders.Vertex.painting, "#define SAVE \n "+ Shaders.Fragment.painting);
 
 		this.quadVertexBuffer = wgl.createBuffer();

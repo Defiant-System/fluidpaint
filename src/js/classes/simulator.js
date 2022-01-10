@@ -21,12 +21,12 @@ class Simulator {
 
 		// create shader programs
 		this.splatProgram = wgl.createProgram(Shaders.Vertex.splat, Shaders.Fragment.splat);
-		this.velocitySplatProgram = wgl.createProgram("#define VELOCITY \n" + Shaders.Vertex.splat, "#define VELOCITY \n" + Shaders.Fragment.splat);
+		this.velocitySplatProgram = wgl.createProgram("#define VELOCITY \n"+ Shaders.Vertex.splat, "#define VELOCITY \n"+ Shaders.Fragment.splat);
 		this.advectProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.advect);
 		this.divergenceProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.divergence);
 		this.jacobiProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.jacobi);
 		this.subtractProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.subtract);
-		this.copyProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.copy);
+		this.copyProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.output);
 		this.resizeProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.resize);
 
 		// create buffers
