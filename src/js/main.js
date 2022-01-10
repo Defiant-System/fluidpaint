@@ -42,9 +42,9 @@ const goya = {
 			.filter(i => typeof this[i].init === "function")
 			.map(i => this[i].init());
 
-		setTimeout(() => {
-			this.dispatch({ type: "load-image", src: "~/img/blue-rose.jpg" });
-		}, 100);
+		// setTimeout(() => {
+		// 	this.dispatch({ type: "load-image", src: "~/img/blue-rose.jpg" });
+		// }, 100);
 	},
 	dispatch(event) {
 		let Self = goya,

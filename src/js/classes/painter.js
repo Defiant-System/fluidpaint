@@ -3,7 +3,7 @@ class Painter {
 	constructor(canvas, wgl) {
 		this.canvas = canvas;
 		this.wgl = wgl;
-		// wgl.gl.clearColor(1, 1, 1, 1);
+		// wgl.gl.clearColor(1, 1, 1, 0);
 
 		wgl.getExtension("OES_texture_float");
 		wgl.getExtension("OES_texture_float_linear");
@@ -132,9 +132,7 @@ class Painter {
 			wgl.clear(clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
 
 			let pW = this.newPaintingRectangle ? this.newPaintingRectangle.width : this.paintingRectangle.width,
-				pH = this.newPaintingRectangle ? this.newPaintingRectangle.height : this.paintingRectangle.height,
-				pX = 0,
-				pY = 0;
+				pH = this.newPaintingRectangle ? this.newPaintingRectangle.height : this.paintingRectangle.height;
 
 			var paintingProgram = this.interactionState === InteractionMode.RESIZING ? this.resizingPaintingProgram : this.paintingProgram;
 			var paintingDrawState = wgl.createDrawState()
@@ -154,7 +152,7 @@ class Painter {
 				.uniform2f("u_paintingSize", this.paintingRectangle.width, this.paintingRectangle.height)
 				.uniform2f("u_screenResolution", this.paintingRectangle.width, this.paintingRectangle.height)
 				.uniformTexture("u_paintTexture", 0, wgl.TEXTURE_2D, this.simulator.paintTexture)
-				.viewport(pX, pY, pW, pH);
+				.viewport(0, 0, pW, pH);
 			
 			wgl.drawArrays(paintingDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 		}

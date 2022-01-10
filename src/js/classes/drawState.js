@@ -3,8 +3,8 @@ class DrawState extends State {
 	constructor(wgl) {
 		super(wgl, wgl);
 
-		//we always set uniforms
-		this.uniforms = {}; //eg: {type: "3f", value: [x, y, z]}
+		// we always set uniforms
+		this.uniforms = {}; // eg: {type: "3f", value: [x, y, z]}
 	}
 
 	bindFramebuffer(framebuffer) {
@@ -51,7 +51,7 @@ class DrawState extends State {
 		this.setParameter("attributeArray" + index.toString(), [buffer, size, type, normalized, stride, offset]);
 
 		if (this.instancedExt && this.changedParameters.hasOwnProperty("attributeDivisor" + index.toString())) {
-			//we need to have divisor information for any attribute location that has a bound buffer
+			// we need to have divisor information for any attribute location that has a bound buffer
 			this.setParameter("attributeDivisor" + index.toString(), [0]);
 		}
 		return this;

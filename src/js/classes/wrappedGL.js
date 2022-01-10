@@ -17,8 +17,8 @@ class WrappedGL {
 
 	constructor(gl) {
 		this.gl = gl;
-		this.gl.clearColor(1, 1, 1, 1);
-		this.gl.clear(gl.COLOR_BUFFER_BIT);
+		this.gl.clearColor(1, 1, 1, 0);
+		// this.gl.clear(gl.COLOR_BUFFER_BIT);
 
 		for (var i = 0; i < CONSTANT_NAMES.length; i += 1) {
 			this[CONSTANT_NAMES[i]] = gl[CONSTANT_NAMES[i]];
@@ -55,7 +55,7 @@ class WrappedGL {
 				usedInDraw: true
 			},
 			viewport: {
-				defaults: [0, 0, 0, 0],
+				defaults: [1, 1, 1, 0],
 				setter: gl.viewport,
 				usedInDraw: true,
 				usedInClear: true
@@ -116,7 +116,7 @@ class WrappedGL {
 				usedInClear: true
 			},
 			scissor: {
-				defaults: [0, 0, 0, 0],
+				defaults: [1, 1, 1, 0],
 				setter: gl.scissor,
 				usedInDraw: true,
 				usedInClear: true
@@ -134,7 +134,7 @@ class WrappedGL {
 				usedInClear: true
 			},
 			clearColor: {
-				defaults: [0, 0, 0, 0],
+				defaults: [1, 1, 1, 0],
 				setter: gl.clearColor,
 				usedInClear: true
 			},
