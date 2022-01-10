@@ -127,9 +127,9 @@ class Painter {
 		if (this.needsRedraw) {
 			//draw painting into texture
 			wgl.framebufferTexture2D(this.framebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, this.canvasTexture, 0);
-
 			let clearState = wgl.createClearState().bindFramebuffer(this.framebuffer);
 			wgl.clear(clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
+			// wgl.gl.clearColor(1, 1, 1, 0);
 
 			let pW = this.newPaintingRectangle ? this.newPaintingRectangle.width : this.paintingRectangle.width,
 				pH = this.newPaintingRectangle ? this.newPaintingRectangle.height : this.paintingRectangle.height;

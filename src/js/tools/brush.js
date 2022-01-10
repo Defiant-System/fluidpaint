@@ -55,6 +55,11 @@
 				break;
 			case "mouseup":
 				painter.interactionState = InteractionMode.NONE;
+
+				// setTimeout(() => {
+				// 	STUDIO.painter.undo();
+				// 	STUDIO.painter.redo();
+				// }, 200);
 				break;
 			// custom events
 			case "focus-tool":

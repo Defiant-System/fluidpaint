@@ -10,6 +10,7 @@ const Shaders = {
 		project: `@import "../shaders/project.frag"`,
 		brush: `@import "../shaders/brush.frag"`,
 		painting: `@import "../shaders/painting.frag"`,
+		copy: `@import "../shaders/copy.frag"`,
 		output: `@import "../shaders/output.frag"`,
 		picker: `@import "../shaders/picker.frag"`,
 		setbristles: `@import "../shaders/setbristles.frag"`,

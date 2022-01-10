@@ -26,7 +26,7 @@ class Simulator {
 		this.divergenceProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.divergence);
 		this.jacobiProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.jacobi);
 		this.subtractProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.subtract);
-		this.copyProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.output);
+		this.copyProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.copy);
 		this.resizeProgram = wgl.createProgram(Shaders.Vertex.fullscreen, Shaders.Fragment.resize);
 
 		// create buffers
@@ -161,6 +161,7 @@ class Simulator {
 				height: this.resolutionHeight,
 				...dim,
 			};
+		
 		this.copyTexture(dest, texture, this.paintTexture);
 		this.copyTexture(dest, texture, this.paintTextureTemp);
 		this.clearTextures([this.velocityTexture, this.velocityTextureTemp]);
