@@ -43,9 +43,10 @@ const goya = {
 			.map(i => this[i].init());
 
 		setTimeout(() => {
-		// 	this.dispatch({ type: "load-image", src: "~/img/blue-rose.jpg" });
-			// STUDIO.painter.simulator.resize(640, 480);
-		}, 100);
+			// this.dispatch({ type: "load-image", src: "~/img/blue-rose.jpg" });
+			STUDIO.painter.resize({ width: 540, height: 380 });
+			STUDIO.painter.simulator.resize(540, 380);
+		}, 1500);
 	},
 	dispatch(event) {
 		let Self = goya,

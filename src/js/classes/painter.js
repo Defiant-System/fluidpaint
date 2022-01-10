@@ -21,7 +21,7 @@ class Painter {
 
 		// this is updated during resizing according to the new mouse position
 		// when we finish resizing, we then resize the simulator to match
-		this.newPaintingRectangle = null;
+		this.newPaintingRectangle = {};
 		this.paintingRectangle = new Rectangle(0, 0, canvas.width, canvas.height);
 		this.paintingRectangle.left = 0;
 		this.paintingRectangle.bottom = 0;
@@ -87,9 +87,9 @@ class Painter {
 
 		this.paintingRectangle.left = 0;
 		this.paintingRectangle.bottom = 0;
-		// this.canvas.width =
+		this.canvas.width =
 		this.newPaintingRectangle.width = dim.width;
-		// this.canvas.height =
+		this.canvas.height =
 		this.newPaintingRectangle.height = dim.height;
 
 		this.needsRedraw = true;
@@ -131,8 +131,8 @@ class Painter {
 			wgl.clear(clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
 			// wgl.gl.clearColor(1, 1, 1, 0);
 
-			let pW = this.newPaintingRectangle ? this.newPaintingRectangle.width : this.paintingRectangle.width,
-				pH = this.newPaintingRectangle ? this.newPaintingRectangle.height : this.paintingRectangle.height;
+			let pW = this.newPaintingRectangle.width ? this.newPaintingRectangle.width : this.paintingRectangle.width,
+				pH = this.newPaintingRectangle.height ? this.newPaintingRectangle.height : this.paintingRectangle.height;
 
 			var paintingProgram = this.interactionState === InteractionMode.RESIZING ? this.resizingPaintingProgram : this.paintingProgram;
 			var paintingDrawState = wgl.createDrawState()

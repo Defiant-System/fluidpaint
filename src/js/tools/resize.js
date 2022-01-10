@@ -84,8 +84,8 @@
 				break;
 			case "mouseup":
 				Painter.paintingRectangle = Painter.newPaintingRectangle;
-				Painter.simulator.resize(Painter.paintingResolutionWidth, Painter.paintingResolutionHeight, RESIZING_FEATHER_SIZE);
-				Painter.newPaintingRectangle = null;
+				Painter.simulator.resize(Painter.paintingResolutionWidth, Painter.paintingResolutionHeight);
+				Painter.newPaintingRectangle = {};
 				// uncover layout
 				Self.els.content.removeClass("no-cursor");
 				// unbind event
