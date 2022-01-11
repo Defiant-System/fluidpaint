@@ -55,7 +55,7 @@ class WrappedGL {
 				usedInDraw: true
 			},
 			viewport: {
-				defaults: [1, 1, 1, 0],
+				defaults: [0, 0, 0, 0],
 				setter: gl.viewport,
 				usedInDraw: true,
 				usedInClear: true
@@ -116,7 +116,7 @@ class WrappedGL {
 				usedInClear: true
 			},
 			scissor: {
-				defaults: [1, 1, 1, 0],
+				defaults: [0, 0, 0, 0],
 				setter: gl.scissor,
 				usedInDraw: true,
 				usedInClear: true
@@ -134,7 +134,7 @@ class WrappedGL {
 				usedInClear: true
 			},
 			clearColor: {
-				defaults: [1, 1, 1, 0],
+				defaults: [0, 0, 0, 0],
 				setter: gl.clearColor,
 				usedInClear: true
 			},

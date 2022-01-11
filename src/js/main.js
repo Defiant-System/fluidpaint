@@ -33,7 +33,7 @@ STUDIO.painter = new Painter(STUDIO.canvas, STUDIO.wgl);
 const goya = {
 	init() {
 		// insert main canvas to workarea
-		window.find(".easel").append(STUDIO.canvas);
+		window.find(".easel .fl-3").append(STUDIO.canvas);
 		let cvsEl = window.find(".sidebar .picker canvas");
 		STUDIO.picker = new ColorPicker(cvsEl, STUDIO.painter, STUDIO.wgl);
 
@@ -42,11 +42,11 @@ const goya = {
 			.filter(i => typeof this[i].init === "function")
 			.map(i => this[i].init());
 
-		setTimeout(() => {
-			// this.dispatch({ type: "load-image", src: "~/img/blue-rose.jpg" });
-			STUDIO.painter.resize({ width: 540, height: 380 });
-			STUDIO.painter.simulator.resize(540, 380);
-		}, 1500);
+		// setTimeout(() => {
+		// 	// this.dispatch({ type: "load-image", src: "~/sample-files/blue-rose.jpg" });
+		// 	STUDIO.painter.resize({ width: 540, height: 380 });
+		// 	STUDIO.painter.simulator.resize(540, 380);
+		// }, 500);
 	},
 	dispatch(event) {
 		let Self = goya,
