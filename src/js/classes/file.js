@@ -18,22 +18,24 @@ class File {
 				let src = URL.createObjectURL(fsFile.blob);
 				this.loadImage(src)
 					.then(img => {
-						this.cvs.width = img.width;
-						this.cvs.height = img.height;
+						let width = img.width,
+							height = img.height;
+
+						this.cvs.width = width;
+						this.cvs.height = height;
 						this.ctx.drawImage(img, 0, 0);
 
 						let wgl = STUDIO.wgl,
 							Paint = STUDIO.painter,
 							texture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, 0, 0, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST),
-							dim = {
-								bottom: 10,
-								left: 10,
-								width: img.width,
-								height: img.height,
-							};
+							dim = { width, height };
 
 						wgl.texImage2D(wgl.TEXTURE_2D, texture, 0, wgl.RGBA, wgl.RGBA, wgl.UNSIGNED_BYTE, img);
 
+						window.find(".file-layers").css(dim);
+
+						Paint.resize(dim);
+						Paint.simulator.resize(width, height);
 						Paint.simulator.applyPaintTexture(texture, dim);
 						Paint.needsRedraw = true;
 						Paint.update();

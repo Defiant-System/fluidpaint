@@ -26,8 +26,8 @@
 const STUDIO = {
 		canvas: document.createElement('canvas'),
 	};
-STUDIO.canvas.width = 640;
-STUDIO.canvas.height = 480;
+STUDIO.canvas.width = 100;
+STUDIO.canvas.height = 100;
 STUDIO.wgl = WrappedGL.create(STUDIO.canvas);
 STUDIO.painter = new Painter(STUDIO.canvas, STUDIO.wgl);
 

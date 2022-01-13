@@ -82,15 +82,14 @@ class Painter {
 	resize(dim) {
 		let wgl = this.wgl;
 
+		this.paintingRectangle = new Rectangle(0, 0, dim.width, dim.height);
 		this.mainProjectionMatrix = makeOrthographicMatrix(new Float32Array(16), 0.0, dim.width, 0, dim.height, -5000.0, 5000.0);
 		this.canvasTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, dim.width, dim.height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
 
 		this.paintingRectangle.left = 0;
 		this.paintingRectangle.bottom = 0;
-		this.canvas.width =
-		this.newPaintingRectangle.width = dim.width;
-		this.canvas.height =
-		this.newPaintingRectangle.height = dim.height;
+		this.canvas.width = dim.width;
+		this.canvas.height = dim.height;
 
 		this.needsRedraw = true;
 	}
