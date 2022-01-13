@@ -268,7 +268,7 @@ class Painter {
 			.toggleClass("tool-disabled_", this.canRedo());
 	}
 
-	save() {
+	toBlob(fnDone, mime, quality) {
 		//we first render the painting to a WebGL texture
 		var wgl = this.wgl;
 		var saveWidth = this.paintingRectangle.width;
@@ -298,24 +298,24 @@ class Painter {
 		wgl.drawArrays(saveDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 
 		//then we read back this texture
-		var savePixels = new Uint8Array(saveWidth * saveHeight * 4);
-		wgl.readPixels(wgl.createReadState().bindFramebuffer(saveFramebuffer),
-						0, 0, saveWidth, saveHeight, wgl.RGBA, wgl.UNSIGNED_BYTE, savePixels);
+		var savePixels = new Uint8Array(saveWidth * saveHeight * 4),
+			buffer = wgl.createReadState().bindFramebuffer(saveFramebuffer);
+		wgl.readPixels(buffer, 0, 0, saveWidth, saveHeight, wgl.RGBA, wgl.UNSIGNED_BYTE, savePixels);
 
 		wgl.deleteTexture(saveTexture);
 		wgl.deleteFramebuffer(saveFramebuffer);
 
 		// then we draw the pixels to a 2D canvas and then save from the canvas
 		// is there a better way?
-		var saveCanvas = document.createElement("canvas");
-		saveCanvas.width = saveWidth;
-		saveCanvas.height = saveHeight;
-		var saveContext = saveCanvas.getContext("2d");
-		var imageData = saveContext.createImageData(saveWidth, saveHeight);
-		imageData.data.set(savePixels);
-		saveContext.putImageData(imageData, 0, 0);
+		let { cvs, ctx } = Utilities.createCanvas(saveWidth, saveHeight),
+			imgData = ctx.createImageData(saveWidth, saveHeight);
+		imgData.data.set(savePixels);
+		ctx.putImageData(imgData, 0, 0);
+		ctx.translate(0, saveHeight);
+		ctx.scale(1, -1);
+		ctx.drawImage(cvs[0], 0, 0);
 
-		// goya.els.content.append(saveCanvas);
+		return cvs[0].toBlob(fnDone, mime, quality);
 	}
 
 }

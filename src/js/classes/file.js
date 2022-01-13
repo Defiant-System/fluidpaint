@@ -19,19 +19,22 @@ class File {
 				this.loadImage(src)
 					.then(img => {
 						let width = img.width,
-							height = img.height;
+							height = img.height,
+							dim = { width, height };
 
-						this.cvs.width = width;
-						this.cvs.height = height;
+						this.cvs.attr(dim);
+						// flip image vertically
+						this.ctx.translate(0, height);
+						this.ctx.scale(1, -1);
 						this.ctx.drawImage(img, 0, 0);
 
 						let wgl = STUDIO.wgl,
 							Paint = STUDIO.painter,
-							texture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, 0, 0, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST),
-							dim = { width, height };
+							texture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, 0, 0, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
 
-						wgl.texImage2D(wgl.TEXTURE_2D, texture, 0, wgl.RGBA, wgl.RGBA, wgl.UNSIGNED_BYTE, img);
+						wgl.texImage2D(wgl.TEXTURE_2D, texture, 0, wgl.RGBA, wgl.RGBA, wgl.UNSIGNED_BYTE, this.cvs[0]);
 
+						// TODO
 						window.find(".file-layers").css(dim);
 
 						Paint.resize(dim);
@@ -66,31 +69,16 @@ class File {
 	}
 
 	async toBlob(mime, quality) {
-		let data,
-			buffer,
-			view;
-
-		switch (kind) {
-			case "png":
-			case "jpg":
-			case "jpeg":
-			case "gif":
-				data = this.ctx.getImageData(0, 0, this.width, this.height);
-				break;
-		}
-
 		// return promise
-		// return new Promise(async (resolve, reject) => {
-		// 	// generate blob
-		// 	this.cvs[0].toBlob((blob) => {
-		// 		// restore file image
-		// 		this.ctx.putImageData(backup, 0, 0);
-		// 		// return created blob
-		// 		resolve(blob);
-		// 	}, mime, quality);
-		// });
+		return new Promise(async (resolve, reject) => {
+			// generate blob
+			STUDIO.painter.toBlob(blob => {
+				// return created blob
+				resolve(blob);
+			}, mime, quality);
+		});
 
-		return new Blob([data], { type });
+		// return new Blob([data], { type });
 	}
 
 	get isDirty() {

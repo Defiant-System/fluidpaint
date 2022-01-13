@@ -26,8 +26,8 @@
 const STUDIO = {
 		canvas: document.createElement('canvas'),
 	};
-STUDIO.canvas.width = 100;
-STUDIO.canvas.height = 100;
+// STUDIO.canvas.width = 100;
+// STUDIO.canvas.height = 100;
 STUDIO.wgl = WrappedGL.create(STUDIO.canvas);
 STUDIO.painter = new Painter(STUDIO.canvas, STUDIO.wgl);
 
@@ -100,6 +100,8 @@ const goya = {
 				event.open({ responseType: "blob" })
 					.then(file => Files.open(file));
 				break;
+			case "save-as":
+				break;
 			case "save-file-as":
 				// pass on available file types
 				window.dialog.saveAs(file._file, {
@@ -111,7 +113,6 @@ const goya = {
 			case "history-undo": Paint.undo(); break;
 			case "history-redo": Paint.redo(); break;
 			case "clear": Paint.clear(); break;
-			case "save": Paint.save(); break;
 			// forwards events
 			case "select-tool":
 				return Self.tools.dispatch(event);

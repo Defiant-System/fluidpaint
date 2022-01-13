@@ -4,6 +4,24 @@
 		<Menu type="divider"/>
 		<Menu name="Quit Goya" shell="win -c"/>
 	</Menu>
+	<Menu name="File">
+		<Menu name="New" click="new-file" hotkey="alt+n"/>
+		<Menu name="Open&#8230;" click="open-file" hotkey="alt+o"/>
+		<Menu type="divider"/>
+		<Menu name="Save" click="save-file" hotkey="alt+s"/>
+		<Menu name="Save as&#8230;" click="save-file-as" hotkey="alt+shift+s"/>
+		<Menu type="divider"/>
+		<Menu name="Close File"/>
+	</Menu>
+	<Menu name="Edit">
+		<Menu name="Undo" click="history-undo" hotkey="meta+z"/>
+		<Menu name="Redo" click="history-redo" hotkey="meta+shift+z"/>
+		<Menu type="divider"/>
+		<Menu name="Cut"/>
+		<Menu name="Copy"/>
+		<Menu name="Paste"/>
+		<Menu name="Select All" click="select-all" arg="selectAll" hotkey="meta+a"/>
+	</Menu>
 	<Menu name="Help">
 		<Menu name="Help" click="open-help"/>
 		<Menu type="divider"/>
