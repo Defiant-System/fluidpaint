@@ -19,6 +19,8 @@
 @import "modules/color.js"
 @import "modules/ui.js"
 
+@import "modules/files.js"
+@import "classes/file.js"
 
 
 const STUDIO = {
@@ -30,6 +32,7 @@ STUDIO.wgl = WrappedGL.create(STUDIO.canvas);
 STUDIO.painter = new Painter(STUDIO.canvas, STUDIO.wgl);
 
 
+
 const goya = {
 	init() {
 		// insert main canvas to workarea
@@ -37,20 +40,26 @@ const goya = {
 		let cvsEl = window.find(".sidebar .picker canvas");
 		STUDIO.picker = new ColorPicker(cvsEl, STUDIO.painter, STUDIO.wgl);
 
+		// auto init
+		Files.init();
+
 		// init all sub-objects
 		Object.keys(this)
 			.filter(i => typeof this[i].init === "function")
 			.map(i => this[i].init());
 
-		// setTimeout(() => {
-		// 	// this.dispatch({ type: "load-image", src: "~/sample-files/blue-rose.jpg" });
+		/*
+		setTimeout(() => {
+			this.dispatch({ type: "load-image", src: "~/sample-files/blue-rose.jpg" });
 		// 	STUDIO.painter.resize({ width: 540, height: 380 });
 		// 	STUDIO.painter.simulator.resize(540, 380);
-		// }, 500);
+		}, 500);
+		*/
 	},
 	dispatch(event) {
 		let Self = goya,
 			Paint = STUDIO.painter,
+			file = Files.activeFile,
 			name,
 			value,
 			pEl,
@@ -86,6 +95,18 @@ const goya = {
 					Paint.update();
 				};
 				img.src = event.src;
+				break;
+			case "open.file":
+				event.open({ responseType: "blob" })
+					.then(file => Files.open(file));
+				break;
+			case "save-file-as":
+				// pass on available file types
+				window.dialog.saveAs(file._file, {
+					png: () => file.toBlob("image/png"),
+					jpg: () => file.toBlob("image/jpeg", .95),
+					webp: () => file.toBlob("image/webp"),
+				});
 				break;
 			case "history-undo": Paint.undo(); break;
 			case "history-redo": Paint.redo(); break;

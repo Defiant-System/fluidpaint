@@ -14,7 +14,13 @@ var Utilities = {
 			x: event.clientX - boundingRect.left,
 			y: event.clientY - boundingRect.top
 		};
-	}
+	},
+	createCanvas(width, height) {
+		let cvs = $(document.createElement("canvas")),
+			ctx = cvs[0].getContext("2d");
+		cvs.prop({ width, height });
+		return { cvs, ctx }
+	},
 };
 
 function keysInObject(object) {
