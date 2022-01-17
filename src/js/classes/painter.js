@@ -90,6 +90,10 @@ class Painter {
 		this.paintingRectangle.bottom = 0;
 		this.canvas.width = dim.width;
 		this.canvas.height = dim.height;
+		
+		if (dim.simulatorResize) {
+			this.simulator.resize(dim.width, dim.height);
+		}
 
 		this.needsRedraw = true;
 	}

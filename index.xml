@@ -1,4 +1,7 @@
 <Application>
+	<Build>
+		<task action="skip" source="src/js/bundle.js" destination="src/js/modules/bundle.min.js"/>
+	</Build>
 	<Head>
 		<meta name="id" value="goya"/>
 		<meta name="title" value="Goya" version="1.2"/>
