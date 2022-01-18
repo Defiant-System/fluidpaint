@@ -1,45 +1,42 @@
 
 @import "modules/bundle.min.js"
 
+@import "classes/painter.js"
+@import "classes/simulator.js"
+@import "classes/wrappedgl.js"
 @import "modules/utilities.js"
-@import "modules/color.js"
-@import "modules/ui.js"
+
 @import "modules/files.js"
 @import "classes/file.js"
 
 
-const STUDIO = {
-		canvas: document.createElement('canvas'),
-	};
-// STUDIO.canvas.width = 100;
-// STUDIO.canvas.height = 100;
-STUDIO.wgl = WrappedGL.create(STUDIO.canvas);
-STUDIO.painter = new Painter(STUDIO.canvas, STUDIO.wgl);
+let canvas = document.createElement('canvas'),
+	STUDIO = { canvas };
+STUDIO.wgl = WrappedGL.create(canvas);
+STUDIO.painter = new Painter(canvas, STUDIO.wgl);
 
 
 
 const goya = {
 	init() {
+		// fast references
+		this.els = {
+			easel: window.find(".easel"),
+			pickerCvs: window.find(".sidebar .picker canvas"),
+		};
 		// insert main canvas to workarea
-		window.find(".easel .fl-3").append(STUDIO.canvas);
-		let cvsEl = window.find(".sidebar .picker canvas");
-		STUDIO.picker = new ColorPicker(cvsEl, STUDIO.painter, STUDIO.wgl);
-
+		this.els.easel.find(".fl-3").append(STUDIO.canvas);
+		// init sidebar color picker
+		STUDIO.picker = new ColorPicker(this.els.pickerCvs, STUDIO.painter, STUDIO.wgl);
 		// auto init
 		Files.init();
-
 		// init all sub-objects
 		Object.keys(this)
 			.filter(i => typeof this[i].init === "function")
 			.map(i => this[i].init());
 
-		/**/
-		setTimeout(() => {
-			this.dispatch({ type: "new-file" });
-		// 	STUDIO.painter.resize({ width: 540, height: 380 });
-		// 	STUDIO.painter.simulator.resize(540, 380);
-		}, 500);
-		
+		// new file by default
+		this.dispatch({ type: "new-file" });
 	},
 	dispatch(event) {
 		let Self = goya,
@@ -52,8 +49,6 @@ const goya = {
 		// console.log(event);
 		switch (event.type) {
 			// system events
-			case "window.open":
-				break;
 			case "open.file":
 				event.open({ responseType: "blob" })
 					.then(file => Files.open(file));
@@ -61,7 +56,10 @@ const goya = {
 			// custom events
 			case "new-file":
 				value = { width: 600, height: 400 };
-				window.find(".file-layers").css(value);
+				Self.els.easel.find(".file-layers").css(value);
+
+				Self.els.easel.find(".fl-1").css({ background: "#f1f1f1" });
+				
 				STUDIO.painter.resize({ ...value, simulatorResize: true });
 				break;
 			case "save-file":

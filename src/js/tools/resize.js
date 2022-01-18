@@ -80,6 +80,8 @@
 				}
 				Drag.el.prop(data);
 
+				APP.els.easel.find(".file-layers").css(data);
+
 				Painter.resize({ ...Drag.offset, ...data });
 				break;
 			case "mouseup":

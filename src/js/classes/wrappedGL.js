@@ -134,7 +134,7 @@ class WrappedGL {
 				usedInClear: true
 			},
 			clearColor: {
-				defaults: [0, 0, 0, 0],
+				defaults: [1, 1, 1, 0],
 				setter: gl.clearColor,
 				usedInClear: true
 			},
