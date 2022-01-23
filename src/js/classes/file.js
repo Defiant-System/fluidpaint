@@ -7,8 +7,6 @@ class File {
 
 		// temp offscreen canvas
 		let { cvs, ctx } = Utilities.createCanvas(1, 1);
-		this.cvs = cvs;
-		this.ctx = ctx;
 
 		switch (this._file.kind) {
 			case "png":
@@ -22,21 +20,22 @@ class File {
 							height = img.height,
 							dim = { width, height };
 
-						this.cvs.attr(dim);
+						cvs.attr(dim);
 						// flip image vertically
-						this.ctx.translate(0, height);
-						this.ctx.scale(1, -1);
-						this.ctx.drawImage(img, 0, 0);
+						ctx.translate(0, height);
+						ctx.scale(1, -1);
+						ctx.drawImage(img, 0, 0);
 
 						let wgl = STUDIO.wgl,
 							Paint = STUDIO.painter,
 							texture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, 0, 0, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
 
-						wgl.texImage2D(wgl.TEXTURE_2D, texture, 0, wgl.RGBA, wgl.RGBA, wgl.UNSIGNED_BYTE, this.cvs[0]);
+						wgl.texImage2D(wgl.TEXTURE_2D, texture, 0, wgl.RGBA, wgl.RGBA, wgl.UNSIGNED_BYTE, cvs[0]);
 
 						// TODO
 						window.find(".file-layers").css(dim);
 
+						// Paint.resize({ ...dim, simulatorResize: true });
 						Paint.resize(dim);
 						Paint.simulator.resize(width, height);
 						Paint.simulator.applyPaintTexture(texture, dim);

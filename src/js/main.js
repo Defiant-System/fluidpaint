@@ -12,6 +12,10 @@
 
 let canvas = document.createElement('canvas'),
 	STUDIO = { canvas };
+
+// canvas.width = 600;
+// canvas.height = 400;
+
 STUDIO.wgl = WrappedGL.create(canvas);
 STUDIO.painter = new Painter(canvas, STUDIO.wgl);
 
@@ -36,7 +40,11 @@ const goya = {
 			.map(i => this[i].init());
 
 		// new file by default
-		this.dispatch({ type: "new-file" });
+		// this.dispatch({ type: "new-file" });
+
+		setTimeout(() => {
+			window.find(`.toolbar-tool_[data-arg="resize"]`).trigger("click");
+		}, 500);
 	},
 	dispatch(event) {
 		let Self = goya,

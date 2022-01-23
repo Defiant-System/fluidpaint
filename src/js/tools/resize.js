@@ -78,13 +78,20 @@
 						Painter.newPaintingRectangle.width = data.width;
 						break;
 				}
+				// resize canvas element
 				Drag.el.prop(data);
-
+				// resize easel element
 				APP.els.easel.find(".file-layers").css(data);
-
+				// resize painter
 				Painter.resize({ ...Drag.offset, ...data });
 				break;
 			case "mouseup":
+				// Painter.resize({
+				// 	width: Painter.newPaintingRectangle.width,
+				// 	height: Painter.newPaintingRectangle.height,
+				// 	simulatorResize: true
+				// });
+
 				Painter.paintingRectangle = Painter.newPaintingRectangle;
 				Painter.simulator.resize(Painter.paintingResolutionWidth, Painter.paintingResolutionHeight);
 				Painter.newPaintingRectangle = {};

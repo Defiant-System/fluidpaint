@@ -37,8 +37,15 @@ class Simulator {
 		this.splatVelocitiesBuffer = wgl.createBuffer();
 		this.simulationFramebuffer = wgl.createFramebuffer();
 
-		// create textures
-		this.resize(resolutionWidth, resolutionHeight);
+		this.paintTexture = wgl.buildTexture(wgl.RGBA, wgl.FLOAT, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
+		this.paintTextureTemp = wgl.buildTexture(wgl.RGBA, wgl.FLOAT, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
+		this.velocityTexture = wgl.buildTexture(wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
+		this.velocityTextureTemp = wgl.buildTexture(wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
+		this.divergenceTexture = wgl.buildTexture(wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
+		this.pressureTexture = wgl.buildTexture(wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
+		this.pressureTextureTemp = wgl.buildTexture(wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
+
+		this.clearTextures([this.paintTexture, this.paintTextureTemp, this.velocityTexture, this.velocityTextureTemp, this.divergenceTexture, this.pressureTexture, this.pressureTextureTemp]);
 	}
 
 	clearTextures(textures) {
@@ -73,20 +80,44 @@ class Simulator {
 
 	// resizes the canvas with direct texel correspondence, offsetting the previous painting
 	resize(newWidth, newHeight) {
-		let wgl = this.wgl;
-		
+		let wgl = this.wgl,
+			dest = {
+				width: newWidth,
+				height: newHeight,
+			};
+		var featherSize = 8,
+			offsetX = 0,
+			offsetY = 0;
+
+		var resizeDrawState = wgl.createDrawState()
+			.bindFramebuffer(this.simulationFramebuffer)
+			.viewport(0, 0, newWidth, newHeight)
+			.useProgram(this.resizeProgram)
+			.uniformTexture("u_paintTexture", 0, wgl.TEXTURE_2D, this.paintTexture)
+			.uniform2f("u_oldResolution", this.resolutionWidth, this.resolutionHeight)
+			.uniform2f("u_offset", offsetX, offsetY)
+			.uniform1f("u_featherSize", featherSize)
+			.vertexAttribPointer(this.quadVertexBuffer, this.resizeProgram.getAttribLocation("a_position"), 2, wgl.FLOAT, false, 0, 0);
+
+		wgl.rebuildTexture(this.paintTextureTemp, wgl.RGBA, wgl.FLOAT, newWidth, newHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
+		wgl.framebufferTexture2D(this.simulationFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, this.paintTextureTemp, 0);
+		wgl.drawArrays(resizeDrawState, wgl.TRIANGLE_STRIP, 0, 4);
+
+		Utilities.swap(this, "paintTexture", "paintTextureTemp");
+
 		this.resolutionWidth = newWidth;
 		this.resolutionHeight = newHeight;
 
+		wgl.rebuildTexture(this.paintTextureTemp, wgl.RGBA, wgl.FLOAT, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
+		this.copyTexture(dest, this.paintTexture, this.paintTextureTemp);
+		
 		// create textures
-		this.paintTexture = wgl.buildTexture(wgl.RGBA, wgl.FLOAT, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
-		this.paintTextureTemp = wgl.buildTexture(wgl.RGBA, wgl.FLOAT, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
-		this.velocityTexture = wgl.buildTexture(wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
-		this.velocityTextureTemp = wgl.buildTexture(wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
-		this.divergenceTexture = wgl.buildTexture(wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
-		this.pressureTexture = wgl.buildTexture(wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
-		this.pressureTextureTemp = wgl.buildTexture(wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
-
+		wgl.rebuildTexture(this.velocityTexture, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
+		wgl.rebuildTexture(this.velocityTextureTemp, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
+		wgl.rebuildTexture(this.divergenceTexture, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
+		wgl.rebuildTexture(this.pressureTexture, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
+		wgl.rebuildTexture(this.pressureTextureTemp, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
+		
 		this.clearTextures([this.paintTexture, this.paintTextureTemp, this.velocityTexture, this.velocityTextureTemp, this.divergenceTexture, this.pressureTexture, this.pressureTextureTemp]);
 	}
 
@@ -139,10 +170,6 @@ class Simulator {
 		this.clearTextures([this.velocityTexture, this.velocityTextureTemp]);
 
 		wgl.rebuildTexture(this.velocityTexture, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
-		// wgl.rebuildTexture(this.velocityTextureTemp, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
-		// wgl.rebuildTexture(this.divergenceTexture, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
-		// wgl.rebuildTexture(this.pressureTexture, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
-		// wgl.rebuildTexture(this.pressureTextureTemp, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
 	}
 
 	// returns the area we"re currently simulating
@@ -171,10 +198,10 @@ class Simulator {
 		var area = new Rectangle(brush.positionX - brushPadding, brush.positionY - brushPadding, brushPadding * 2, brushPadding * 2);
 		
 		// transform into simulation space
-		area.translate(-paintingRectangle.left, -paintingRectangle.bottom);
-		area.scale(this.resolutionWidth / paintingRectangle.width, this.resolutionHeight / paintingRectangle.height);
-		area.round();
-		area.intersectRectangle(new Rectangle(0, 0, this.resolutionWidth, this.resolutionHeight));
+		// area.translate(-paintingRectangle.left, -paintingRectangle.bottom);
+		// area.scale(this.resolutionWidth / paintingRectangle.width, this.resolutionHeight / paintingRectangle.height);
+		// area.round();
+		// area.intersectRectangle(new Rectangle(0, 0, this.resolutionWidth, this.resolutionHeight));
 
 		this.splatAreas.splice(0, 0, new SplatArea(area, this.frameNumber));
 
@@ -195,7 +222,7 @@ class Simulator {
 			.bindIndexBuffer(brush.splatIndexBuffer)
 			.useProgram(this.splatProgram)
 			.uniform2f("u_paintingDimensions", paintingRectangle.width, paintingRectangle.height)
-			.uniform2f("u_paintingPosition", paintingRectangle.left, paintingRectangle.bottom)
+			.uniform2f("u_paintingPosition", 0, 0)
 			.uniform1f("u_splatRadius", splatRadius)
 			.uniform4f("u_splatColor", splatColor[0], splatColor[1], splatColor[2], splatColor[3])
 			.uniformTexture("u_positionsTexture", 0, wgl.TEXTURE_2D, brush.positionsTexture)
@@ -219,7 +246,7 @@ class Simulator {
 			.bindIndexBuffer(brush.splatIndexBuffer)
 			.useProgram(this.velocitySplatProgram)
 			.uniform2f("u_paintingDimensions", paintingRectangle.width, paintingRectangle.height)
-			.uniform2f("u_paintingPosition", paintingRectangle.left, paintingRectangle.bottom)
+			.uniform2f("u_paintingPosition", 0, 0)
 			.uniform1f("u_splatRadius", splatRadius)
 			.uniformTexture("u_positionsTexture", 0, wgl.TEXTURE_2D, brush.positionsTexture)
 			.uniformTexture("u_previousPositionsTexture", 1, wgl.TEXTURE_2D, brush.previousPositionsTexture)

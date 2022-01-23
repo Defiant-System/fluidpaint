@@ -23,8 +23,6 @@ class Painter {
 		// when we finish resizing, we then resize the simulator to match
 		this.newPaintingRectangle = {};
 		this.paintingRectangle = new Rectangle(0, 0, canvas.width, canvas.height);
-		this.paintingRectangle.left = 0;
-		this.paintingRectangle.bottom = 0;
 
 		//simulation resolution = painting resolution * resolution scale
 		this.resolutionScale = QUALITIES[INITIAL_QUALITY].resolutionScale;
@@ -54,9 +52,10 @@ class Painter {
 		this.splatRadius = 0.05;
 		this.brushScale = 20;
 		this.brushHeight = 1.0;
-		// this.brushColorHSVA = [Math.random(), 1, 1, 0.8];
-		this.brushColorHSVA = [.175, 1, 1, 0.8];
+		this.brushColorHSVA = [Math.random(), 1, 1, 0.8];
+		// this.brushColorHSVA = [.175, 1, 1, 0.8];
 		this.brush = new Brush(wgl, 30, MAX_BRISTLE_COUNT);
+		// this.resize();
 		this.mainProjectionMatrix = makeOrthographicMatrix(new Float32Array(16), 0.0, canvas.width, 0, canvas.height, -5000.0, 5000.0);
 		this.canvasTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, canvas.width, canvas.height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
 		this.needsRedraw = true;
@@ -79,21 +78,18 @@ class Painter {
 		return Math.ceil(this.paintingRectangle.height * this.resolutionScale);
 	}
 
-	resize(dim) {
-		let wgl = this.wgl;
-		this.canvas.width = dim.width;
-		this.canvas.height = dim.height;
+	resize(dim={}) {
+		let wgl = this.wgl,
+			canvas = this.canvas;
+		canvas.width = dim.width || canvas.width;
+		canvas.height = dim.height || canvas.height;
 
 		this.paintingRectangle = new Rectangle(0, 0, dim.width, dim.height);
-		this.mainProjectionMatrix = makeOrthographicMatrix(new Float32Array(16), 0.0, dim.width, 0, dim.height, -5000.0, 5000.0);
-		this.canvasTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, dim.width, dim.height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
-		this.paintingRectangle.left = 0;
-		this.paintingRectangle.bottom = 0;
+		this.mainProjectionMatrix = makeOrthographicMatrix(new Float32Array(16), 0.0, canvas.width, 0, canvas.height, -5000.0, 5000.0);
+		this.canvasTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, canvas.width, canvas.height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
+
 		this.needsRedraw = true;
-		
-		if (dim.simulatorResize) {
-			this.simulator.resize(dim.width, dim.height);
-		}
+		this.simulator.resize(canvas.width, canvas.height);
 	}
 
 	update() {
@@ -130,15 +126,10 @@ class Painter {
 			wgl.framebufferTexture2D(this.framebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, this.canvasTexture, 0);
 			let clearState = wgl.createClearState().bindFramebuffer(this.framebuffer);
 			wgl.clear(clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
-			// wgl.gl.clearColor(1, 1, 1, 0);
-
-			let pW = this.newPaintingRectangle.width ? this.newPaintingRectangle.width : this.paintingRectangle.width,
-				pH = this.newPaintingRectangle.height ? this.newPaintingRectangle.height : this.paintingRectangle.height;
 
 			var paintingProgram = this.interactionState === InteractionMode.RESIZING ? this.resizingPaintingProgram : this.paintingProgram;
 			var paintingDrawState = wgl.createDrawState()
 				.bindFramebuffer(this.framebuffer)
-				.viewport(0, 0, cvsWidth, cvsHeight)
 				.vertexAttribPointer(this.quadVertexBuffer, paintingProgram.getAttribLocation("a_position"), 2, wgl.FLOAT, false, 0, 0)
 				.useProgram(paintingProgram)
 				.uniform1f("u_featherSize", RESIZING_FEATHER_SIZE)
@@ -148,12 +139,12 @@ class Painter {
 				.uniform1f("u_specularScale", SPECULAR_SCALE)
 				.uniform1f("u_F0", F0)
 				.uniform3f("u_lightDirection", LIGHT_DIRECTION[0], LIGHT_DIRECTION[1], LIGHT_DIRECTION[2])
-				.uniform2f("u_paintingPosition", this.paintingRectangle.left, this.paintingRectangle.bottom)
+				.uniform2f("u_paintingPosition", 0, 0)
 				.uniform2f("u_paintingResolution", this.simulator.resolutionWidth, this.simulator.resolutionHeight)
 				.uniform2f("u_paintingSize", this.paintingRectangle.width, this.paintingRectangle.height)
 				.uniform2f("u_screenResolution", this.paintingRectangle.width, this.paintingRectangle.height)
 				.uniformTexture("u_paintTexture", 0, wgl.TEXTURE_2D, this.simulator.paintTexture)
-				.viewport(0, 0, pW, pH);
+				.viewport(0, 0, cvsWidth, cvsHeight);
 			
 			wgl.drawArrays(paintingDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 		}
