@@ -89,8 +89,8 @@
 				Painter.resize({ ...Drag.offset, ...data });
 				break;
 			case "mouseup":
+				Painter.simulator.resize(Painter.paintingResolutionWidth, Painter.paintingResolutionHeight, Painter.paintingRectangle.left, Painter.paintingRectangle.bottom);
 				Painter.paintingRectangle = Painter.newPaintingRectangle;
-				Painter.simulator.resize(Painter.paintingResolutionWidth, Painter.paintingResolutionHeight);
 				Painter.newPaintingRectangle = {};
 				Painter.needsRedraw = true;
 				// uncover layout
