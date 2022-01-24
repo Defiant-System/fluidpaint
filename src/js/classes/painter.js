@@ -14,7 +14,6 @@ class Painter {
 		this.resizingPaintingProgram = wgl.createProgram(Shaders.Vertex.painting, "#define RESIZING \n "+ Shaders.Fragment.painting);
 		this.brushProgram = wgl.createProgram(Shaders.Vertex.brush, Shaders.Fragment.brush, { "a_position": 0 });
 		this.outputProgram = wgl.createProgram(Shaders.Vertex.fullscreen, "#define OUTPUT \n"+ Shaders.Fragment.output, { "a_position": 0 });
-		this.savePaintingProgram = wgl.createProgram(Shaders.Vertex.painting, "#define SAVE \n "+ Shaders.Fragment.painting);
 
 		this.quadVertexBuffer = wgl.createBuffer();
 		wgl.bufferData(this.quadVertexBuffer, wgl.ARRAY_BUFFER, new Float32Array([-1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0]), wgl.STATIC_DRAW);
@@ -80,11 +79,13 @@ class Painter {
 
 	resize(dim={}) {
 		let wgl = this.wgl,
-			canvas = this.canvas;
+			canvas = this.canvas,
+			left = this.paintingRectangle.left || 0,
+			bottom = this.paintingRectangle.bottom || 0;
 		canvas.width = dim.width || canvas.width;
 		canvas.height = dim.height || canvas.height;
 
-		this.paintingRectangle = new Rectangle(0, 0, dim.width, dim.height);
+		this.paintingRectangle = new Rectangle(left, bottom, dim.width, dim.height);
 		this.mainProjectionMatrix = makeOrthographicMatrix(new Float32Array(16), 0.0, canvas.width, 0, canvas.height, -5000.0, 5000.0);
 		this.canvasTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, canvas.width, canvas.height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
 		this.needsRedraw = true;
@@ -138,7 +139,7 @@ class Painter {
 				.uniform1f("u_specularScale", SPECULAR_SCALE)
 				.uniform1f("u_F0", F0)
 				.uniform3f("u_lightDirection", LIGHT_DIRECTION[0], LIGHT_DIRECTION[1], LIGHT_DIRECTION[2])
-				.uniform2f("u_paintingPosition", 0, 0)
+				.uniform2f("u_paintingPosition", this.paintingRectangle.left, this.paintingRectangle.bottom)
 				.uniform2f("u_paintingResolution", this.simulator.resolutionWidth, this.simulator.resolutionHeight)
 				.uniform2f("u_paintingSize", this.simulator.resolutionWidth, this.simulator.resolutionHeight)
 				.uniform2f("u_screenResolution", this.paintingRectangle.width, this.paintingRectangle.height)
@@ -261,17 +262,18 @@ class Painter {
 
 	toBlob(fnDone, mime, quality) {
 		//we first render the painting to a WebGL texture
-		var wgl = this.wgl;
-		var saveWidth = this.paintingRectangle.width;
-		var saveHeight = this.paintingRectangle.height;
-		var saveTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, saveWidth, saveHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
-		var saveFramebuffer = wgl.createFramebuffer();
-		wgl.framebufferTexture2D(saveFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, saveTexture, 0);
-		var paintingProgram = this.savePaintingProgram;
+		var wgl = this.wgl,
+			width = this.canvas.width,
+			height = this.canvas.height,
+			saveTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, width, height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST),
+			saveFramebuffer = wgl.createFramebuffer();
 		
+		wgl.framebufferTexture2D(saveFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, saveTexture, 0);
+		
+		var paintingProgram = this.paintingProgram;
 		var saveDrawState = wgl.createDrawState()
 			.bindFramebuffer(saveFramebuffer)
-			.viewport(0, 0, saveWidth, saveHeight)
+			.viewport(0, 0, width, height)
 			.vertexAttribPointer(this.quadVertexBuffer, paintingProgram.getAttribLocation("a_position"), 2, wgl.FLOAT, false, 0, 0)
 			.useProgram(paintingProgram)
 			.uniform2f("u_paintingSize", this.paintingRectangle.width, this.paintingRectangle.height)
@@ -289,20 +291,20 @@ class Painter {
 		wgl.drawArrays(saveDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 
 		//then we read back this texture
-		var savePixels = new Uint8Array(saveWidth * saveHeight * 4),
+		var savePixels = new Uint8Array(width * height * 4),
 			buffer = wgl.createReadState().bindFramebuffer(saveFramebuffer);
-		wgl.readPixels(buffer, 0, 0, saveWidth, saveHeight, wgl.RGBA, wgl.UNSIGNED_BYTE, savePixels);
+		wgl.readPixels(buffer, 0, 0, width, height, wgl.RGBA, wgl.UNSIGNED_BYTE, savePixels);
 
 		wgl.deleteTexture(saveTexture);
 		wgl.deleteFramebuffer(saveFramebuffer);
 
 		// then we draw the pixels to a 2D canvas and then save from the canvas
 		// is there a better way?
-		let { cvs, ctx } = Utilities.createCanvas(saveWidth, saveHeight),
-			imgData = ctx.createImageData(saveWidth, saveHeight);
+		let { cvs, ctx } = Utilities.createCanvas(width, height),
+			imgData = ctx.createImageData(width, height);
 		imgData.data.set(savePixels);
 		ctx.putImageData(imgData, 0, 0);
-		ctx.translate(0, saveHeight);
+		ctx.translate(0, height);
 		ctx.scale(1, -1);
 		ctx.drawImage(cvs[0], 0, 0);
 

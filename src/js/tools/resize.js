@@ -78,6 +78,9 @@
 						Painter.newPaintingRectangle.width = data.width;
 						break;
 				}
+				// origo from middle / center
+				Painter.paintingRectangle.left = Math.round((data.width - Drag.offset.width) >> 1);
+				Painter.paintingRectangle.bottom = Math.round((data.height - Drag.offset.height) >> 1);
 				// resize canvas element
 				Drag.el.prop(data);
 				// resize easel element
