@@ -87,9 +87,8 @@ class Painter {
 		this.paintingRectangle = new Rectangle(0, 0, dim.width, dim.height);
 		this.mainProjectionMatrix = makeOrthographicMatrix(new Float32Array(16), 0.0, canvas.width, 0, canvas.height, -5000.0, 5000.0);
 		this.canvasTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, canvas.width, canvas.height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
-
 		this.needsRedraw = true;
-		this.simulator.resize(canvas.width, canvas.height);
+		// this.simulator.resize(canvas.width, canvas.height);
 	}
 
 	update() {
@@ -141,11 +140,11 @@ class Painter {
 				.uniform3f("u_lightDirection", LIGHT_DIRECTION[0], LIGHT_DIRECTION[1], LIGHT_DIRECTION[2])
 				.uniform2f("u_paintingPosition", 0, 0)
 				.uniform2f("u_paintingResolution", this.simulator.resolutionWidth, this.simulator.resolutionHeight)
-				.uniform2f("u_paintingSize", this.paintingRectangle.width, this.paintingRectangle.height)
+				.uniform2f("u_paintingSize", this.simulator.resolutionWidth, this.simulator.resolutionHeight)
 				.uniform2f("u_screenResolution", this.paintingRectangle.width, this.paintingRectangle.height)
 				.uniformTexture("u_paintTexture", 0, wgl.TEXTURE_2D, this.simulator.paintTexture)
 				.viewport(0, 0, cvsWidth, cvsHeight);
-			
+
 			wgl.drawArrays(paintingDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 		}
 
@@ -155,8 +154,7 @@ class Painter {
 			.useProgram(this.outputProgram)
 			.uniformTexture("u_input", 0, wgl.TEXTURE_2D, this.canvasTexture)
 			.vertexAttribPointer(this.quadVertexBuffer, 0, 2, wgl.FLOAT, wgl.FALSE, 0, 0);
-			// .enable(wgl.BLEND)
-			// .blendFunc(wgl.ONE, wgl.ONE_MINUS_SRC_ALPHA);
+
 		wgl.drawArrays(outputDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 
 		//draw brush to screen

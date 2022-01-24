@@ -86,15 +86,10 @@
 				Painter.resize({ ...Drag.offset, ...data });
 				break;
 			case "mouseup":
-				// Painter.resize({
-				// 	width: Painter.newPaintingRectangle.width,
-				// 	height: Painter.newPaintingRectangle.height,
-				// 	simulatorResize: true
-				// });
-
 				Painter.paintingRectangle = Painter.newPaintingRectangle;
 				Painter.simulator.resize(Painter.paintingResolutionWidth, Painter.paintingResolutionHeight);
 				Painter.newPaintingRectangle = {};
+				Painter.needsRedraw = true;
 				// uncover layout
 				Self.els.content.removeClass("no-cursor");
 				// unbind event
