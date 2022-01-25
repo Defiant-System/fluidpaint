@@ -1,5 +1,5 @@
 
-@import "modules/bundle.min.js"
+@import "../../public/js/bundle.min.js"
 
 @import "classes/painter.js"
 @import "classes/simulator.js"
@@ -12,10 +12,6 @@
 
 let canvas = document.createElement('canvas'),
 	STUDIO = { canvas };
-
-// canvas.width = 600;
-// canvas.height = 400;
-
 STUDIO.wgl = WrappedGL.create(canvas);
 STUDIO.painter = new Painter(canvas, STUDIO.wgl);
 
@@ -58,6 +54,7 @@ const goya = {
 		switch (event.type) {
 			// system events
 			case "open.file":
+				return;
 				event.open({ responseType: "blob" })
 					.then(file => Files.open(file));
 				break;
@@ -68,7 +65,7 @@ const goya = {
 
 				// Self.els.easel.find(".fl-1").css({ background: "#f1f1f1" });
 				
-				STUDIO.painter.simulator.resize(value.width, value.height, 0, 0);
+				STUDIO.painter.simulator.resize(value.width, value.height);
 				STUDIO.painter.resize(value);
 				STUDIO.painter.needsRedraw = true;
 				STUDIO.painter.update();

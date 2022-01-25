@@ -10,7 +10,6 @@ const Shaders = {
 		project: `@import "../shaders/project.frag"`,
 		brush: `@import "../shaders/brush.frag"`,
 		painting: `@import "../shaders/painting.frag"`,
-		copy: `@import "../shaders/copy.frag"`,
 		output: `@import "../shaders/output.frag"`,
 		picker: `@import "../shaders/picker.frag"`,
 		setbristles: `@import "../shaders/setbristles.frag"`,
@@ -43,7 +42,7 @@ let QUALITIES = [
 	MIN_PAINTING_WIDTH = 300,
 	MAX_PAINTING_WIDTH = 4096, //this is further constrained by the maximum texture size
 	RESIZING_RADIUS = 20,
-	RESIZING_FEATHER_SIZE = 8, //in pixels 
+	RESIZING_FEATHER_SIZE = 2, //in pixels 
 	//rendering parameters
 	NORMAL_SCALE = 7.0,
 	ROUGHNESS = 0.075,

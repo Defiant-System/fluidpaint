@@ -81,33 +81,34 @@ class Simulator {
 	}
 
 	// resizes the canvas with direct texel correspondence, offsetting the previous painting
-	resize(newWidth, newHeight, offsetX=0, offsetY=0) {
-		let wgl = this.wgl,
-			dest = {
-				width: newWidth,
-				height: newHeight,
-			},
-			resizeDrawState = wgl.createDrawState()
+	resize(width, height, offsetX=0, offsetY=0) {
+		let wgl = this.wgl;
+		
+		let resizeDrawState = wgl.createDrawState()
 				.bindFramebuffer(this.simulationFramebuffer)
-				.viewport(0, 0, newWidth, newHeight)
+				.viewport(0, 0, width, height)
 				.useProgram(this.resizeProgram)
 				.uniformTexture("u_paintTexture", 0, wgl.TEXTURE_2D, this.paintTexture)
 				.uniform2f("u_oldResolution", this.resolutionWidth, this.resolutionHeight)
 				.uniform2f("u_offset", offsetX, offsetY)
+				// .uniform2f("u_oldResolution", width, height)
+				// .uniform2f("u_offset", 0, 0)
 				.uniform1f("u_featherSize", RESIZING_FEATHER_SIZE)
 				.vertexAttribPointer(this.quadVertexBuffer, this.resizeProgram.getAttribLocation("a_position"), 2, wgl.FLOAT, false, 0, 0);
 
-		wgl.rebuildTexture(this.paintTextureTemp, wgl.RGBA, wgl.FLOAT, newWidth, newHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
+		wgl.rebuildTexture(this.paintTextureTemp, wgl.RGBA, wgl.FLOAT, width, height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
 		wgl.framebufferTexture2D(this.simulationFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, this.paintTextureTemp, 0);
 		wgl.drawArrays(resizeDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 
 		Utilities.swap(this, "paintTexture", "paintTextureTemp");
 
-		this.resolutionWidth = newWidth;
-		this.resolutionHeight = newHeight;
+		this.resolutionWidth = width;
+		this.resolutionHeight = height;
 
 		wgl.rebuildTexture(this.paintTextureTemp, wgl.RGBA, wgl.FLOAT, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
-		this.copyTexture(dest, this.paintTexture, this.paintTextureTemp);
+		this.copyTexture({ width, height }, this.paintTexture, this.paintTextureTemp);
+
+		this.clear();
 		
 		// rebuild textures
 		wgl.rebuildTexture(this.velocityTexture, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
@@ -115,7 +116,7 @@ class Simulator {
 		wgl.rebuildTexture(this.divergenceTexture, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
 		wgl.rebuildTexture(this.pressureTexture, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
 		wgl.rebuildTexture(this.pressureTextureTemp, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
-
+		
 		// this.clearTextures([this.velocityTexture, this.velocityTextureTemp, this.divergenceTexture, this.pressureTexture, this.pressureTextureTemp]);
 	}
 

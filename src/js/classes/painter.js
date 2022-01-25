@@ -3,7 +3,6 @@ class Painter {
 	constructor(canvas, wgl) {
 		this.canvas = canvas;
 		this.wgl = wgl;
-		// wgl.gl.clearColor(1, 1, 1, 0);
 
 		wgl.getExtension("OES_texture_float");
 		wgl.getExtension("OES_texture_float_linear");
@@ -88,6 +87,7 @@ class Painter {
 		this.paintingRectangle = new Rectangle(left, bottom, dim.width, dim.height);
 		this.mainProjectionMatrix = makeOrthographicMatrix(new Float32Array(16), 0.0, canvas.width, 0, canvas.height, -5000.0, 5000.0);
 		this.canvasTexture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, canvas.width, canvas.height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
+
 		this.needsRedraw = true;
 	}
 
