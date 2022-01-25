@@ -40,11 +40,11 @@ const goya = {
 			.map(i => this[i].init());
 
 		// new file by default
-		// this.dispatch({ type: "new-file" });
+		this.dispatch({ type: "new-file" });
 
-		setTimeout(() => {
-			window.find(`.toolbar-tool_[data-arg="resize"]`).trigger("click");
-		}, 500);
+		// setTimeout(() => {
+		// 	window.find(`.toolbar-tool_[data-arg="resize"]`).trigger("click");
+		// }, 500);
 	},
 	dispatch(event) {
 		let Self = goya,
@@ -66,9 +66,12 @@ const goya = {
 				value = { width: 600, height: 400 };
 				Self.els.easel.find(".file-layers").css(value);
 
-				Self.els.easel.find(".fl-1").css({ background: "#f1f1f1" });
+				// Self.els.easel.find(".fl-1").css({ background: "#f1f1f1" });
 				
-				STUDIO.painter.resize({ ...value, simulatorResize: true });
+				STUDIO.painter.simulator.resize(value.width, value.height, 0, 0);
+				STUDIO.painter.resize(value);
+				STUDIO.painter.needsRedraw = true;
+				STUDIO.painter.update();
 				break;
 			case "save-file":
 				// create blob and save file
