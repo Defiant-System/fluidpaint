@@ -212,9 +212,6 @@ class Painter {
 		if (this.resolutionScale !== snapshot.resolutionScale) {
 			this.resolutionScale = snapshot.resolutionScale;
 		}
-		if (this.simulator.resolutionWidth !== this.paintingResolutionWidth || this.simulator.resolutionHeight !== this.paintingResolutionHeight) {
-			this.simulator.changeResolution(this.paintingResolutionWidth, this.paintingResolutionHeight);
-		}
 		this.simulator.applyPaintTexture(snapshot.texture);
 	}
 
@@ -289,7 +286,7 @@ class Painter {
 
 		wgl.drawArrays(saveDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 
-		//then we read back this texture
+		// then we read back this texture
 		var savePixels = new Uint8Array(width * height * 4),
 			buffer = wgl.createReadState().bindFramebuffer(saveFramebuffer);
 		wgl.readPixels(buffer, 0, 0, width, height, wgl.RGBA, wgl.UNSIGNED_BYTE, savePixels);

@@ -12,8 +12,8 @@
 		</Options>
 	</Group>
 	<Group width="50%">
-		<Tool name="Clear" click="clear"/>
-		<Tool name="Save" click="save"/>
+		<!-- <Tool name="Clear" click="clear"/>
+		<Tool name="Save" click="save"/> -->
 		<Tool symbol="icon-format" state="active" click="toggle-sidebar"/>
 	</Group>
 </CaptionToolBar>

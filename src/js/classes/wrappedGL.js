@@ -2,10 +2,6 @@
 class WrappedGL {
 	static create(canvas, options) {
 		var gl = null;
-		
-		// auto set height width
-		// canvas.width =
-		// canvas.height = 4096;
 
 		try {
 			gl = canvas.getContext("webgl", options) || canvas.getContext("experimental-webgl", options);
