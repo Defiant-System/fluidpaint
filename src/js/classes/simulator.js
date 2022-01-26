@@ -82,6 +82,24 @@ class Simulator {
 	// resizes the canvas with direct texel correspondence, offsetting the previous painting
 	resize(width, height, offsetX=0, offsetY=0) {
 		let wgl = this.wgl;
+		let dim = {
+			width: this.resolutionWidth,
+			height: this.resolutionHeight
+		};
+		// temp texture
+		let tmpTexture = wgl.buildTexture(wgl.RGBA, wgl.FLOAT, width, height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
+		this.clearTextures([tmpTexture]);
+
+		this.copyTexture(dim, this.paintTexture, tmpTexture);
+
+		this.resize2(width, height, offsetX, offsetY);
+
+		this.applyPaintTexture(tmpTexture);
+	}
+
+	// resizes the canvas with direct texel correspondence, offsetting the previous painting
+	resize2(width, height, offsetX=0, offsetY=0) {
+		let wgl = this.wgl;
 
 		let resizeDrawState = wgl.createDrawState()
 			.bindFramebuffer(this.simulationFramebuffer)
@@ -103,9 +121,8 @@ class Simulator {
 		Utilities.swap(this, "paintTexture", "paintTextureTemp");
 		wgl.rebuildTexture(this.paintTextureTemp, wgl.RGBA, wgl.FLOAT, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
 		this.copyTexture({ width, height }, this.paintTexture, this.paintTextureTemp);
-
+		// clear textures
 		this.clear();
-
 
 		// rebuild textures
 		wgl.rebuildTexture(this.velocityTexture, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);

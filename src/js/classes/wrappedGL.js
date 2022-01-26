@@ -17,7 +17,7 @@ class WrappedGL {
 
 	constructor(gl) {
 		this.gl = gl;
-		this.gl.clearColor(1, 1, 1, 0);
+		this.gl.clearColor(1, 1, 1, 1);
 		// this.gl.clear(gl.COLOR_BUFFER_BIT);
 
 		for (var i = 0; i < CONSTANT_NAMES.length; i += 1) {
