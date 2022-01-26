@@ -38,9 +38,9 @@ const goya = {
 		// new file by default
 		// this.dispatch({ type: "new-file" });
 
-		// setTimeout(() => {
-		// 	window.find(`.toolbar-tool_[data-arg="resize"]`).trigger("click");
-		// }, 500);
+		setTimeout(() => {
+			window.find(`.toolbar-tool_[data-arg="resize"]`).trigger("click");
+		}, 500);
 	},
 	dispatch(event) {
 		let Self = goya,
@@ -54,7 +54,7 @@ const goya = {
 		switch (event.type) {
 			// system events
 			case "open.file":
-				return this.dispatch({ type: "new-file" });
+				// return this.dispatch({ type: "new-file" });
 				
 				event.open({ responseType: "blob" })
 					.then(file => Files.open(file));
