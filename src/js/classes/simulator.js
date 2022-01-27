@@ -62,13 +62,15 @@ class Simulator {
 	copyTexture(destination, sourceTexture, destinationTexture) {
 		var wgl = this.wgl,
 			dest = {
+				left: 0,
+				bottom: 0,
 				width: this.resolutionWidth,
 				height: this.resolutionHeight,
 				...destination,
 			};
 		var copyDrawState = wgl.createDrawState()
 			.bindFramebuffer(this.simulationFramebuffer)
-			.viewport(0, 0, dest.width, dest.height)
+			.viewport(dest.left, dest.bottom, dest.width, dest.height)
 			.useProgram(this.copyProgram)
 			.uniformTexture("u_input", 0, wgl.TEXTURE_2D, sourceTexture)
 			.vertexAttribPointer(this.quadVertexBuffer, this.copyProgram.getAttribLocation("a_position"), 2, wgl.FLOAT, false, 0, 0);
@@ -79,40 +81,23 @@ class Simulator {
 
 	// resizes the canvas with direct texel correspondence, offsetting the previous painting
 	resize(width, height, offsetX=0, offsetY=0) {
-		let wgl = this.wgl;
-		let dim = {
-			width: this.resolutionWidth,
-			height: this.resolutionHeight
-		};
-		// temp texture
-		let tmpTexture = wgl.buildTexture(wgl.RGBA, wgl.FLOAT, width, height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
+		let wgl = this.wgl,
+			tmpTexture = wgl.buildTexture(wgl.RGBA, wgl.FLOAT, width, height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR),
+			dim = {
+				left: offsetX,
+				bottom: offsetY,
+				width: this.resolutionWidth,
+				height: this.resolutionHeight
+			};
 		this.clearTextures([tmpTexture]);
 		this.copyTexture(dim, this.paintTexture, tmpTexture);
-		
-		let resizeDrawState = wgl.createDrawState()
-			.bindFramebuffer(this.simulationFramebuffer)
-			.viewport(0, 0, width, height)
-			.useProgram(this.resizeProgram)
-			.uniformTexture("u_paintTexture", 0, wgl.TEXTURE_2D, this.paintTexture)
-			.uniform2f("u_oldResolution", this.resolutionWidth, this.resolutionHeight)
-			.uniform2f("u_offset", offsetX, offsetY)
-			.uniform1f("u_featherSize", RESIZING_FEATHER_SIZE)
-			.vertexAttribPointer(this.quadVertexBuffer, this.resizeProgram.getAttribLocation("a_position"), 2, wgl.FLOAT, false, 0, 0);
-
-		wgl.rebuildTexture(this.paintTextureTemp, wgl.RGBA, wgl.FLOAT, width, height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
-		wgl.framebufferTexture2D(this.simulationFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, this.paintTextureTemp, 0);
-		wgl.drawArrays(resizeDrawState, wgl.TRIANGLE_STRIP, 0, 4);
-
-		Utilities.swap(this, "paintTexture", "paintTextureTemp");
-		wgl.rebuildTexture(this.paintTextureTemp, wgl.RGBA, wgl.FLOAT, width, height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
-		// this.copyTexture({ width, height }, this.paintTexture, this.paintTextureTemp);
-	
 		this.resolutionWidth = width;
 		this.resolutionHeight = height;
 
+		wgl.rebuildTexture(this.paintTexture, wgl.RGBA, wgl.FLOAT, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
+		wgl.rebuildTexture(this.paintTextureTemp, wgl.RGBA, wgl.FLOAT, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
 		// paste in copied texture
 		this.applyPaintTexture(tmpTexture);
-
 		// rebuild textures
 		wgl.rebuildTexture(this.velocityTexture, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
 		wgl.rebuildTexture(this.velocityTextureTemp, wgl.RGBA, this.simulationTextureType, this.resolutionWidth, this.resolutionHeight, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
