@@ -54,7 +54,7 @@ const goya = {
 		switch (event.type) {
 			// system events
 			case "open.file":
-				return this.dispatch({ type: "new-file" });
+				// return this.dispatch({ type: "new-file" });
 				
 				event.open({ responseType: "blob" })
 					.then(file => Files.open(file));

@@ -429,14 +429,23 @@ content {
 
 			> div {
 				background: #fff;
+				position: relative;
 				box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
+				border-radius: 2px;
 				display: inline-block;
-				width: 53px;
+				width: 100%;
 				height: 53px;
 				margin: 0 9px 8px 0;
 
-				&:nth-child(4n) {
-					margin-right: 0;
+				&.active:before {
+					content: "";
+					position: absolute;
+					top: -2px;
+					left: -2px;
+					right: -2px;
+					bottom: -2px;
+					border-radius: 3px;
+					box-shadow: 0 0 0 1px #3583d077;
 				}
 			}
 		}
