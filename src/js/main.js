@@ -4,8 +4,8 @@
 @import "classes/painter.js"
 @import "classes/simulator.js"
 @import "classes/wrappedgl.js"
-@import "modules/utilities.js"
 
+@import "modules/ui.js"
 @import "modules/files.js"
 @import "classes/file.js"
 

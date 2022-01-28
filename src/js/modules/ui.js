@@ -10,7 +10,7 @@ const UI = {
 				min = +el.data("min"),
 				max = +el.data("max"),
 				val = +el.data("value"),
-				value = Math.round((val / max) * 100);
+				value = Math.round(((val - min) / (max - min)) * 100);
 
 			el.data({ value })
 			el.nextAll(".value").html(val);

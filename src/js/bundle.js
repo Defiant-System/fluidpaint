@@ -12,5 +12,5 @@
 @import "classes/readState.js"
 @import "classes/wrappedProgram.js"
 
+@import "modules/utilities.js"
 @import "modules/color.js"
-@import "modules/ui.js"

@@ -60,8 +60,20 @@
 
 					data = Self.presets[el.data("arg")];
 					for (name in data) {
-						let item = Self.els.el.find(`[data-arg="${name}"]`);
-						item.data({ value: data[name] }).trigger("change");
+						let item = Self.els.el.find(`[data-arg="${name}"]`),
+							min = +item.data("min"),
+							max = +item.data("max"),
+							value = Math.round(((data[name] - min) / (max - min)) * 100);
+						// update knob
+						item.data({ value });
+						// update knob value
+						item.parent().find(".value").html(data[name]);
+						// update brush
+						APP.sidebar.dispatch({
+							type: "set-variable",
+							arg: item.data("arg"),
+							value: data[name],
+						});
 					}
 				}
 				break;
