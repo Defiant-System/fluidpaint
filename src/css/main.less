@@ -32,13 +32,8 @@ content {
 	transition: padding @sidebar_speed * 0.75;
 
 	&.show-blank-view {
-		.blank-view {
-			display: block;
-		}
-
-		.workarea {
-			display: none;
-		}
+		.blank-view { display: block; }
+		.workarea { display: none; }
 	}
 
 	&.show-sidebar {
@@ -101,7 +96,6 @@ content {
 		left: 0;
 		right: 0;
 		bottom: 0;
-		display: flex;
 
 		h2 {
 			height: 47px;
@@ -148,17 +142,20 @@ content {
 					height: 60px;
 					opacity: .175;
 					margin-bottom: 5px;
+					pointer-events: none;
 				}
 
 				h4 {
 					font-size: 13px;
 					font-weight: 400;
 					margin-bottom: 3px;
+					pointer-events: none;
 				}
 
 				h5 {
 					font-weight: 400;
 					opacity: 0.5;
+					pointer-events: none;
 				}
 			}
 		}
@@ -195,6 +192,7 @@ content {
 					background-clip: border-box, border-box;
 					background-size: 12px 12px, 12px 12px;
 					transform: scaleX(1) scaleY(1) scaleZ(1);
+					pointer-events: none;
 				}
 
 				&:hover {
@@ -209,6 +207,7 @@ content {
 					right: 7px;
 					bottom: 7px;
 					border-radius: 5px;
+					pointer-events: none;
 
 					&:not(.bg-checker) {
 						background-position: 50% 50%;
@@ -224,6 +223,7 @@ content {
 					right: 0;
 					padding-top: 5px;
 					font-size: 13px;
+					pointer-events: none;
 				}
 			}
 		}

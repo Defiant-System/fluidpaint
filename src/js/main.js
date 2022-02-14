@@ -37,7 +37,7 @@ const goya = {
 			.filter(i => typeof this[i].init === "function")
 			.map(i => this[i].init());
 
-		// new file by default
+		// reset app by default - show initial view
 		this.initTimer = setTimeout(() => this.dispatch({ type: "reset-app" }), 100);
 
 		// setTimeout(() => {
@@ -73,11 +73,33 @@ const goya = {
 				// show blank view
 				Self.els.content.addClass("show-blank-view");
 				break;
+			case "select-preset":
+				el = $(event.target);
+				if (!el.hasClass("preset")) return;
+
+				value = {
+					bg: el.data("bg"),
+					width: +el.data("width"),
+					height: +el.data("height"),
+				};
+				Self.dispatch({ type: "new-file", value });
+				break;
+			case "select-recent-file":
+				el = $(event.target);
+				if (!el.hasClass("recent-file")) return;
+				console.log(event);
+				break;
 			case "new-file":
-				value = { width: 600, height: 400 };
+				value = event.value || { width: 600, height: 400, bg: "#f1f1f1" };
 				Self.els.easel.find(".file-layers").css(value);
 
-				// Self.els.easel.find(".fl-1").css({ background: "#f1f1f1" });
+				// set-canvas background color
+				Self.els.easel.find(".fl-1").css({ background: value.bg });
+				// hide blank view
+				Self.els.content.removeClass("show-blank-view");
+				// fix toolbar
+				Self.dispatch({ type: "enable-toolbar-tools", tools: ["select-tool", "toggle-sidebar"] });
+				window.find(`.toolbar-tool_[data-arg="brush"]`).trigger("click");
 				if (!Self.els.content.hasClass("show-sidebar")) {
 					window.find(`.toolbar-tool_[data-click="toggle-sidebar"]`).trigger("click");
 				}
@@ -103,6 +125,22 @@ const goya = {
 			case "history-undo": Paint.undo(); break;
 			case "history-redo": Paint.redo(); break;
 			case "clear": Paint.clear(); break;
+			// toolbar related
+			case "enable-toolbar-tools":
+				window.find(".toolbar-tool_").map(tool => {
+					let el = $(tool),
+						isDisabled = el.data("disabled") || true;
+					if (isDisabled && !event.tools.includes(el.data("click"))) el.addClass("tool-disabled_");
+					else el.removeClass("tool-disabled_");
+				});
+				break;
+			case "diable-toolbar-tools":
+				window.find(".toolbar-tool_").map(tool => {
+					let el = $(tool);
+					el.data({ disabled: el.hasClass("tool-disabled_") })
+						.addClass("tool-disabled_");
+				});
+				break;
 			// forwards events
 			case "select-tool":
 				return Self.tools.dispatch(event);
