@@ -17,6 +17,8 @@
 		<Menu name="Undo" click="history-undo" hotkey="meta+z"/>
 		<Menu name="Redo" click="history-redo" hotkey="meta+shift+z"/>
 		<Menu type="divider"/>
+		<Menu name="Clear" click="clear"/>
+		<Menu type="divider"/>
 		<Menu name="Cut"/>
 		<Menu name="Copy"/>
 		<Menu name="Paste"/>
