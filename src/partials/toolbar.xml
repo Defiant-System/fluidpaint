@@ -5,15 +5,14 @@
 			<Tool symbol="icon-redo" click="history-redo" state="disabled"/>
 		</Options>
 		<Options>
-			<Tool symbol="icon-crop" click="select-tool" arg="resize"/>
-			<Tool symbol="icon-hand" click="select-tool" arg="pan"/>
-			<!-- <Tool symbol="icon-zoom" click="select-tool" arg="zoom"/> -->
-			<Tool symbol="icon-brush" state="active" click="select-tool" arg="brush"/>
+			<Tool symbol="icon-crop" click="select-tool" arg="resize" state="disabled"/>
+			<Tool symbol="icon-hand" click="select-tool" arg="pan" state="disabled"/>
+			<!-- <Tool symbol="icon-zoom" click="select-tool" arg="zoom" state="disabled"/> -->
+			<Tool symbol="icon-brush" click="select-tool" arg="brush" state="disabled"/>
 		</Options>
 	</Group>
 	<Group width="50%">
-		<!-- <Tool name="Clear" click="clear"/>
-		<Tool name="Save" click="save"/> -->
-		<Tool symbol="icon-format" state="active" click="toggle-sidebar"/>
+		<!-- <Tool name="Clear" click="clear" state="disabled"/> -->
+		<Tool symbol="icon-format" click="toggle-sidebar" state="disabled"/>
 	</Group>
 </CaptionToolBar>

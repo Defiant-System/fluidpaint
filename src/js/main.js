@@ -21,6 +21,7 @@ const goya = {
 	init() {
 		// fast references
 		this.els = {
+			content: window.find("content"),
 			easel: window.find(".easel"),
 			pickerCvs: window.find(".sidebar .picker canvas"),
 		};
@@ -54,17 +55,23 @@ const goya = {
 		switch (event.type) {
 			// system events
 			case "open.file":
-				// return this.dispatch({ type: "new-file" });
+				return this.dispatch({ type: "reset-app" });
 				
 				event.open({ responseType: "blob" })
 					.then(file => Files.open(file));
 				break;
 			// custom events
+			case "reset-app":
+				Self.els.content.addClass("show-blank-view");
+				break;
 			case "new-file":
 				value = { width: 600, height: 400 };
 				Self.els.easel.find(".file-layers").css(value);
 
 				// Self.els.easel.find(".fl-1").css({ background: "#f1f1f1" });
+				if (!Self.els.content.hasClass("show-sidebar")) {
+					window.find(`.toolbar-tool_[data-click="toggle-sidebar"]`).trigger("click");
+				}
 				
 				STUDIO.painter.simulator.resize(value.width, value.height);
 				STUDIO.painter.resize(value);

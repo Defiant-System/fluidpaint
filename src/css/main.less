@@ -31,6 +31,16 @@ content {
 	user-select: none;
 	transition: padding @sidebar_speed * 0.75;
 
+	&.show-blank-view {
+		.blank-view {
+			display: block;
+		}
+
+		.workarea {
+			display: none;
+		}
+	}
+
 	&.show-sidebar {
 		padding-right: 261px;
 
@@ -68,6 +78,8 @@ content {
 
 		&.icon-eye-on  {background-image: url(~/icons/icon-eye-on.png); }
 		&.icon-eye-off {background-image: url(~/icons/icon-eye-off.png); }
+		
+		&.icon-file-image {background-image: url(~/icons/icon-file-image.png); }
 	}
 
 	.bg-checker {
@@ -78,6 +90,114 @@ content {
 		background-clip: border-box, border-box;
 		background-size: 20px 20px, 20px 20px;
 		transform: scaleX(1) scaleY(1) scaleZ(1);
+	}
+
+	.blank-view {
+		display: none;
+		background: #ddd;
+		color: #777;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		display: flex;
+
+		div > h3 {
+			font-size: 15px;
+			// font-weight: 400;
+			margin-bottom: 5px;
+			color: #555;
+		}
+
+		.block-presets {
+			font-size: 0;
+			padding: 17px 47px;
+			height: 167px;
+
+			.preset {
+				display: inline-block;
+				position: relative;
+				width: 173px;
+				height: 113px;
+				text-align: center;
+				font-size: 12px;
+				margin: 0 17px 13px 0;
+				padding: 7px 0 0;
+				border-radius: 5px;
+				box-shadow: inset 0 0 0 2px rgba(0,0,0,.1);
+
+				&:hover {
+					box-shadow: 0 0 0 3px #489bf770,
+								inset 0 0 0 2px #489bf7;
+				}
+
+				i {
+					width: 60px;
+					height: 60px;
+					opacity: .25;
+					margin-bottom: 5px;
+				}
+
+				h4 {
+					font-size: 13px;
+					font-weight: 400;
+					margin-bottom: 3px;
+				}
+
+				h5 {
+					font-weight: 400;
+					opacity: 0.5;
+				}
+			}
+		}
+
+		.block-recent {
+			font-size: 0;
+			padding: 17px 47px;
+			flex: 1;
+
+			.recent-file {
+				background: rgba(0,0,0,.075);
+				display: inline-block;
+				position: relative;
+				width: 173px;
+				height: 151px;
+				margin: 0 17px 47px 0;
+				padding: 5px 0 0;
+				text-align: center;
+				border-radius: 11px;
+
+				&:hover {
+					box-shadow: 0 0 0 3px #489bf770,
+								inset 0 0 0 2px #489bf7;
+				}
+
+				.thumbnail {
+					position: absolute;
+					top: 7px;
+					left: 7px;
+					right: 7px;
+					bottom: 7px;
+					border-radius: 5px;
+
+					&:not(.bg-checker) {
+						background-position: 50% 50%;
+						background-size: contain;
+						background-repeat: no-repeat;
+					}
+				}
+
+				.name {
+					position: absolute;
+					top: 100%;
+					left: 0;
+					right: 0;
+					padding-top: 5px;
+					font-size: 13px;
+				}
+			}
+		}
 	}
 
 	.workarea {
