@@ -60,7 +60,10 @@ const goya = {
 				clearTimeout(Self.initTimer);
 
 				event.open({ responseType: "blob" })
-					.then(file => Files.open(file));
+					.then(file => {
+						Self.dispatch({ type: "setup-workspace" });
+						Files.open(file);
+					});
 				break;
 			// custom events
 			case "reset-app":
@@ -72,6 +75,16 @@ const goya = {
 				});
 				// show blank view
 				Self.els.content.addClass("show-blank-view");
+				break;
+			case "setup-workspace":
+				// hide blank view
+				Self.els.content.removeClass("show-blank-view");
+				// fix toolbar
+				Self.dispatch({ type: "enable-toolbar-tools", tools: ["select-tool", "toggle-sidebar"] });
+				window.find(`.toolbar-tool_[data-arg="brush"]`).trigger("click");
+				if (!Self.els.content.hasClass("show-sidebar")) {
+					window.find(`.toolbar-tool_[data-click="toggle-sidebar"]`).trigger("click");
+				}
 				break;
 			case "select-preset":
 				el = $(event.target);
@@ -87,7 +100,9 @@ const goya = {
 			case "select-recent-file":
 				el = $(event.target);
 				if (!el.hasClass("recent-file")) return;
-				console.log(event);
+				
+				defiant.shell(`fs -o '${el.data("file")}' null`)
+					.then(exec => Self.dispatch(exec.result));
 				break;
 			case "new-file":
 				value = event.value || { width: 600, height: 400, bg: "#f1f1f1" };
@@ -95,14 +110,7 @@ const goya = {
 
 				// set-canvas background color
 				Self.els.easel.find(".fl-1").css({ background: value.bg });
-				// hide blank view
-				Self.els.content.removeClass("show-blank-view");
-				// fix toolbar
-				Self.dispatch({ type: "enable-toolbar-tools", tools: ["select-tool", "toggle-sidebar"] });
-				window.find(`.toolbar-tool_[data-arg="brush"]`).trigger("click");
-				if (!Self.els.content.hasClass("show-sidebar")) {
-					window.find(`.toolbar-tool_[data-click="toggle-sidebar"]`).trigger("click");
-				}
+				Self.dispatch({ type: "setup-workspace" });
 				
 				STUDIO.painter.simulator.resize(value.width, value.height);
 				STUDIO.painter.resize(value);
