@@ -22,6 +22,7 @@ const goya = {
 		// fast references
 		this.els = {
 			content: window.find("content"),
+			blankView: window.find(".blank-view"),
 			easel: window.find(".easel"),
 			pickerCvs: window.find(".sidebar .picker canvas"),
 		};
@@ -37,7 +38,7 @@ const goya = {
 			.map(i => this[i].init());
 
 		// new file by default
-		// this.dispatch({ type: "new-file" });
+		this.initTimer = setTimeout(() => this.dispatch({ type: "reset-app" }), 100);
 
 		// setTimeout(() => {
 		// 	window.find(`.toolbar-tool_[data-arg="resize"]`).trigger("click");
@@ -55,13 +56,21 @@ const goya = {
 		switch (event.type) {
 			// system events
 			case "open.file":
-				return this.dispatch({ type: "reset-app" });
-				
+				// prevent blank view
+				clearTimeout(Self.initTimer);
+
 				event.open({ responseType: "blob" })
 					.then(file => Files.open(file));
 				break;
 			// custom events
 			case "reset-app":
+				// render blank view
+				window.render({
+					template: "blank-view",
+					match: `//Data`,
+					target: this.els.blankView
+				});
+				// show blank view
 				Self.els.content.addClass("show-blank-view");
 				break;
 			case "new-file":

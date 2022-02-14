@@ -1,0 +1,13 @@
+<Data>
+	<Presets>
+		<i width="600" height="400" name="Landscape, 3 x 2" description="600 x 400 pixels"/>
+		<i width="500" height="300" name="Landscape, 5 x 3" description="500 x 300 pixels"/>
+		<i width="400" height="600" name="Portrait, 2 x 3" description="400 x 600 pixels"/>
+		<i width="300" height="600" name="Portrait, 1 x 2" description="300 x 600 pixels"/>
+		<i width="500" height="500" name="Quadratic, 1 x 1" description="500 x 500 pixels"/>
+	</Presets>
+	<Recents>
+		<i name="layer-1.jpg" filepath="/fs/Desktop/images/basketball.png"/>
+		<i name="coast-2.jpg" filepath="/fs/Desktop/coast-2.jpg"/>
+	</Recents>
+</Data>
