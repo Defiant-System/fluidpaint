@@ -90,6 +90,8 @@ const goya = {
 				el = $(event.target);
 				if (!el.hasClass("preset")) return;
 
+				// window.tabs.add("test");
+
 				value = {
 					bg: el.data("bg"),
 					width: +el.data("width"),

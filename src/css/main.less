@@ -71,10 +71,11 @@ content {
 		background-repeat: no-repeat;
 		background-position: 50% 50%;
 
-		&.icon-eye-on  {background-image: url(~/icons/icon-eye-on.png); }
-		&.icon-eye-off {background-image: url(~/icons/icon-eye-off.png); }
+		&.icon-eye-on  { background-image: url(~/icons/icon-eye-on.png); }
+		&.icon-eye-off { background-image: url(~/icons/icon-eye-off.png); }
 		
-		&.icon-file-image {background-image: url(~/icons/icon-file-image.png); }
+		&.icon-file-image  { background-image: url(~/icons/icon-file-image.png); }
+		&.icon-folder-open { background-image: url(~/icons/icon-folder-open.png); }
 	}
 
 	.bg-checker {
@@ -135,6 +136,14 @@ content {
 				&:hover {
 					box-shadow: 0 0 0 3px #489bf770,
 								inset 0 0 0 2px #489bf7;
+				}
+
+				&.fs-open {
+					top: -6px;
+
+					i {
+						margin: 11px 0 3px;
+					}
 				}
 
 				i {
