@@ -86,6 +86,15 @@ const goya = {
 					window.find(`.toolbar-tool_[data-click="toggle-sidebar"]`).trigger("click");
 				}
 				break;
+			case "open-filesystem":
+				window.dialog.open({
+					jpg: item => {
+						console.log(item);
+					}
+				});
+				break;
+			case "from-clipboard":
+				break;
 			case "select-preset":
 				el = $(event.target);
 				if (!el.hasClass("preset")) return;

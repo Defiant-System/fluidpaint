@@ -3,21 +3,21 @@
 <xsl:template name="blank-view">
 	<h2>Welcome to Goya.</h2>
 
-	<div class="block-presets" data-click="select-preset">
-		<h3>Presets</h3>
-		<xsl:call-template name="preset-list" />
-	</div>
-
 	<div class="block-buttons">
-		<div class="btn">
+		<div class="btn" data-click="open-filesystem">
 			<i class="icon-folder-open"></i>
 			Open&#8230;
 		</div>
 
-		<div class="btn">
+		<div class="btn disabled_" data-click="from-clipboard">
 			<i class="icon-folder-open"></i>
-			Paste from clipboard
+			From clipboard
 		</div>
+	</div>
+
+	<div class="block-presets" data-click="select-preset">
+		<h3>Presets</h3>
+		<xsl:call-template name="preset-list" />
 	</div>
 
 	<xsl:if test="count(./Presets/*)">
