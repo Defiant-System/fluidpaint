@@ -108,16 +108,40 @@ content {
 			color: #555;
 		}
 
-		div > h3 {
-			font-size: 15px;
-			font-weight: 400;
-			margin-bottom: 5px;
-			color: #555;
+		> div {
+			font-size: 0;
+			padding: 17px 47px;
+
+			> h3 {
+				font-size: 15px;
+				font-weight: 400;
+				margin-bottom: 5px;
+				color: #555;
+			}
+		}
+
+		.block-buttons {
+			padding: 17px 47px;
+			height: 47px;
+
+			.btn {
+				display: inline-block;
+				font-size: 13px;
+				margin-right: 11px;
+				padding: 9px 13px 6px;
+				border-radius: 17px;
+				box-shadow: inset 0 0 0 2px rgba(0,0,0,.1);
+
+				i {
+					position: relative;
+					top: -2px;
+					opacity: .175;
+					margin-right: 2px;
+				}
+			}
 		}
 
 		.block-presets {
-			font-size: 0;
-			padding: 17px 47px;
 			height: 167px;
 
 			.preset {
@@ -170,8 +194,6 @@ content {
 		}
 
 		.block-recent {
-			font-size: 0;
-			padding: 17px 47px;
 			flex: 1;
 
 			.recent-file {

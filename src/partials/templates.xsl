@@ -8,6 +8,18 @@
 		<xsl:call-template name="preset-list" />
 	</div>
 
+	<div class="block-buttons">
+		<div class="btn">
+			<i class="icon-folder-open"></i>
+			Open&#8230;
+		</div>
+
+		<div class="btn">
+			<i class="icon-folder-open"></i>
+			Paste from clipboard
+		</div>
+	</div>
+
 	<xsl:if test="count(./Presets/*)">
 		<div class="block-recent" data-click="select-recent-file">
 			<h3>Recent</h3>
