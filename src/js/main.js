@@ -39,7 +39,7 @@ const goya = {
 
 		setTimeout(() => {
 			// window.find(`.toolbar-tool_[data-arg="resize"]`).trigger("click");
-			window.find(".preset:nth(3)").trigger("click");
+			window.find(".preset:nth(1)").trigger("click");
 		}, 500);
 	},
 	dispatch(event) {

@@ -644,7 +644,8 @@ content {
 		}
 
 		.layers-body {
-			--thumb-height: 37px;
+			--thumb-width: 33px;
+			--thumb-height: 33px;
 
 			.layer {
 				// background: rgba(0,0,0,.1);
@@ -668,7 +669,7 @@ content {
 					width: 41px;
 					display: flex;
 					align-items: center;
-					padding: 0 3px;
+					text-align: center;
 					border-left: 1px solid rgba(0,0,0,.125);
 					border-right: 1px solid rgba(0,0,0,.125);
 
@@ -676,7 +677,8 @@ content {
 						background-position: 0px 0, 6px 6px;
 						background-size: 12px 12px, 12px 12px;
 						display: inline-block;
-						width: 37px;
+						margin: 0 auto;
+						width: var(--thumb-width);
 						height: var(--thumb-height);
 						box-shadow: 0 0 0 1px rgba(0,0,0,.15);
 					}

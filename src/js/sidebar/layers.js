@@ -19,8 +19,20 @@
 		// console.log(event);
 		switch (event.type) {
 			case "set-canvas":
-				Self.els.bgLayer.find(".thumbnail span")
-					.css({ background: event.bg });
+				if (event.bg) {
+					Self.els.bgLayer.find(".thumbnail span")
+						.css({ background: event.bg });
+				}
+
+				let max = 33,
+					ratio = event.width / event.height,
+					width = ratio > 1 ? max : Math.round(ratio * max),
+					height = ratio > 1 ? Math.round(width / ratio) : max;
+
+				Self.els.body.css({
+					"--thumb-width": `${width}px`,
+					"--thumb-height": `${height}px`,
+				});
 				break;
 			case "toggle-layer-visiblity":
 				el = event.el.parents(".layer[data-layer]");
