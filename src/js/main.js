@@ -27,7 +27,7 @@ const goya = {
 			pickerCvs: window.find(".sidebar .picker canvas"),
 		};
 		// insert main canvas to workarea
-		this.els.easel.find(".fl-3").append(STUDIO.canvas);
+		this.els.easel.find(".fl-2").append(STUDIO.canvas);
 		// init sidebar color picker
 		STUDIO.picker = new ColorPicker(this.els.pickerCvs, STUDIO.painter, STUDIO.wgl);
 		// auto init
@@ -37,12 +37,10 @@ const goya = {
 			.filter(i => typeof this[i].init === "function")
 			.map(i => this[i].init());
 
-		// reset app by default - show initial view
-		this.initTimer = setTimeout(() => this.dispatch({ type: "reset-app" }), 100);
-
-		// setTimeout(() => {
-		// 	window.find(`.toolbar-tool_[data-arg="resize"]`).trigger("click");
-		// }, 500);
+		setTimeout(() => {
+			// window.find(`.toolbar-tool_[data-arg="resize"]`).trigger("click");
+			window.find(".preset:nth(3)").trigger("click");
+		}, 500);
 	},
 	dispatch(event) {
 		let Self = goya,
@@ -55,9 +53,11 @@ const goya = {
 		// console.log(event);
 		switch (event.type) {
 			// system events
+			case "window.init":
+				// reset app by default - show initial view
+				Self.dispatch({ type: "reset-app" });
+				break;
 			case "open.file":
-				// prevent blank view
-				clearTimeout(Self.initTimer);
 				// open file
 				event.open({ responseType: "blob" })
 					.then(file => {
