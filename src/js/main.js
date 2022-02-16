@@ -58,7 +58,7 @@ const goya = {
 			case "open.file":
 				// prevent blank view
 				clearTimeout(Self.initTimer);
-
+				// open file
 				event.open({ responseType: "blob" })
 					.then(file => {
 						Self.dispatch({ type: "setup-workspace" });
@@ -88,12 +88,13 @@ const goya = {
 				break;
 			case "open-filesystem":
 				window.dialog.open({
-					jpg: item => {
-						console.log(item);
-					}
+					jpg: item => Self.dispatch(item),
+					jpeg: item => Self.dispatch(item),
+					png: item => Self.dispatch(item),
 				});
 				break;
 			case "from-clipboard":
+				// TODO
 				break;
 			case "select-preset":
 				el = $(event.target);

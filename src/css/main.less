@@ -226,11 +226,12 @@ content {
 				&:before {
 					content: "";
 					position: absolute;
-					top: 7px;
-					left: 7px;
-					right: 7px;
-					bottom: 7px;
-					border-radius: 5px;
+					top: 5px;
+					left: 5px;
+					right: 5px;
+					bottom: 5px;
+					border-radius: 7px;
+					// background: rgba(255,255,255,.35);
 					background: linear-gradient(45deg, rgba(0, 0, 0, 0.0980392) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.0980392) 75%, rgba(0, 0, 0, 0.0980392) 0), linear-gradient(45deg, rgba(0, 0, 0, 0.0980392) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.0980392) 75%, rgba(0, 0, 0, 0.0980392) 0), white;
 					background-repeat: repeat, repeat;
 					background-position: 0px 0, 6px 6px;
@@ -248,18 +249,15 @@ content {
 
 				.thumbnail {
 					position: absolute;
-					top: 7px;
-					left: 7px;
-					right: 7px;
-					bottom: 7px;
-					border-radius: 5px;
+					top: 5px;
+					left: 5px;
+					right: 5px;
+					bottom: 5px;
+					border-radius: 7px;
 					pointer-events: none;
-
-					&:not(.bg-checker) {
-						background-position: 50% 50%;
-						background-size: contain;
-						background-repeat: no-repeat;
-					}
+					background-position: 50% 50%;
+					background-size: contain;
+					background-repeat: no-repeat;
 				}
 
 				.name {

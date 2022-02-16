@@ -20,7 +20,7 @@
 		<xsl:call-template name="preset-list" />
 	</div>
 
-	<xsl:if test="count(./Presets/*)">
+	<xsl:if test="count(./Recents/*) &gt; 0">
 		<div class="block-recent" data-click="select-recent-file">
 			<h3>Recent</h3>
 			<xsl:call-template name="recent-list" />

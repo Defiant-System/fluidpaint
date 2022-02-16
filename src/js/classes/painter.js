@@ -61,7 +61,7 @@ class Painter {
 		this.interactionState = InteractionMode.NONE;
 
 		var update = () => {
-				this.update();
+				if (this.brushX > -1 && this.brushY > -1) this.update();
 				requestAnimationFrame(update);
 			};
 
