@@ -145,6 +145,9 @@ class Simulator {
 		simulationArea.round();
 		simulationArea.intersectRectangle(new Rectangle(0, 0, this.resolutionWidth, this.resolutionHeight));
 
+		if (simulationArea.width < 0) simulationArea.width = 0;
+		if (simulationArea.height < 0) simulationArea.height = 0;
+
 		return simulationArea;
 	}
 
