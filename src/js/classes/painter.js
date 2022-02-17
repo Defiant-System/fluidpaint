@@ -3,6 +3,8 @@ class Painter {
 	constructor(canvas, wgl) {
 		this.canvas = canvas;
 		this.wgl = wgl;
+		// swap canvas
+		this.swap = Utilities.createCanvas(canvas.width, canvas.height);
 
 		wgl.getExtension("OES_texture_float");
 		wgl.getExtension("OES_texture_float_linear");
@@ -90,6 +92,9 @@ class Painter {
 			bottom = this.paintingRectangle.bottom || 0;
 		canvas.width = dim.width || canvas.width;
 		canvas.height = dim.height || canvas.height;
+
+		// resize swap canvas
+		this.swap.cvs.prop(dim);
 
 		this.paintingRectangle = new Rectangle(left, bottom, dim.width, dim.height);
 		this.mainProjectionMatrix = makeOrthographicMatrix(new Float32Array(16), 0.0, canvas.width, 0, canvas.height, -5000.0, 5000.0);
@@ -304,15 +309,16 @@ class Painter {
 		wgl.deleteTexture(saveTexture);
 		wgl.deleteFramebuffer(saveFramebuffer);
 
-		// then we draw the pixels to a 2D canvas and then save from the canvas
-		// is there a better way?
-		let { cvs, ctx } = Utilities.createCanvas(width, height),
-			imgData = ctx.createImageData(width, height);
+		// first put image data on swap canvas
+		let imgData = this.swap.ctx.createImageData(width, height);
 		imgData.data.set(savePixels);
-		ctx.putImageData(imgData, 0, 0);
+		this.swap.ctx.putImageData(imgData, 0, 0);
+
+		// now transfer flipped image to temp canvas
+		let { cvs, ctx } = Utilities.createCanvas(width, height);
 		ctx.translate(0, height);
 		ctx.scale(1, -1);
-		ctx.drawImage(cvs[0], 0, 0);
+		ctx.drawImage(this.swap.cvs[0], 0, 0);
 
 		return cvs[0].toBlob(fnDone, mime, quality);
 	}
