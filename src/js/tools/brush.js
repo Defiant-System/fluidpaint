@@ -54,6 +54,10 @@
 				}
 				break;
 			case "mouseup":
+				if (painter.interactionState === InteractionMode.PAINTING) {
+					// notify sidebar (thumbnail)
+					APP.sidebar.layers.dispatch({ type: "update-thumbnail" });
+				}
 				painter.interactionState = InteractionMode.NONE;
 				break;
 			// custom events

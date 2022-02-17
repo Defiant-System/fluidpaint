@@ -50,7 +50,8 @@ class Painter {
 		this.splatRadius = 0.05;
 		this.brushScale = 20;
 		this.brushHeight = 1.0;
-		this.brushColorHSVA = [Math.random(), 1, 1, 0.8];
+		// this.brushColorHSVA = [Math.random(), 1, 1, 0.8];
+		this.brushColorHSVA = [.75, 1, 1, 0.8];
 		// this.brushColorHSVA = [.175, 1, 1, 0.8];
 		this.brush = new Brush(wgl, 30, MAX_BRISTLE_COUNT);
 		// this.resize();

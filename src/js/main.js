@@ -77,6 +77,8 @@ const goya = {
 				Self.els.content.addClass("show-blank-view");
 				break;
 			case "setup-workspace":
+				// notify sidebar (thumbnail)
+				Self.sidebar.layers.dispatch({ type: "update-thumbnail" });
 				// hide blank view
 				Self.els.content.removeClass("show-blank-view");
 				// fix toolbar
