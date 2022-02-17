@@ -24,22 +24,27 @@
 		// console.log(event);
 		switch (event.type) {
 			case "update-thumbnail":
-				let cvs = Self.els.easel.find(`.fl-2 canvas`),
-					opt = {
-						resizeWidth: Self.vars.width,
-						resizeHeight: Self.vars.height,
-						resizeQuality: "medium",
-					};
-				createImageBitmap(cvs[0], opt)
-					.then(img => {
-						Self.els.drawCtx.drawImage(img, 0, 0);
-					});
+				STUDIO.painter.toBlob(blob => {
+					let opt = {
+							resizeWidth: Self.vars.width,
+							resizeHeight: Self.vars.height,
+							resizeQuality: "medium",
+						};
+					createImageBitmap(blob, opt)
+						.then(img => {
+							Self.els.drawCvs.prop({
+								width: Self.vars.width,
+								height: Self.vars.height,
+							});
+							Self.els.drawCtx.drawImage(img, 0, 0);
+						});
+				});
 				break;
 			case "set-canvas":
 				if (event.bg) {
 					Self.els.bgLayer.find(".thumbnail span")
 						.css({ background: event.bg });
-
+					// update painter clear color
 					let hsl = Color.hexToHsl( event.bg );
 					STUDIO.painter.clearColor = [...hsvToRyb(...hsl), 0];
 				}
