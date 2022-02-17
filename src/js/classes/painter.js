@@ -271,7 +271,7 @@ class Painter {
 			.toggleClass("tool-disabled_", this.canRedo());
 	}
 
-	toBlob(fnDone, mime, quality) {
+	toBlob(fnDone, mime, quality, bgColor) {
 		//we first render the painting to a WebGL texture
 		var wgl = this.wgl,
 			width = this.canvas.width,
@@ -318,6 +318,10 @@ class Painter {
 		let { cvs, ctx } = Utilities.createCanvas(width, height);
 		ctx.translate(0, height);
 		ctx.scale(1, -1);
+		if (bgColor) {
+			ctx.fillStyle = bgColor;
+			ctx.fillRect(0, 0, width, height);
+		}
 		ctx.drawImage(this.swap.cvs[0], 0, 0);
 
 		return cvs[0].toBlob(fnDone, mime, quality);

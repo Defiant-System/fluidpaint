@@ -44,6 +44,8 @@
 				if (event.bg) {
 					Self.els.bgLayer.find(".thumbnail span")
 						.css({ background: event.bg });
+					// save bg-color value
+					Self.vars.bgColor = event.bg;
 					// update painter clear color
 					let hsl = Color.hexToHsl( event.bg );
 					STUDIO.painter.clearColor = [...hsvToRyb(...hsl), 0];
@@ -70,6 +72,11 @@
 				Self.els.easel.find(`.fl-${el.data("layer")}`)
 					.css({ display: value ? "" : "none" });
 				break;
+			case "get-bg-color":
+				if (!Self.els.bgLayer.find(".icon-eye-on").hasClass("icon-eye-off")) {
+					value = Self.vars.bgColor;
+				}
+				return value;
 		}
 	}
 }

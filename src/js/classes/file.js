@@ -68,13 +68,14 @@ class File {
 	}
 
 	async toBlob(mime, quality) {
+		let bgColor = goya.sidebar.layers.dispatch({ type: "get-bg-color" });
 		// return promise
 		return new Promise(async (resolve, reject) => {
 			// generate blob
 			STUDIO.painter.toBlob(blob => {
 				// return created blob
 				resolve(blob);
-			}, mime, quality);
+			}, mime, quality, bgColor);
 		});
 
 		// return new Blob([data], { type });
