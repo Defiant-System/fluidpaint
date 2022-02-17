@@ -77,6 +77,12 @@ class Painter {
 		return Math.ceil(this.paintingRectangle.height * this.resolutionScale);
 	}
 
+	set clearColor(rgba) {
+		this.wgl.gl.clearColor(...rgba);
+		// refresh simulator
+		this.simulator = new Simulator(this.wgl, this.paintingResolutionWidth, this.paintingResolutionHeight);
+	}
+
 	resize(dim={}) {
 		let wgl = this.wgl,
 			canvas = this.canvas,

@@ -39,6 +39,9 @@
 				if (event.bg) {
 					Self.els.bgLayer.find(".thumbnail span")
 						.css({ background: event.bg });
+
+					let hsl = Color.hexToHsl( event.bg );
+					STUDIO.painter.clearColor = [...hsvToRyb(...hsl), 0];
 				}
 
 				Self.vars.ratio = event.width / event.height,
