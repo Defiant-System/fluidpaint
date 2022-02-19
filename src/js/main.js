@@ -37,10 +37,10 @@ const goya = {
 			.filter(i => typeof this[i].init === "function")
 			.map(i => this[i].init());
 
-		setTimeout(() => {
-			// window.find(`.toolbar-tool_[data-arg="resize"]`).trigger("click");
-			window.find(".preset:nth(0)").trigger("click");
-		}, 500);
+		// setTimeout(() => {
+		// 	// window.find(`.toolbar-tool_[data-arg="resize"]`).trigger("click");
+		// 	window.find(".preset:nth(0)").trigger("click");
+		// }, 500);
 	},
 	dispatch(event) {
 		let Self = goya,

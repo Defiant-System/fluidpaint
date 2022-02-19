@@ -191,11 +191,13 @@ class Painter {
 		this.needsRedraw = false;
 	}
 
-	clear(hsl) {
-		// hsl = hsl || [1, 1, 1];
-		// this.wgl.gl.clearColor(...hsl, 0);
+	clear() {
 		this.simulator.clear();
 		this.needsRedraw = true;
+		// notify sidebar layers
+		let Layers = goya.sidebar.layers;
+		Layers.dispatch({ type: "update-thumbnail" });
+		Layers.dispatch({ type: "set-canvas", bgColor: "#f1f1f1", ...Layers.vars });
 	}
 
 	saveSnapshot() {
@@ -319,7 +321,7 @@ class Painter {
 		ctx.translate(0, height);
 		ctx.scale(1, -1);
 		if (bgColor) {
-			ctx.fillStyle = bgColor;
+			ctx.fillStyle = bgColor || "transparent";
 			ctx.fillRect(0, 0, width, height);
 		}
 		ctx.drawImage(this.swap.cvs[0], 0, 0);

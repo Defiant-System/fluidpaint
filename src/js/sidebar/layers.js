@@ -41,13 +41,14 @@
 				});
 				break;
 			case "set-canvas":
-				if (event.bg) {
-					Self.els.bgLayer.find(".thumbnail span")
-						.css({ background: event.bg });
+				if (event.bgColor) {
+					Self.els.bgLayer.find(".thumbnail span").css({ background: event.bgColor });
+					// set easel canvas bg color
+					Self.els.easel.find(".fl-1").css({ background: event.bgColor });
 					// save bg-color value
-					Self.vars.bgColor = event.bg;
+					Self.vars.bgColor = event.bgColor;
 					// update painter clear color
-					let hsl = Color.hexToHsl( event.bg );
+					let hsl = Color.hexToHsl( event.bgColor );
 					STUDIO.painter.clearColor = [...hsvToRyb(...hsl), 0];
 				}
 
