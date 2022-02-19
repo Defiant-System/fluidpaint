@@ -3,7 +3,10 @@ class File {
 
 	constructor(fsFile, data) {
 		// save reference to original FS file
-		this._file = fsFile || new defiant.File();
+		this._file = fsFile || new defiant.File({ kind: "jpg" });
+
+		// if new "empty" file
+		if (!fsFile.blob) return;
 
 		// temp offscreen canvas
 		let { cvs, ctx } = Utilities.createCanvas(1, 1);

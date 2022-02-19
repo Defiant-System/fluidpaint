@@ -37,10 +37,10 @@ const goya = {
 			.filter(i => typeof this[i].init === "function")
 			.map(i => this[i].init());
 
-		// setTimeout(() => {
-		// 	// window.find(`.toolbar-tool_[data-arg="resize"]`).trigger("click");
-		// 	window.find(".preset:nth(2)").trigger("click");
-		// }, 500);
+		setTimeout(() => {
+			// window.find(`.toolbar-tool_[data-arg="resize"]`).trigger("click");
+			window.find(".preset:nth(0)").trigger("click");
+		}, 500);
 	},
 	dispatch(event) {
 		let Self = goya,
@@ -101,7 +101,6 @@ const goya = {
 			case "select-preset":
 				el = $(event.target);
 				if (!el.hasClass("preset")) return;
-
 				// window.tabs.add("test");
 
 				value = {
@@ -121,6 +120,12 @@ const goya = {
 			case "new-file":
 				value = event.value || { width: 600, height: 400, bg: "#f1f1f1" };
 				Self.els.easel.find(".file-layers").css(value);
+
+				// TODO: create new "activeFile"
+				if (!file) {
+					file = new defiant.File({ kind: "jpg" });
+					Files.open(file);
+				}
 
 				// set-canvas background color
 				Self.els.easel.find(".fl-1").css({ background: value.bg });
