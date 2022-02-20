@@ -38,8 +38,7 @@ const goya = {
 			.map(i => this[i].init());
 
 		// setTimeout(() => {
-		// 	// window.find(`.toolbar-tool_[data-arg="resize"]`).trigger("click");
-		// 	window.find(".preset:nth(0)").trigger("click");
+		// 	window.find(`.toolbar-tool_[data-arg="resize"]`).trigger("click");
 		// }, 500);
 	},
 	dispatch(event) {
@@ -87,35 +86,6 @@ const goya = {
 				if (!Self.els.content.hasClass("show-sidebar")) {
 					window.find(`.toolbar-tool_[data-click="toggle-sidebar"]`).trigger("click");
 				}
-				break;
-			case "open-filesystem":
-				window.dialog.open({
-					jpg: item => Self.dispatch(item),
-					jpeg: item => Self.dispatch(item),
-					png: item => Self.dispatch(item),
-				});
-				break;
-			case "from-clipboard":
-				// TODO
-				break;
-			case "select-preset":
-				el = $(event.target);
-				if (!el.hasClass("preset")) return;
-				// window.tabs.add("test");
-
-				value = {
-					bg: el.data("bg"),
-					width: +el.data("width"),
-					height: +el.data("height"),
-				};
-				Self.dispatch({ type: "new-file", value });
-				break;
-			case "select-recent-file":
-				el = $(event.target);
-				if (!el.hasClass("recent-file")) return;
-				
-				defiant.shell(`fs -o '${el.data("file")}' null`)
-					.then(exec => Self.dispatch(exec.result));
 				break;
 			case "new-file":
 				value = event.value || { width: 600, height: 400, bg: "#f1f1f1" };
@@ -189,6 +159,7 @@ const goya = {
 				}
 		}
 	},
+	blankView: @import "modules/blankView.js",
 	sidebar: @import "sidebar/sidebar.js",
 	tools: @import "tools/tools.js"
 };
