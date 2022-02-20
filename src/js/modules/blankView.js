@@ -10,6 +10,17 @@
 			el: window.find(".blank-view"),
 		};
 
+		// get settings, if any
+		let xList = $.xmlFromString(`<Recents>
+				<i name="basketball.png" filepath="/fs/Desktop/images/basketball.png"/>
+				<i name="coast.jpg" filepath="/fs/Desktop/coast.jpg"/>
+			</Recents>`);
+		let xPreset = window.bluePrint.selectSingleNode(`//Presets`);
+
+		this.xRecent = window.settings.getItem("recents") || xList.documentElement;
+		// add recent files in to data-section
+		xPreset.parentNode.append(this.xRecent);
+
 		// setTimeout(() => {
 		// 	window.find(".preset:nth(0)").trigger("click");
 		// }, 500);
@@ -22,6 +33,10 @@
 			el;
 		// console.log(event);
 		switch (event.type) {
+			case "add-recent-file":
+				let xFile = $.nodeFromString(`<i name="${event.file.base}" filepath="${event.file.path}"/>`);
+				Self.xRecent.appendChild(xFile);
+				break;
 			case "open-filesystem":
 				window.dialog.open({
 					jpg: item => Self.dispatch(item),

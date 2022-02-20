@@ -62,7 +62,14 @@ const goya = {
 					.then(file => {
 						Self.dispatch({ type: "setup-workspace" });
 						Files.open(file);
+
+						// setTimeout(() => {
+						// 	Self.dispatch({ type: "file.saved", file });
+						// }, 300);
 					});
+				break;
+			case "file.saved":
+				Self.blankView.dispatch({ type: "add-recent-file", file: event.file });
 				break;
 			// custom events
 			case "reset-app":

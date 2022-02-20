@@ -6,8 +6,8 @@
 		<i width="300" height="500" icon="file-image" bg="#111111" bg-name="Black" name="Portrait, 3 x 5"/>
 		<i width="500" height="500" icon="file-image" bg="transparent" bg-name="Transparent" name="Quadratic, 1 x 1"/>
 	</Presets>
-	<Recents>
+	<!-- <Recents>
 		<i name="basketball.png" filepath="/fs/Desktop/images/basketball.png"/>
 		<i name="coast.jpg" filepath="/fs/Desktop/coast.jpg"/>
-	</Recents>
+	</Recents> -->
 </Data>
