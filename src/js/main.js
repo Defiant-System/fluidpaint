@@ -56,20 +56,24 @@ const goya = {
 				// reset app by default - show initial view
 				Self.dispatch({ type: "reset-app" });
 				break;
+			case "window.close":
+				// save recents list to settings
+				window.settings.setItem("recents", Self.blankView.xRecent);
+				break;
 			case "open.file":
 				// open file
 				event.open({ responseType: "blob" })
 					.then(file => {
+						// add file to "recent" list
+						Self.blankView.dispatch({ type: "add-recent-file", file });
+						// set up workspace
 						Self.dispatch({ type: "setup-workspace" });
+						// open file with Files
 						Files.open(file);
-
-						// setTimeout(() => {
-						// 	Self.dispatch({ type: "file.saved", file });
-						// }, 300);
 					});
 				break;
 			case "file.saved":
-				Self.blankView.dispatch({ type: "add-recent-file", file: event.file });
+				// Self.blankView.dispatch({ type: "add-recent-file", file: event.file });
 				break;
 			// custom events
 			case "reset-app":

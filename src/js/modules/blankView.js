@@ -10,11 +10,10 @@
 			el: window.find(".blank-view"),
 		};
 
+		// window.settings.clear();
+
 		// get settings, if any
-		let xList = $.xmlFromString(`<Recents>
-				<i name="basketball.png" filepath="/fs/Desktop/images/basketball.png"/>
-				<i name="coast.jpg" filepath="/fs/Desktop/coast.jpg"/>
-			</Recents>`);
+		let xList = $.xmlFromString(`<Recents/>`);
 		let xPreset = window.bluePrint.selectSingleNode(`//Presets`);
 
 		this.xRecent = window.settings.getItem("recents") || xList.documentElement;
@@ -34,8 +33,13 @@
 		// console.log(event);
 		switch (event.type) {
 			case "add-recent-file":
-				let xFile = $.nodeFromString(`<i name="${event.file.base}" filepath="${event.file.path}"/>`);
-				Self.xRecent.appendChild(xFile);
+				let str = `<i name="${event.file.base}" filepath="${event.file.path}"/>`,
+					xFile = $.nodeFromString(str),
+					xExist = Self.xRecent.selectSingleNode(`//Recents/*[@filepath="${event.file.path}"]`);
+				// remove entry if already exist
+				if (xExist) xExist.parentNode.removeChild(xExist);
+				// insert new entry at first position
+				Self.xRecent.prependChild(xFile);
 				break;
 			case "open-filesystem":
 				window.dialog.open({
