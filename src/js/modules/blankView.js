@@ -39,7 +39,7 @@
 				// remove entry if already exist
 				if (xExist) xExist.parentNode.removeChild(xExist);
 				// insert new entry at first position
-				Self.xRecent.prependChild(xFile);
+				Self.xRecent.insertBefore(xFile, Self.xRecent.firstChild);
 				break;
 			case "open-filesystem":
 				window.dialog.open({
