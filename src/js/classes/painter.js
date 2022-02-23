@@ -52,8 +52,8 @@ class Painter {
 		this.splatRadius = 0.05;
 		this.brushScale = 20;
 		this.brushHeight = 1.0;
-		// this.brushColorHSVA = [Math.random(), 1, 1, 0.8];
-		this.brushColorHSVA = [.75, 1, 1, 0.8];
+		this.brushColorHSVA = [Math.random(), 1, 1, 0.8];
+		// this.brushColorHSVA = [.75, 1, 1, 0.8];
 		// this.brushColorHSVA = [.175, 1, 1, 0.8];
 		this.brush = new Brush(wgl, 30, MAX_BRISTLE_COUNT);
 		// this.resize();
@@ -283,12 +283,11 @@ class Painter {
 		
 		wgl.framebufferTexture2D(saveFramebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, saveTexture, 0);
 		
-		var paintingProgram = this.paintingProgram;
 		var saveDrawState = wgl.createDrawState()
 			.bindFramebuffer(saveFramebuffer)
 			.viewport(0, 0, width, height)
-			.vertexAttribPointer(this.quadVertexBuffer, paintingProgram.getAttribLocation("a_position"), 2, wgl.FLOAT, false, 0, 0)
-			.useProgram(paintingProgram)
+			.vertexAttribPointer(this.quadVertexBuffer, this.paintingProgram.getAttribLocation("a_position"), 2, wgl.FLOAT, false, 0, 0)
+			.useProgram(this.paintingProgram)
 			.uniform2f("u_paintingSize", this.paintingRectangle.width, this.paintingRectangle.height)
 			.uniform2f("u_paintingResolution", this.simulator.resolutionWidth, this.simulator.resolutionHeight)
 			.uniform2f("u_screenResolution", this.paintingRectangle.width, this.paintingRectangle.height)
@@ -320,7 +319,9 @@ class Painter {
 		let { cvs, ctx } = Utilities.createCanvas(width, height);
 		ctx.translate(0, height);
 		ctx.scale(1, -1);
-		if (!bgColor && mime !== "png") bgColor = "#f1f1f1";
+		ctx.clearRect(0, 0, width, height);
+
+		if (!bgColor && mime !== "image/png") bgColor = "#f1f1f1";
 		if (bgColor) {
 			ctx.fillStyle = bgColor || "transparent";
 			ctx.fillRect(0, 0, width, height);

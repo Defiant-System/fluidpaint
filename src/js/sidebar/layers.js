@@ -52,6 +52,13 @@
 					STUDIO.painter.clearColor = [...hsvToRyb(...hsl), 0];
 				}
 
+				value = Self.els.easel.find(".fl-1").css("background-color");
+				value = Color.rgbToHex(value);
+				if (value.slice(-2) === "00") {
+					Self.vars.bgColor = value = "#f1f1f1";
+					Self.els.easel.find(".fl-1").css({ "background-color": value });
+				}
+
 				Self.vars.ratio = event.width / event.height,
 				Self.vars.width = Self.vars.ratio > 1 ? Self.vars.max : Math.round(Self.vars.ratio * Self.vars.max),
 				Self.vars.height = Self.vars.ratio > 1 ? Math.round(Self.vars.width / Self.vars.ratio) : Self.vars.max;
@@ -75,7 +82,7 @@
 				break;
 			case "get-bg-color":
 				if (!Self.els.bgLayer.find(".icon-eye-on").hasClass("icon-eye-off")) {
-					value = Self.vars.bgColor;
+					value = Self.vars.bgColor || Self.els.bgLayer.css("background-color");
 				}
 				return value;
 		}

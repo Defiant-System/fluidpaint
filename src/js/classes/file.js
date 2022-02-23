@@ -35,7 +35,7 @@ class File {
 
 						wgl.texImage2D(wgl.TEXTURE_2D, texture, 0, wgl.RGBA, wgl.RGBA, wgl.UNSIGNED_BYTE, cvs[0]);
 
-						// TODO
+						// resize layers
 						window.find(".file-layers").css(dim);
 
 						// Paint.resize({ ...dim, simulatorResize: true });
@@ -44,6 +44,8 @@ class File {
 						Paint.simulator.applyPaintTexture(texture, dim);
 						Paint.needsRedraw = true;
 						Paint.update();
+
+						goya.sidebar.layers.dispatch({ type: "update-thumbnail" });
 					});
 				break;
 			case "goya": /* TODO */ break;
@@ -80,8 +82,6 @@ class File {
 				resolve(blob);
 			}, mime, quality, bgColor);
 		});
-
-		// return new Blob([data], { type });
 	}
 
 	get isDirty() {
