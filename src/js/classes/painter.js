@@ -320,6 +320,7 @@ class Painter {
 		let { cvs, ctx } = Utilities.createCanvas(width, height);
 		ctx.translate(0, height);
 		ctx.scale(1, -1);
+		if (!bgColor && mime !== "png") bgColor = "#f1f1f1";
 		if (bgColor) {
 			ctx.fillStyle = bgColor || "transparent";
 			ctx.fillRect(0, 0, width, height);
