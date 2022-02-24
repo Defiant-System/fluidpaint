@@ -10,7 +10,7 @@
 		</div>
 
 		<div class="btn disabled_" data-click="from-clipboard">
-			<i class="icon-folder-open"></i>
+			<i class="icon-clipboard"></i>
 			From clipboard
 		</div>
 	</div>

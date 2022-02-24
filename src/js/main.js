@@ -81,7 +81,7 @@ const goya = {
 				window.render({
 					template: "blank-view",
 					match: `//Data`,
-					target: this.els.blankView
+					target: Self.els.blankView
 				});
 				// show blank view
 				Self.els.content.addClass("show-blank-view");

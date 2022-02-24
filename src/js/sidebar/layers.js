@@ -55,8 +55,8 @@
 				value = Self.els.easel.find(".fl-1").css("background-color");
 				value = Color.rgbToHex(value);
 				if (value.slice(-2) === "00") {
-					Self.vars.bgColor = value = "#f1f1f1";
-					Self.els.easel.find(".fl-1").css({ "background-color": value });
+					// Self.vars.bgColor = value = "#f1f1f1";
+					// Self.els.easel.find(".fl-1").css({ "background-color": value });
 				}
 
 				Self.vars.ratio = event.width / event.height,

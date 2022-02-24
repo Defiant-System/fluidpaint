@@ -29,10 +29,23 @@ class File {
 						ctx.scale(1, -1);
 						ctx.drawImage(img, 0, 0);
 
+
+						let style = `position: absolute; top: 0; left: 0; width: 300px; height: 250px; overflow: hidden;`,
+							str = `<div style="${style}"><canvas width="600" height="400"></canvas></div>`,
+							div = goya.els.easel.find(".file-layers").append(str),
+							ctx2 = div.find("canvas")[0].getContext("2d");
+						ctx2.translate(0, height);
+						ctx2.scale(1, -1);
+						ctx2.drawImage(cvs[0], 0, 0);
+
+
+						// TODO: create texture correctly
+						// need to make gamma correction
+						// this.adjustGamma(cvs[0], 1.5);
+
 						let wgl = STUDIO.wgl,
 							Paint = STUDIO.painter,
-							texture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, 0, 0, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.NEAREST, wgl.NEAREST);
-
+							texture = wgl.buildTexture(wgl.RGBA, wgl.UNSIGNED_BYTE, width, height, null, wgl.CLAMP_TO_EDGE, wgl.CLAMP_TO_EDGE, wgl.LINEAR, wgl.LINEAR);
 						wgl.texImage2D(wgl.TEXTURE_2D, texture, 0, wgl.RGBA, wgl.RGBA, wgl.UNSIGNED_BYTE, cvs[0]);
 
 						// resize layers
@@ -50,6 +63,19 @@ class File {
 				break;
 			case "goya": /* TODO */ break;
 		}
+	}
+
+	adjustGamma(cvs, gamma) {
+	    let gammaCorrection = 1 / gamma;
+	    let ctx = cvs.getContext('2d');
+	    let imageData = ctx.getImageData(0.0, 0.0, cvs.width, cvs.height);
+	    let data = imageData.data;
+	    for (var i = 0; i < data.length; i += 4) {
+	        data[i] = 255 * Math.pow((data[i] / 255), gammaCorrection);
+	        data[i+1] = 255 * Math.pow((data[i+1] / 255), gammaCorrection);
+	        data[i+2] = 255 * Math.pow((data[i+2] / 255), gammaCorrection);
+	    }
+	    ctx.putImageData(imageData, 0, 0);
 	}
 
 	loadImage(url) {
@@ -74,14 +100,9 @@ class File {
 
 	async toBlob(mime, quality) {
 		let bgColor = goya.sidebar.layers.dispatch({ type: "get-bg-color" });
-		// return promise
-		return new Promise(async (resolve, reject) => {
-			// generate blob
-			STUDIO.painter.toBlob(blob => {
-				// return created blob
-				resolve(blob);
-			}, mime, quality, bgColor);
-		});
+		// return promise generating blob
+		return new Promise(async (resolve, reject) =>
+			STUDIO.painter.toBlob(blob => resolve(blob), mime, quality, bgColor));
 	}
 
 	get isDirty() {
