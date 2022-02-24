@@ -43,9 +43,9 @@
 				break;
 			case "open-filesystem":
 				window.dialog.open({
-					jpg: item => Self.dispatch(item),
-					jpeg: item => Self.dispatch(item),
-					png: item => Self.dispatch(item),
+					jpg: item => APP.dispatch(item),
+					jpeg: item => APP.dispatch(item),
+					png: item => APP.dispatch(item),
 				});
 				break;
 			case "from-clipboard":
