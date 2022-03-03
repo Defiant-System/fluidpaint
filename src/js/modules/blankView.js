@@ -9,19 +9,34 @@
 			content: window.find("content"),
 			el: window.find(".blank-view"),
 		};
-
 		// window.settings.clear();
 
 		// get settings, if any
 		let xList = $.xmlFromString(`<Recents/>`);
 		let xPreset = window.bluePrint.selectSingleNode(`//Presets`);
-
 		this.xRecent = window.settings.getItem("recents") || xList.documentElement;
-		// add recent files in to data-section
-		xPreset.parentNode.append(this.xRecent);
 
-		// setTimeout(() => window.find(".preset:nth(0)").trigger("click"), 100);
-		// setTimeout(() => goya.dispatch({ type: "close-file" }), 500);
+		Promise.all(this.xRecent.selectNodes("./*").map(async xItem => {
+				let filepath = xItem.getAttribute("filepath"),
+					check = await defiant.shell(`fs -f '${filepath}'`);
+				if (!check.result) {
+					xItem.parentNode.removeChild(xItem)
+				}
+			}))
+			.then(() => {
+				// add recent files in to data-section
+				xPreset.parentNode.append(this.xRecent);
+		
+				// render blank view
+				window.render({
+					template: "blank-view",
+					match: `//Data`,
+					target: goya.els.blankView
+				});
+
+				// setTimeout(() => window.find(".preset:nth(0)").trigger("click"), 100);
+				// setTimeout(() => goya.dispatch({ type: "close-file" }), 500);
+			});
 	},
 	dispatch(event) {
 		let APP = goya,

@@ -80,12 +80,6 @@ const goya = {
 				break;
 			// custom events
 			case "reset-app":
-				// render blank view
-				window.render({
-					template: "blank-view",
-					match: `//Data`,
-					target: Self.els.blankView
-				});
 				// show blank view
 				Self.els.content.addClass("show-blank-view");
 				break;
