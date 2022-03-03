@@ -25,6 +25,9 @@ const goya = {
 			blankView: window.find(".blank-view"),
 			easel: window.find(".easel"),
 			pickerCvs: window.find(".sidebar .picker canvas"),
+			tools: {
+				sidebar: window.find(`.toolbar-tool_[data-click="toggle-sidebar"]`),
+			}
 		};
 		// insert main canvas to workarea
 		this.els.easel.find(".fl-2").append(STUDIO.canvas);
@@ -115,7 +118,7 @@ const goya = {
 				STUDIO.painter.simulator.resize(value.width, value.height);
 				STUDIO.painter.resize(value);
 				STUDIO.painter.needsRedraw = true;
-				STUDIO.painter.update();
+				STUDIO.painter.startUpdate();
 				break;
 			case "save-file":
 				// create blob and save file
@@ -129,6 +132,16 @@ const goya = {
 					jpg: () => file.toBlob("image/jpeg", .95),
 					webp: () => file.toBlob("image/webp"),
 				});
+				break;
+			case "close-file":
+				// close file + prepare workspace
+				Files.close();
+				// show blank view
+				Self.els.content.addClass("show-blank-view");
+				// hide sidebar, if needed
+				if (Self.els.tools.sidebar.hasClass("tool-active_")) {
+					Self.els.tools.sidebar.trigger("click");
+				}
 				break;
 			case "history-undo": Paint.undo(); break;
 			case "history-redo": Paint.redo(); break;

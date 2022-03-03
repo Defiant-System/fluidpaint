@@ -20,9 +20,8 @@
 		// add recent files in to data-section
 		xPreset.parentNode.append(this.xRecent);
 
-		// setTimeout(() => {
-		// 	window.find(".preset:nth(0)").trigger("click");
-		// }, 500);
+		// setTimeout(() => window.find(".preset:nth(0)").trigger("click"), 100);
+		// setTimeout(() => goya.dispatch({ type: "close-file" }), 500);
 	},
 	dispatch(event) {
 		let APP = goya,

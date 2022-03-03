@@ -18,7 +18,7 @@ const Files = {
 		this.select(fileId);
 	},
 	close(id) {
-		
+		this.activeFile.dispatch({ type: "close-file" });
 	},
 	select(id) {
 		// reference to active file

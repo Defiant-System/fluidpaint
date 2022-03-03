@@ -62,13 +62,21 @@ class Painter {
 		this.needsRedraw = true;
 
 		this.interactionState = InteractionMode.NONE;
+	}
 
+	startUpdate() {
 		var update = () => {
+				if (!this._updating) return;
 				this.update();
 				requestAnimationFrame(update);
 			};
 
+		this._updating = true;
 		update();
+	}
+
+	stopUpdate() {
+		this._updating = false;
 	}
 
 	get paintingResolutionWidth() {

@@ -29,14 +29,15 @@ class File {
 						ctx.scale(1, -1);
 						ctx.drawImage(img, 0, 0);
 
-
+						/*
 						let style = `position: absolute; top: 0; left: 0; width: 300px; height: 250px; overflow: hidden;`,
-							str = `<div style="${style}"><canvas width="600" height="400"></canvas></div>`,
+							str = `<div style="${style}"><canvas width="${width}" height="${height}"></canvas></div>`,
 							div = goya.els.easel.find(".file-layers").append(str),
 							ctx2 = div.find("canvas")[0].getContext("2d");
 						ctx2.translate(0, height);
 						ctx2.scale(1, -1);
 						ctx2.drawImage(cvs[0], 0, 0);
+						*/
 
 
 						// TODO: create texture correctly
@@ -56,7 +57,7 @@ class File {
 						Paint.simulator.resize(width, height);
 						Paint.simulator.applyPaintTexture(texture, dim);
 						Paint.needsRedraw = true;
-						Paint.update();
+						Paint.startUpdate();
 
 						goya.sidebar.layers.dispatch({ type: "update-thumbnail" });
 					});
@@ -87,13 +88,13 @@ class File {
 	}
 
 	dispatch(event) {
-		let APP = eniac,
-			xSheet,
-			xClone,
+		let APP = goya,
 			name,
 			str;
 		switch (event.type) {
-			case "render-sheet-names":
+			case "close-file":
+				STUDIO.painter.clear();
+				STUDIO.painter.stopUpdate();
 				break;
 		}
 	}
