@@ -33,8 +33,6 @@ const goya = {
 		this.els.easel.find(".fl-2").append(STUDIO.canvas);
 		// init sidebar color picker
 		STUDIO.picker = new ColorPicker(this.els.pickerCvs, STUDIO.painter, STUDIO.wgl);
-		// auto init
-		Files.init();
 		// init all sub-objects
 		Object.keys(this)
 			.filter(i => typeof this[i].init === "function")

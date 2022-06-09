@@ -25,3 +25,6 @@ const Files = {
 		this.activeFile = this.stack.find(f => f._file.id === id);
 	}
 };
+
+// auto init
+Files.init();
