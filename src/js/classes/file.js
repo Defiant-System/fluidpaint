@@ -3,7 +3,7 @@ class File {
 
 	constructor(fsFile, data) {
 		// save reference to original FS file
-		this._file = fsFile || new defiant.File({ kind: "jpg" });
+		this._file = fsFile || new karaqu.File({ kind: "jpg" });
 
 		// if new "empty" file
 		if (!fsFile.blob) return;

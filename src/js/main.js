@@ -99,7 +99,7 @@ const goya = {
 
 				// TODO: create new "activeFile"
 				if (!file) {
-					file = new defiant.File({ kind: "jpg" });
+					file = new karaqu.File({ kind: "jpg" });
 					Files.open(file);
 				}
 

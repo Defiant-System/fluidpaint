@@ -18,7 +18,7 @@
 
 		Promise.all(this.xRecent.selectNodes("./*").map(async xItem => {
 				let filepath = xItem.getAttribute("filepath"),
-					check = await defiant.shell(`fs -f '${filepath}'`);
+					check = await karaqu.shell(`fs -f '${filepath}'`);
 				if (!check.result) {
 					xItem.parentNode.removeChild(xItem)
 				}
@@ -81,7 +81,7 @@
 				el = $(event.target);
 				if (!el.hasClass("recent-file")) return;
 				
-				defiant.shell(`fs -o '${el.data("file")}' null`)
+				karaqu.shell(`fs -o '${el.data("file")}' null`)
 					.then(exec => APP.dispatch(exec.result));
 				break;
 		}
