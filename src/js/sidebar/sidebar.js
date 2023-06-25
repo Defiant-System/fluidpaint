@@ -60,7 +60,7 @@
 				}
 		}
 	},
-	colors: @import "./colors.js",
-	brush: @import "./brush.js",
-	layers: @import "./layers.js",
+	brush: @import "brush.js",
+	colors: @import "colors.js",
+	layers: @import "layers.js",
 }
