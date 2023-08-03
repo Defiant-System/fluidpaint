@@ -62,4 +62,124 @@
 			}
 		}
 	}
+
+	&.win-body-focused_ {
+		sidebar {
+			.sidebar-head {
+				color: var( --content-fg );
+
+				span {
+					&.active {
+						background: rgba(0,0,0,.1);
+					}
+				}
+			}
+
+			.picker,
+			.palette,
+			.controls,
+			.brush-presets {
+				&:before {
+					content: "";
+					position: absolute;
+					top: 0;
+					right: 0;
+					left: 0;
+					height: 1px;
+					opacity: .35;
+					background: linear-gradient(90deg, transparent 0%, #fff 50%, transparent 100%);
+					mix-blend-mode: overlay;
+				}
+			}
+
+			.layers-body {
+				.layer {
+					&:before {
+						content: "";
+						position: absolute;
+						top: 0;
+						right: 0;
+						left: 0;
+						height: 1px;
+						opacity: .35;
+						background: linear-gradient(90deg, transparent 0%, #fff 50%, transparent 100%);
+						mix-blend-mode: overlay;
+					}
+
+					[class*="icon-"],
+					[class^="icon-"] {
+						filter: invert(1) brightness(1.5) drop-shadow(0 1px 0 rgba(#000,.5));
+					}
+
+					.info {
+						color: var( --content-fg );
+					}
+				}
+			}
+		}
+
+		.control {
+			span {
+				&:nth-child(1) {
+					color: var( --content-fg );
+					text-shadow: 0 1px 0 rgba(#000,.25);
+				}
+
+				&:nth-child(3) {
+					color: var( --content-fg );
+					opacity: .5;
+				}
+			}
+		}
+
+		.knob {
+			filter: hue-rotate(310deg) invert(1) drop-shadow(0 1px 0 #000);
+			mix-blend-mode: color-dodge;
+		}
+	}
+		
+	sidebar {
+		background: rgba(#fff,.025);
+		
+		&:before {
+			content: "";
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			width: 1px;
+			opacity: .5;
+			background: linear-gradient(0deg, transparent 0%, #fff 50%, transparent 100%);
+			mix-blend-mode: overlay;
+		}
+
+		&:after {
+			left: -1px;
+			border-color: rgba(#000,.4);
+		}
+
+		.sidebar-head {
+			background: rgba(0,0,0,.1);
+			color: var( --sidebar-fg );
+			border-bottom-color: rgba(#000,.35);
+
+			span {
+				&:not(:first-child) {
+					border-left-color: transparent;
+				}
+				
+				&.active {
+					background: rgba(#fff,.1);
+					color: #fff;
+					
+					&:after {
+						border-color: transparent;
+					}
+				}
+
+				&:hover:not(.active),
+				&:active:not(.active) { color: rgba(#fff,.75); }
+			}
+		}
+	}
 }

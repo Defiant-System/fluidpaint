@@ -5,9 +5,10 @@
 @import "classes/simulator.js"
 @import "classes/wrappedgl.js"
 
+@import "classes/file.js"
 @import "modules/ui.js"
 @import "modules/files.js"
-@import "classes/file.js"
+@import "modules/test.js"
 
 
 let canvas = document.createElement('canvas'),
@@ -24,7 +25,7 @@ const goya = {
 			content: window.find("content"),
 			blankView: window.find(".blank-view"),
 			easel: window.find(".easel"),
-			pickerCvs: window.find(".sidebar .picker canvas"),
+			pickerCvs: window.find("sidebar .picker canvas"),
 			tools: {
 				sidebar: window.find(`.toolbar-tool_[data-click="toggle-sidebar"]`),
 			}
@@ -38,9 +39,9 @@ const goya = {
 			.filter(i => typeof this[i].init === "function")
 			.map(i => this[i].init());
 
-		// setTimeout(() => {
-		// 	window.find(`.toolbar-tool_[data-arg="resize"]`).trigger("click");
-		// }, 500);
+		// DEV-ONLY-START
+		Test.init(this);
+		// DEV-ONLY-END
 	},
 	dispatch(event) {
 		let Self = goya,
