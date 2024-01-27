@@ -139,6 +139,9 @@ const goya = {
 			case "history-undo": Paint.undo(); break;
 			case "history-redo": Paint.redo(); break;
 			case "clear": Paint.clear(); break;
+			case "open-help":
+				karaqu.shell("fs -u '~/help/index.md'");
+				break;
 			// toolbar related
 			case "enable-toolbar-tools":
 				window.find(".toolbar-tool_").map(tool => {
